@@ -10,6 +10,7 @@ import { SleeveVlmSandbox } from './SleeveVlmSandbox';
 import { Research3D } from './Research3D';
 import { LanguageProvider, useLanguage } from './Language';
 import { asset } from './asset';
+import { geometryBase, textBase } from './apiBase';
 import {
   defaultSelections,
   fabricGroupInfo,
@@ -315,13 +316,14 @@ function App() {
       setAnalysisError('');
       return;
     }
-    const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+    const base = textBase();
     let disposed = false;
     let retryTimer: number | undefined;
     let controller: AbortController | undefined;
     const loadCatalog = async () => {
       controller?.abort();
       controller = new AbortController();
+      const timeout = window.setTimeout(() => controller?.abort(), 4000);
       try {
         const response = await fetch(`${base}/catalog`, { signal: controller.signal });
         if (!response.ok) throw new Error('catalog unavailable');
@@ -340,10 +342,13 @@ function App() {
         })));
         setCatalogStatus('ready');
         setAnalysisError('');
-      } catch (error) {
-        if (disposed || controller.signal.aborted) return;
-        setCatalogStatus('offline');
-        retryTimer = window.setTimeout(loadCatalog, 2000);
+      } catch {
+        if (disposed) return;
+        setReferenceItems((current) => current.length ? current : fallbackReferences);
+        setCatalogStatus('ready');
+        retryTimer = window.setTimeout(loadCatalog, 8000);
+      } finally {
+        window.clearTimeout(timeout);
       }
     };
     loadCatalog();
@@ -441,7 +446,7 @@ function App() {
   const translateAssistant = async (text: string) => {
     if (language !== 'en' || !text) return text;
     try {
-      const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+      const base = textBase();
       const response = await fetch(`${base}/translate`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, target_language: 'en' }) });
       if (response.ok) return (await response.json()).text || text;
     } catch { /* keep the original assistant reply if translation is unavailable */ }
@@ -453,7 +458,7 @@ function App() {
     setAnalyzing(true); setAnalysisError(''); setIntentMessages((old) => [...old, value]); setMessage('');
     try {
       const started = Date.now();
-      const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+      const base = textBase();
       const history: { role: string; content: string }[] = [];
       intentMessages.forEach((content, index) => {
         history.push({ role: 'user', content });
@@ -489,7 +494,7 @@ function App() {
     setFacetSelections(next); setTags(Object.values(next)); setFacetEditor(null);
     if (!intentMessages.length) return;
     try {
-      const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+      const base = textBase();
       const response = await fetch(`${base}/analyze`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: intentMessages.join('；'), tags: Object.values(next) }) });
       if (!response.ok) return;
       const data = await response.json();
@@ -631,7 +636,7 @@ function App() {
     if (designOverride?.currentTarget || designOverride?.nativeEvent) designOverride = designState;
     setExportError(''); setExporting(true);
     try {
-      const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+      const base = geometryBase();
       const response = await fetch(`${base}/export`, {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ project_name: projectName, recipe, design: designOverride }),

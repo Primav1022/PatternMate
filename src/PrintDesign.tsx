@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from './Language';
+import { aiBase } from './apiBase';
 import './PrintDesign.css';
 
 export type PrintAsset = { id: string; name: string; src: string };
@@ -28,7 +29,7 @@ export function PrintDesignPanel(props: any) {
   };
   const generatePrint = async () => {
     if (!aiPrompt.trim() || aiStatus) return;
-    const base = import.meta.env.VITE_AI_BASE_URL || '/ai';
+    const base = aiBase();
     const prompt = aiPrompt.trim();
     if (!basePreview?.url) { setAiError(t('请先在编辑搭配中完成2D设计预览。', 'Complete the 2D design preview first.')); return; }
     const priorRequests = aiHistory.filter((turn) => turn.role === 'user').map((turn) => turn.text).slice(-8);

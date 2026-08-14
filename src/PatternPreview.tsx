@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from './Language';
+import { aiBase, geometryBase } from './apiBase';
 import { Research3D } from './Research3D';
 import { garmentPath, necklinePath, specialDesignLines } from './garmentGeometry';
 
@@ -162,7 +163,7 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
   const loadPrompt = async () => {
     setPromptLoading(true);
     try {
-      const base = import.meta.env.VITE_AI_BASE_URL || '/ai';
+      const base = aiBase();
       const response = await fetch(`${base}/design-preview/prompt`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(buildInput(promptDraft)) });
       if (!response.ok) throw new Error(t('无法读取提示词。', 'Unable to load the prompt.'));
       const data = await response.json();
@@ -186,7 +187,7 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
     lastInputRef.current = input;
     setError(''); setJob({ status: 'queued', progress: 0 }); setPromptOpen(false); setImageReady(false);
     try {
-      const base = import.meta.env.VITE_AI_BASE_URL || '/ai';
+      const base = aiBase();
       const response = await fetch(`${base}/design-preview/jobs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
       if (!response.ok) throw new Error(t('2D设计生成服务暂时不可用。', 'The 2D design service is temporarily unavailable.'));
       const created = await response.json(); let current = created;
@@ -349,7 +350,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
       setLoading(true);
       setError('');
       try {
-        const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+        const base = geometryBase();
         const response = await fetch(`${base}/compose`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -427,7 +428,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
     }
     setBusyLabel(t('正在加载放码前纸样', 'Loading ungraded pattern'));
     try {
-      const base = import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry';
+      const base = geometryBase();
       const response = await fetch(`${base}/compose`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },

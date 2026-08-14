@@ -1,0 +1,9 @@
+name = "patternmate-api"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+workers_dev = true
+
+[vars]
+IMAGE_MODEL_NAME = "gpt-image-2"
+DESIGN_MODEL_NAME = "gemini-3.5-flash"
+ASSET_BASE = "https://raw.githubusercontent.com/Primav1022/PatternMate/main/public"
