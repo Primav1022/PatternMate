@@ -5,7 +5,7 @@
 - 在线使用：https://primav1022.github.io/PatternMate/
 - 源码：本仓库
 
-在线版前端托管在 GitHub Pages。对话和生图走 Cloudflare Worker（密钥在 Worker Secrets，不进仓库）。纸样组合 / 3D 试穿仍需要演示机。
+在线版前端托管在 GitHub Pages，对话 / 生图 / 纸样 / 试穿目前都打到演示机。Cloudflare Worker 代码在 `workers/api/`，演示机关机后再切过去。
 
 本地 `.env` 不要提交。Cloudflare 部署需要在仓库 Settings → Secrets 填写：
 
