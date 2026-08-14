@@ -5,16 +5,9 @@
 - 在线使用：https://primav1022.github.io/PatternMate/
 - 源码：本仓库
 
-在线版前端托管在 GitHub Pages，对话 / 生图 / 纸样 / 试穿目前都打到演示机。Cloudflare Worker 代码在 `workers/api/`，演示机关机后再切过去。
+在线版前端托管在 GitHub Pages，对话 / 生图 / 纸样 / 试穿目前都打到演示机。**仓库里不含任何 API Key**。Cloudflare Worker 代码在 `workers/api/`，演示机关机后再切。
 
-本地 `.env` 不要提交。Cloudflare 部署需要在仓库 Settings → Secrets 填写：
-
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
-- `MODEL_API_KEY`
-- `MODEL_BASE_URL`
-
-部署成功后把 Worker 地址写入 Settings → Variables → `WORKER_BASE_URL`，再跑一次 Pages workflow。
+本地 `.env` 不要提交。
 
 ## 目录
 
