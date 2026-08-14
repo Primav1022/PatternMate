@@ -1,0 +1,35 @@
+{
+  "case_id": "C2490277",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2490277_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "confidence": 0.9
+    },
+    "special": [],
+    "notes": "圆领正肩袖T恤"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"set-in\", \"confidence\": 0.9},\n  \"special\": [],\n  \"notes\": \"圆领正肩袖T恤\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "该服装为长袖无帽的厚重针织/抓绒款式，属于无帽卫衣。",
+    "signals": [
+      "fleece"
+    ]
+  }
+}

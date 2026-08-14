@@ -1,0 +1,420 @@
+{
+  "version": "shirt-v2-remix-v1",
+  "count": 31,
+  "matched": 31,
+  "missing_case_ids": [],
+  "rows": [
+    {
+      "case_id": "C2330115",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2330115.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2330115.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2330115.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2330115_product.png"
+    },
+    {
+      "case_id": "C2431027",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431027.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431027.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431027.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431027_product.png"
+    },
+    {
+      "case_id": "C2431055",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431055.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431055.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431055.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431055_product.png"
+    },
+    {
+      "case_id": "C2431105",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431105.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431105.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431105.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431105_product.png"
+    },
+    {
+      "case_id": "C2431239",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431239.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431239.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431239.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431239_product.png"
+    },
+    {
+      "case_id": "C2431245",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431245.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431245.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431245.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431245_product.png"
+    },
+    {
+      "case_id": "C2431354",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431354.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431354.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431354.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431354_product.png"
+    },
+    {
+      "case_id": "C2431381",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2431381.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2431381.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2431381.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2431381_product.png"
+    },
+    {
+      "case_id": "C2530027",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530027.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530027.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530027.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530027_product.png"
+    },
+    {
+      "case_id": "C2530028",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530028.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530028.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530028.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530028_product.png"
+    },
+    {
+      "case_id": "C2530029",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530029.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530029.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530029.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530029_product.png"
+    },
+    {
+      "case_id": "C2530093",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530093.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530093.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530093.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530093_product.png"
+    },
+    {
+      "case_id": "C2530098",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530098.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530098.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530098.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530098_product.png"
+    },
+    {
+      "case_id": "C2530110",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530110.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530110.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530110.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530110_product.png"
+    },
+    {
+      "case_id": "C2530117",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530117.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530117.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530117.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530117_product.png"
+    },
+    {
+      "case_id": "C2530128",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530128.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530128.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530128.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530128_product.png"
+    },
+    {
+      "case_id": "C2530131",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530131.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530131.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530131.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530131_product.png"
+    },
+    {
+      "case_id": "C2530137",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530137.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530137.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530137.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530137_product.png"
+    },
+    {
+      "case_id": "C2530175",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530175.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530175.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530175.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530175_product.png"
+    },
+    {
+      "case_id": "C2530423",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530423.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530423.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530423.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530423_product.png"
+    },
+    {
+      "case_id": "C2530429",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530429.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530429.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530429.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530429_product.png"
+    },
+    {
+      "case_id": "C2530534",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530534.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530534.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530534.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530534_product.png"
+    },
+    {
+      "case_id": "C2530581",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530581.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530581.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530581.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530581_product.png"
+    },
+    {
+      "case_id": "C2530633",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530633.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530633.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530633.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530633_product.png"
+    },
+    {
+      "case_id": "C2530642",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530642.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530642.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530642.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530642_product.png"
+    },
+    {
+      "case_id": "C2530682",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530682.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530682.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530682.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530682_product.png"
+    },
+    {
+      "case_id": "C2530692",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530692.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530692.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530692.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530692_product.png"
+    },
+    {
+      "case_id": "C2530694",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530694.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530694.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530694.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530694_product.png"
+    },
+    {
+      "case_id": "C2530790",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530790.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530790.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530790.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530790_product.png"
+    },
+    {
+      "case_id": "C2530900",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2530900.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2530900.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2530900.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2530900_product.png"
+    },
+    {
+      "case_id": "C2531023",
+      "ir": "data/ir/shirt_v2/pattern_ir_remix_v1/C2531023.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2531023.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2531023.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready",
+      "remix_baseline": "shirt.dxf_fused_remix.v1",
+      "cover": "images/C2531023_product.png"
+    }
+  ],
+  "remix_baseline": {
+    "id": "shirt.dxf_fused_remix.v1",
+    "locked": true,
+    "locked_at": "2026-08-13T08:59:11Z",
+    "ir_dir": "data/ir/shirt_v2/pattern_ir_remix_v1",
+    "pattern_ir_link": "data/ir/shirt_v2/pattern_ir -> pattern_ir_remix_v1",
+    "purpose": "display_and_migration_foundation",
+    "pipeline": "shirt.simple_piece_swap.v1"
+  }
+}

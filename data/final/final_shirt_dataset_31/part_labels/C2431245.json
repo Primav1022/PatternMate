@@ -1,0 +1,185 @@
+{
+  "case_id": "C2431245",
+  "category": "shirt",
+  "part_labels": {
+    "notes": "领口带有可系结的飘带；常规长袖配克夫；全开襟前门襟；宽松直筒H型廓形；常规衣长",
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.760115+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "unknown",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该样衣为梭织衬衫，不属于T恤或Polo衫品类。领口为系带领衬衫领，不在T恤/Polo衫领型选项中，故选unknown。袖型为正肩袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2431245_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"bow-tie\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"cuff\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"placket\": {\"slug\": \"full\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"relaxed-h\", \"confidence\": 0.85},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"notes\": \"领口带有可系结的飘带；常规长袖配克夫；全开襟前门襟；宽松直筒H型廓形；常规衣长\"\n}",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "shirt",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "带有飘带设计且质感轻盈的女式梭织时装衬衫，符合 blouse 品类特征。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "bow-tie",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "full",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:36:26.128068+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:34.630765+00:00",
+  "part_labels_original": {
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "part_labels_original_notes": "领口带有可系结的飘带；常规长袖配克夫；全开襟前门襟；宽松直筒H型廓形；常规衣长",
+  "shirt_label_review_state": "edge_bindings_pending",
+  "edge_bindings_pending_at": "2026-08-09T05:55:33.547Z"
+}

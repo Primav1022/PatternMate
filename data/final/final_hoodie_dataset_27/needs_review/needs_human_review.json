@@ -1,0 +1,255 @@
+{
+  "total_needs_review": 11,
+  "fields_to_review": [
+    "neckline",
+    "sleeve_style",
+    "garment_length",
+    "front_opening"
+  ],
+  "rationale": "geometric heuristic could not infer these fields; need human annotation",
+  "annotation_target": "服务器标注平台: annotation_platform/vercel_app",
+  "cases": [
+    {
+      "case_id": "C2590024",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 1,
+      "edge_count": 1,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "minimal"
+    },
+    {
+      "case_id": "C2590444",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2590445",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 13,
+      "edge_count": 38,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590446",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 9,
+      "edge_count": 12,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2690447",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2490033",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 10,
+      "edge_count": 18,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2490340",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 15,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2490439",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 16,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590251",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 6,
+      "edge_count": 20,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590408",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 10,
+      "edge_count": 32,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2690313",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    }
+  ]
+}

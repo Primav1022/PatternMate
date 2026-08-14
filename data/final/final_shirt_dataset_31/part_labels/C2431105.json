@@ -1,0 +1,185 @@
+{
+  "case_id": "C2431105",
+  "category": "shirt",
+  "part_labels": {
+    "notes": "经典正装尖领；袖山和袖身有蓬起的泡泡袖效果；袖口为常规克夫；前门襟全开；合身廓形；常规衣长。",
+    "collar": {
+      "slug": "pointed",
+      "label_zh": "正装尖领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.95
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.759179+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "polo",
+    "sleeve_style": "puff",
+    "special": [],
+    "notes": "样衣为带翻领的衬衫式设计，袖子为具有明显蓬松感的泡泡袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2431105_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "```json\n{\n  \"collar\": {\n    \"slug\": \"pointed\",\n    \"confidence\": 0.95\n  },\n  \"sleeve_style\": {\n    \"slug\": \"puff\",\n    \"confidence\": 0.9\n  },\n  \"cuff\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"placket\": {\n    \"slug\": \"full\",\n    \"confidence\": 0.95\n  },\n  \"silhouette\": {\n    \"slug\": \"regular-fit\",\n    \"confidence\": 0.85\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"notes\": \"经典正装尖领；袖山和袖身有蓬起的泡泡袖效果；袖口为常规克夫；前门襟全开；合身廓形；常规衣长。\"\n}\n```",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "shirt",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "面料呈梭织感，具备泡泡袖等时装化设计细节，符合女式时装衬衫特征。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "pointed",
+    "sleeve_style": "puff",
+    "cuff": "regular",
+    "placket": "full",
+    "silhouette": "regular-fit",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:35:45.251093+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "pointed",
+      "label_zh": "正装尖领",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:33.899820+00:00",
+  "part_labels_original": {
+    "collar": {
+      "slug": "pointed",
+      "label_zh": "正装尖领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.95
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "part_labels_original_notes": "经典正装尖领；袖山和袖身有蓬起的泡泡袖效果；袖口为常规克夫；前门襟全开；合身廓形；常规衣长。",
+  "shirt_label_review_state": "edge_bindings_pending",
+  "edge_bindings_pending_at": "2026-08-09T05:55:33.532Z"
+}

@@ -1,0 +1,533 @@
+{
+  "dataset": "final_hoodie_dataset_27",
+  "version": "v1",
+  "created_at": "2026-08-09T23:39:14.586163",
+  "rule": "27 件 = 6 hoodie + 15 sweatshirt + 6 GPU-misclassified-tshirt（任务E·卫衣）",
+  "category_unified_to": "hoodie",
+  "ir_input_dir": "ir_corpus_0807/v1_pattern_ir_hoodie_27/",
+  "merged_output": "ir_corpus_0807/v1_pattern_ir_merged/ (appended 27 hoodie cases)",
+  "summary": {
+    "total": 27,
+    "with_real_part_labels": 16,
+    "placeholder_part_labels": 11,
+    "needs_human_review": 11,
+    "ir_passing_piece>=3": 15,
+    "ir_empty_shell": 11
+  },
+  "cases": [
+    {
+      "case_id": "C2590024",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 1,
+      "edge_count": 1,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "minimal"
+    },
+    {
+      "case_id": "C2590082",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 5,
+      "part_labels": {
+        "neckline": "polo",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "该服装为带有连帽的半拉链长袖上衣，领口归类为 Polo 领，袖型为插肩袖。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590444",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2590445",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 13,
+      "edge_count": 38,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590446",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 9,
+      "edge_count": 12,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2690447",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2390077",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "该T恤为圆领设计，袖型为正肩袖，无特殊结构设计。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2390270",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "经典圆领黑白条纹长袖上衣，正肩袖设计，无特殊结构。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2490277",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "圆领正肩袖T恤",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2490437",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "高领带抽绳，插肩袖设计",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2490577",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 4,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "圆领插肩袖无袖款式",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2490583",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 4,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "圆领插肩袖短袖T恤",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590023",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "这是一件圆领正肩袖卫衣，无特殊设计。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2590029",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 4,
+      "edge_count": 11,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "这是一件带有拉链高领和正肩袖的抓绒衫。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590069",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 4,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "样衣为白色长袖T恤，领口为半高领，袖型为正肩袖。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590214",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 29,
+      "edge_count": 120,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "圆领插肩袖卫衣式样T恤",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590218",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 14,
+      "edge_count": 62,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "灰色半拉链高领套头衫，正肩袖。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590246",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 6,
+      "edge_count": 55,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "样衣为高领半高领设计，袖型为正肩袖。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590280",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "crew",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "这是一款拼色长袖圆领T恤，袖子为正肩袖。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2590337",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "raglan",
+        "garment_length": null
+      },
+      "notes": "半高领设计，搭配插肩袖长袖T恤结构。",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2590427",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": "high-mock",
+        "sleeve_style": "set-in",
+        "garment_length": null
+      },
+      "notes": "服装为半高领正肩长袖T恤结构",
+      "needs_human_review": false,
+      "needs_human_review_fields": [],
+      "is_placeholder": false,
+      "ir_completeness": "empty_shell"
+    },
+    {
+      "case_id": "C2490033",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 10,
+      "edge_count": 18,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2490340",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 15,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2490439",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 3,
+      "edge_count": 16,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590251",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 6,
+      "edge_count": 20,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2590408",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 10,
+      "edge_count": 32,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "passing"
+    },
+    {
+      "case_id": "C2690313",
+      "category": "hoodie",
+      "original_category": null,
+      "piece_count": 0,
+      "edge_count": 0,
+      "part_labels": {
+        "neckline": null,
+        "sleeve_style": null,
+        "garment_length": null
+      },
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag",
+      "needs_human_review": true,
+      "needs_human_review_fields": [
+        "neckline",
+        "sleeve_style",
+        "garment_length",
+        "front_opening"
+      ],
+      "is_placeholder": true,
+      "ir_completeness": "empty_shell"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "case_id": "C2530900",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "立领设计，前中V型开襟带系带，无法归类；常规袖；平直袖口；宽松H型廓形；常规衣长。",
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "confidence": 0.9
+    },
+    "sleeve_style": {
+      "slug": "bell",
+      "label_zh": "喇叭袖"
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟"
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.776773+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "领口为带系带的高领/立领，袖型为正肩袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530900_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "```json\n{\n  \"collar\": {\n    \"slug\": \"non_composable\",\n    \"confidence\": 0.9\n  },\n  \"sleeve_style\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"cuff\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"placket\": {\n    \"slug\": \"non_composable\",\n    \"confidence\": 0.9\n  },\n  \"silhouette\": {\n    \"slug\": \"relaxed-h\",\n    \"confidence\": 0.85\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"notes\": \"立领设计，前中V型开襟带系带，无法归类；常规袖；平直袖口；宽松H型廓形；常规衣长。\"\n}\n```",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "该服装为具有明显时装感的梭织女式上装，带有系带开衩领和印花设计。",
+    "signals": [
+      "woven",
+      "collar",
+      "placket"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "non_composable",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "non_composable",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:34:41.131738+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "bell",
+      "label_zh": "喇叭袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:39.997210+00:00"
+}

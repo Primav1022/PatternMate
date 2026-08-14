@@ -1,0 +1,33 @@
+{
+  "case_id": "C2590023",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2590023_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 1.0
+    },
+    "sleeve_style": {
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "confidence": 1.0
+    },
+    "special": [],
+    "notes": "这是一件圆领正肩袖卫衣，无特殊设计。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 1.0},\n  \"sleeve_style\": {\"slug\": \"set-in\", \"confidence\": 1.0},\n  \"special\": [],\n  \"notes\": \"这是一件圆领正肩袖卫衣，无特殊设计。\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 1.0,
+    "reason_zh": "该衣物为无帽圆领卫衣，材质看起来较厚实且有螺纹收口，属于典型的卫衣品类。",
+    "signals": []
+  }
+}

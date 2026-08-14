@@ -1,0 +1,1312 @@
+{
+  "case_id": "C2330115",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "领型为立领不在四类内故选unknown；常规装袖；常规袖口；全开襟排扣；合身廓形；常规衣长",
+    "collar": {
+      "slug": "pointed",
+      "label_zh": "正装尖领"
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.85
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.8
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.95
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "confidence": 0.9
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.85
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.755523+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "crew",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该服装为立领设计，但选项中无立领，故选择unknown。袖子为正肩袖，无特殊设计。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2330115_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"unknown\", \"confidence\": 0.9},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.85},\n  \"cuff\": {\"slug\": \"regular\", \"confidence\": 0.8},\n  \"placket\": {\"slug\": \"full\", \"confidence\": 0.95},\n  \"silhouette\": {\"slug\": \"regular-fit\", \"confidence\": 0.9},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.85},\n  \"notes\": \"领型为立领不在四类内故选unknown；常规装袖；常规袖口；全开襟排扣；合身廓形；常规衣长\"\n}",
+  "gemini_prelabel": {
+    "collar": "unknown",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "full",
+    "silhouette": "regular-fit",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:01:49.198492+00:00",
+  "reviewed_by": "expert",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "该上衣具有立领和全开襟纽扣，袖子为薄纱材质，整体设计时尚，符合女式时装上装的blouse气质。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "edge_bindings": {
+    "collar": {
+      "slug": "pointed",
+      "label_zh": "正装尖领",
+      "status": "ok",
+      "match_source": "edge_chains",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": [
+        {
+          "edge_chain_id": "C2330115:edge:front_neckline:04",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "front_neckline",
+          "entity_ids": [
+            "line_1440__seg_01",
+            "line_1440__seg_02",
+            "line_1440__seg_03",
+            "line_1440__seg_04",
+            "line_1440__seg_05",
+            "line_1440__seg_06",
+            "line_1440__seg_07",
+            "line_1440__seg_08",
+            "line_1440__seg_09"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:back_neckline:05",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "back_neckline",
+          "entity_ids": [
+            "line_4160__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:neckline:41",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "neckline",
+          "entity_ids": [
+            "line_1698__seg_05"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:neckline:47",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "neckline",
+          "entity_ids": [
+            "line_4358__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:neckline:66",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "neckline",
+          "entity_ids": [
+            "line_3351__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:neckline:72",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "neckline",
+          "entity_ids": [
+            "line_3989__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:neckline:73",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "neckline",
+          "entity_ids": [
+            "line_3164__seg_01"
+          ]
+        }
+      ]
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "ok",
+      "match_source": "edge_chains",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": [
+        {
+          "edge_chain_id": "C2330115:edge:hem:02",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:07",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4160__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:10",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_2333__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:12",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_2333__seg_01",
+            "line_2333__seg_02",
+            "line_2333__seg_03",
+            "line_2333__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:14",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0741__seg_02",
+            "line_0741__seg_03",
+            "line_0741__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:16",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0741__seg_01",
+            "line_0741__seg_02",
+            "line_0741__seg_03",
+            "line_0741__seg_04",
+            "line_0741__seg_05",
+            "line_0741__seg_06",
+            "line_0741__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:19",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0002__seg_03",
+            "line_0002__seg_05"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:22",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0002__seg_01",
+            "line_0002__seg_02",
+            "line_0002__seg_03",
+            "line_0002__seg_04",
+            "line_0002__seg_05",
+            "line_0002__seg_06",
+            "line_0002__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:23",
+          "piece_id": "C2330115:piece:sleeve:15",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_3370__seg_01",
+            "line_3370__seg_02",
+            "line_3370__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:24",
+          "piece_id": "C2330115:piece:sleeve:15",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_3370__seg_01",
+            "line_3538__seg_04",
+            "line_3370__seg_02",
+            "line_3370__seg_03",
+            "line_3370__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:26",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3340__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:32",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3940__seg_01",
+            "line_3940__seg_02",
+            "line_3940__seg_03",
+            "line_3940__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:33",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3114__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:armhole_front:38",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "armhole_front",
+          "entity_ids": [
+            "line_1698__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:40",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:armhole_front:42",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "armhole_front",
+          "entity_ids": [
+            "line_1698__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:44",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_09"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:45",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4358__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:50",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_2534__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:52",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_2534__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:54",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0920__seg_02",
+            "line_0920__seg_03",
+            "line_0920__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:55",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0920__seg_05"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:57",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0920__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:59",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0192__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:60",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_0192__seg_03",
+            "line_0192__seg_05",
+            "line_0192__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:62",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0192__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:63",
+          "piece_id": "C2330115:piece:sleeve:15",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_3538__seg_01",
+            "line_3538__seg_02",
+            "line_3538__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:sleeve_cap:64",
+          "piece_id": "C2330115:piece:sleeve:15",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "sleeve_cap",
+          "entity_ids": [
+            "line_3370__seg_01",
+            "line_3538__seg_04",
+            "line_3370__seg_02",
+            "line_3370__seg_03",
+            "line_3370__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:68",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3351__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:70",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3989__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:75",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3164__seg_03"
+          ]
+        }
+      ]
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "status": "ok",
+      "match_source": "edge_chains",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": [
+        {
+          "edge_chain_id": "C2330115:edge:hem:02",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:07",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4160__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:10",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_2333__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:14",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0741__seg_02",
+            "line_0741__seg_03",
+            "line_0741__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:19",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0002__seg_03",
+            "line_0002__seg_05"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:23",
+          "piece_id": "C2330115:piece:sleeve:15",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_3370__seg_01",
+            "line_3370__seg_02",
+            "line_3370__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:26",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3340__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:32",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3940__seg_01",
+            "line_3940__seg_02",
+            "line_3940__seg_03",
+            "line_3940__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:33",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3114__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:40",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:44",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_09"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:45",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4358__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:52",
+          "piece_id": "C2330115:piece:sleeve:12",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_2534__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:57",
+          "piece_id": "C2330115:piece:sleeve:13",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0920__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:cuff_edge:62",
+          "piece_id": "C2330115:piece:sleeve:14",
+          "piece_role": "sleeve",
+          "side": null,
+          "edge_role": "cuff_edge",
+          "entity_ids": [
+            "line_0192__seg_07"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:68",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3351__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:70",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3989__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:75",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3164__seg_03"
+          ]
+        }
+      ]
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "status": "ok",
+      "match_source": "edge_chains",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": [
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:01",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:03",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_08"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:06",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4358__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:08",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4160__seg_01",
+            "line_4358__seg_04",
+            "line_4160__seg_02",
+            "line_4160__seg_03",
+            "line_4160__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:25",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:27",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:29",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:31",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:34",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3164__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:36",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3114__seg_01",
+            "line_3164__seg_04",
+            "line_3114__seg_02",
+            "line_3114__seg_03",
+            "line_3114__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:37",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:43",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_08"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:46",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4358__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:48",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4160__seg_01",
+            "line_4358__seg_04",
+            "line_4160__seg_02",
+            "line_4160__seg_03",
+            "line_4160__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:65",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:67",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:69",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:71",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:74",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3164__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:76",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3114__seg_01",
+            "line_3164__seg_04",
+            "line_3114__seg_02",
+            "line_3114__seg_03",
+            "line_3114__seg_04"
+          ]
+        }
+      ]
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "ok",
+      "match_source": "edge_chains",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": [
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:01",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:02",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:03",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_08"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:06",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4358__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:07",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4160__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:08",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4160__seg_01",
+            "line_4358__seg_04",
+            "line_4160__seg_02",
+            "line_4160__seg_03",
+            "line_4160__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:25",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:26",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3340__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:27",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:29",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:31",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:32",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3940__seg_01",
+            "line_3940__seg_02",
+            "line_3940__seg_03",
+            "line_3940__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:33",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3114__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:34",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3164__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:36",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3114__seg_01",
+            "line_3164__seg_04",
+            "line_3114__seg_02",
+            "line_3114__seg_03",
+            "line_3114__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:37",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:40",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:43",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_1698__seg_08"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:44",
+          "piece_id": "C2330115:piece:front_body:10",
+          "piece_role": "front_body",
+          "side": "front",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_1698__seg_09"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:45",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_4358__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:46",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4358__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:48",
+          "piece_id": "C2330115:piece:back_body:11",
+          "piece_role": "back_body",
+          "side": "back",
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_4160__seg_01",
+            "line_4358__seg_04",
+            "line_4160__seg_02",
+            "line_4160__seg_03",
+            "line_4160__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:65",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:67",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3351__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:68",
+          "piece_id": "C2330115:piece:neck_binding:16",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3351__seg_04"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:69",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_01"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:70",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3989__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:71",
+          "piece_id": "C2330115:piece:neck_binding:17",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3989__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:74",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3164__seg_02"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:hem:75",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "hem",
+          "entity_ids": [
+            "line_3164__seg_03"
+          ]
+        },
+        {
+          "edge_chain_id": "C2330115:edge:side_seam:76",
+          "piece_id": "C2330115:piece:neck_binding:18",
+          "piece_role": "neck_binding",
+          "side": null,
+          "edge_role": "side_seam",
+          "entity_ids": [
+            "line_3114__seg_01",
+            "line_3164__seg_04",
+            "line_3114__seg_02",
+            "line_3114__seg_03",
+            "line_3114__seg_04"
+          ]
+        }
+      ]
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:32.706779+00:00"
+}

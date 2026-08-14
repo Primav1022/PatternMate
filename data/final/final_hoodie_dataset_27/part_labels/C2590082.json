@@ -1,0 +1,36 @@
+{
+  "case_id": "C2590082",
+  "category": "hoodie",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2590082_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "polo",
+      "label_zh": "Polo领",
+      "confidence": 1.0
+    },
+    "sleeve_style": {
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "confidence": 1.0
+    },
+    "special": [],
+    "notes": "该服装为带有连帽的半拉链长袖上衣，领口归类为 Polo 领，袖型为插肩袖。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"polo\", \"confidence\": 1.0},\n  \"sleeve_style\": {\"slug\": \"raglan\", \"confidence\": 1.0},\n  \"special\": [],\n  \"notes\": \"该服装为带有连帽的半拉链长袖上衣，领口归类为 Polo 领，袖型为插肩袖。\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "hoodie",
+    "label_zh": "连帽卫衣",
+    "confidence": 0.98,
+    "reason_zh": "实物带有连帽和拉链，符合连帽卫衣特征",
+    "signals": [
+      "hood",
+      "zipper"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "C2490577",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2490577_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "confidence": 0.95
+    },
+    "special": [],
+    "notes": "圆领插肩袖无袖款式"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"raglan\", \"confidence\": 0.95},\n  \"special\": [],\n  \"notes\": \"圆领插肩袖无袖款式\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.9,
+    "reason_zh": "该衣物为针织面料，圆领，无帽子，下摆有罗纹收口，整体款式和面料厚度更符合无帽卫衣的特征，而非轻薄T恤。",
+    "signals": []
+  }
+}

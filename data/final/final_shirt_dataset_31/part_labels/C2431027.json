@@ -1,0 +1,177 @@
+{
+  "case_id": "C2431027",
+  "category": "shirt",
+  "part_labels": {
+    "notes": "V型敞开尖领；常规袖；袖口抽褶收口；半开襟；宽松H型；常规衣长",
+    "collar": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.8
+    },
+    "cuff": {
+      "slug": "gathered",
+      "label_zh": "抽褶袖口",
+      "confidence": 0.85
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型"
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.85
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.757619+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "v-neck",
+    "sleeve_style": "set-in",
+    "special": [
+      "shoulder-pleats"
+    ],
+    "notes": "领口为V领，袖型为正肩袖，肩部有捏褶设计。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2431027_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"open-v-pointed\", \"confidence\": 0.9},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.8},\n  \"cuff\": {\"slug\": \"gathered\", \"confidence\": 0.85},\n  \"placket\": {\"slug\": \"half\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"relaxed-h\", \"confidence\": 0.8},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.85},\n  \"notes\": \"V型敞开尖领；常规袖；袖口抽褶收口；半开襟；宽松H型；常规衣长\"\n}",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "shirt",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "面料呈现梭织感，且具有典型的女式宽松时尚上衣剪裁，属于女式衬衫类目。",
+    "signals": [
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "open-v-pointed",
+    "sleeve_style": "regular",
+    "cuff": "gathered",
+    "placket": "half",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:35:16.422901+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "pending_annotation",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "gathered",
+      "label_zh": "抽褶袖口",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:32.957614+00:00",
+  "part_labels_original": {
+    "collar": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.8
+    },
+    "cuff": {
+      "slug": "gathered",
+      "label_zh": "抽褶袖口",
+      "confidence": 0.85
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型"
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.85
+    }
+  },
+  "part_labels_original_notes": "V型敞开尖领；常规袖；袖口抽褶收口；半开襟；宽松H型；常规衣长",
+  "shirt_label_review_state": "edge_bindings_pending",
+  "edge_bindings_pending_at": "2026-08-09T05:55:33.515Z"
+}

@@ -1,0 +1,5923 @@
+{
+  "schema": "chi27.shirt-remix-matrix.v1",
+  "pipeline": "shirt.strategy_batch.v1",
+  "total": 120,
+  "ok": 120,
+  "fail": 0,
+  "ok_rate": 1.0,
+  "elapsed_s": 2871.93,
+  "axes": {
+    "bases": [
+      "C2431027",
+      "C2431055",
+      "C2530790"
+    ],
+    "styles": [
+      "base",
+      "collar",
+      "sleeve",
+      "cuff",
+      "long"
+    ],
+    "bodies": [
+      "woman",
+      "man",
+      "elder",
+      "youth"
+    ],
+    "fabrics": [
+      "poplin",
+      "linen"
+    ]
+  },
+  "by_base": {
+    "C2431027": {
+      "n": 40,
+      "ok": 40,
+      "ok_rate": 1.0
+    },
+    "C2431055": {
+      "n": 40,
+      "ok": 40,
+      "ok_rate": 1.0
+    },
+    "C2530790": {
+      "n": 40,
+      "ok": 40,
+      "ok_rate": 1.0
+    }
+  },
+  "by_style": {
+    "base": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "collar": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "sleeve": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "cuff": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "long": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    }
+  },
+  "by_body": {
+    "woman": {
+      "n": 30,
+      "ok": 30,
+      "ok_rate": 1.0
+    },
+    "man": {
+      "n": 30,
+      "ok": 30,
+      "ok_rate": 1.0
+    },
+    "elder": {
+      "n": 30,
+      "ok": 30,
+      "ok_rate": 1.0
+    },
+    "youth": {
+      "n": 30,
+      "ok": 30,
+      "ok_rate": 1.0
+    }
+  },
+  "by_fabric": {
+    "poplin": {
+      "n": 60,
+      "ok": 60,
+      "ok_rate": 1.0
+    },
+    "linen": {
+      "n": 60,
+      "ok": 60,
+      "ok_rate": 1.0
+    }
+  },
+  "fail_reasons": {},
+  "fail_rows": [],
+  "rows": [
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 18439,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 19521,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20243,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 18552,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16421,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20538,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16967,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "base",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 17702,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 23434,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          572.6,
+          629.3
+        ],
+        "back": [
+          587.4,
+          552.6
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 572.6,
+      "front_h": 629.3,
+      "back_w": 587.4,
+      "back_h": 552.6,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 25032,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          572.6,
+          629.3
+        ],
+        "back": [
+          587.4,
+          552.6
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 572.6,
+      "front_h": 629.3,
+      "back_w": 587.4,
+      "back_h": 552.6,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 23549,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          596.3,
+          629.3
+        ],
+        "back": [
+          611.7,
+          552.6
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 596.3,
+      "front_h": 629.3,
+      "back_w": 611.7,
+      "back_h": 552.6,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 25799,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          596.3,
+          629.3
+        ],
+        "back": [
+          611.7,
+          552.6
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 596.3,
+      "front_h": 629.3,
+      "back_w": 611.7,
+      "back_h": 552.6,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 26702,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          673.5,
+          609.6
+        ],
+        "back": [
+          690.9,
+          535.3
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 673.5,
+      "front_h": 609.6,
+      "back_w": 690.9,
+      "back_h": 535.3,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 25792,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          673.5,
+          609.6
+        ],
+        "back": [
+          690.9,
+          535.3
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 673.5,
+      "front_h": 609.6,
+      "back_w": 690.9,
+      "back_h": 535.3,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 26359,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.2,
+          589.9
+        ],
+        "back": [
+          535.7,
+          518.0
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.2,
+      "front_h": 589.9,
+      "back_w": 535.7,
+      "back_h": 518.0,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 25539,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.2,
+          589.9
+        ],
+        "back": [
+          535.7,
+          518.0
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530694",
+      "donor_score": 0.74838,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.2,
+      "front_h": 589.9,
+      "back_w": 535.7,
+      "back_h": 518.0,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 38380,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 40318,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 33711,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 33598,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 34007,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 35101,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 35177,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32625,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          408.1
+        ]
+      },
+      "option": "shirt.sleeve.bell",
+      "donor": "C2530900",
+      "donor_score": 1.09503,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "bell",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 408.1,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20368,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 19355,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          578.4
+        ],
+        "back": [
+          607.9,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 578.4,
+      "back_w": 607.9,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 19923,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20518,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          578.4
+        ],
+        "back": [
+          633.1,
+          603.4
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 578.4,
+      "back_w": 633.1,
+      "back_h": 603.4,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20855,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 21026,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          560.4
+        ],
+        "back": [
+          715.1,
+          584.5
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 560.4,
+      "back_w": 715.1,
+      "back_h": 584.5,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 20422,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 19098,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          542.3
+        ],
+        "back": [
+          554.5,
+          565.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 542.3,
+      "back_w": 554.5,
+      "back_h": 565.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16763,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          636.3
+        ],
+        "back": [
+          607.9,
+          663.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 636.3,
+      "back_w": 607.9,
+      "back_h": 663.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 15320,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          552.0,
+          636.3
+        ],
+        "back": [
+          607.9,
+          663.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 552.0,
+      "front_h": 636.3,
+      "back_w": 607.9,
+      "back_h": 663.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16302,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          636.3
+        ],
+        "back": [
+          633.1,
+          663.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 636.3,
+      "back_w": 633.1,
+      "back_h": 663.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 17879,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          574.9,
+          636.3
+        ],
+        "back": [
+          633.1,
+          663.7
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 574.9,
+      "front_h": 636.3,
+      "back_w": 633.1,
+      "back_h": 663.7,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 15767,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          616.4
+        ],
+        "back": [
+          715.1,
+          643.0
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 616.4,
+      "back_w": 715.1,
+      "back_h": 643.0,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16229,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          649.3,
+          616.4
+        ],
+        "back": [
+          715.1,
+          643.0
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 649.3,
+      "front_h": 616.4,
+      "back_w": 715.1,
+      "back_h": 643.0,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16515,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          596.5
+        ],
+        "back": [
+          554.5,
+          622.2
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 596.5,
+      "back_w": 554.5,
+      "back_h": 622.2,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431027",
+      "style": "long",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16349,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          503.5,
+          596.5
+        ],
+        "back": [
+          554.5,
+          622.2
+        ],
+        "sleeve": [
+          571.0,
+          42.5
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 503.5,
+      "front_h": 596.5,
+      "back_w": 554.5,
+      "back_h": 622.2,
+      "sleeve_w": 571.0,
+      "sleeve_h": 42.5,
+      "host_w": 582.7,
+      "host_h": 590.9
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 31320,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 34333,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32810,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 30823,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32565,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 30249,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29225,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "base",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29706,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 33090,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          163.2,
+          423.1
+        ],
+        "back": [
+          326.6,
+          492.9
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 163.2,
+      "front_h": 423.1,
+      "back_w": 326.6,
+      "back_h": 492.9,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 53738,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          163.2,
+          423.1
+        ],
+        "back": [
+          326.6,
+          492.9
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 163.2,
+      "front_h": 423.1,
+      "back_w": 326.6,
+      "back_h": 492.9,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 31557,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          169.9,
+          423.1
+        ],
+        "back": [
+          340.1,
+          492.9
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 169.9,
+      "front_h": 423.1,
+      "back_w": 340.1,
+      "back_h": 492.9,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32159,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          169.9,
+          423.1
+        ],
+        "back": [
+          340.1,
+          492.9
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 169.9,
+      "front_h": 423.1,
+      "back_w": 340.1,
+      "back_h": 492.9,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32884,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          191.9,
+          409.9
+        ],
+        "back": [
+          384.1,
+          477.5
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 191.9,
+      "front_h": 409.9,
+      "back_w": 384.1,
+      "back_h": 477.5,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32637,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          191.9,
+          409.9
+        ],
+        "back": [
+          384.1,
+          477.5
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 191.9,
+      "front_h": 409.9,
+      "back_w": 384.1,
+      "back_h": 477.5,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32906,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          148.8,
+          396.7
+        ],
+        "back": [
+          297.8,
+          462.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 148.8,
+      "front_h": 396.7,
+      "back_w": 297.8,
+      "back_h": 462.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 32704,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          148.8,
+          396.7
+        ],
+        "back": [
+          297.8,
+          462.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530029",
+      "donor_score": 0.6786,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 148.8,
+      "front_h": 396.7,
+      "back_w": 297.8,
+      "back_h": 462.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 41011,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 39975,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 43394,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 43603,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 41121,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 40254,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 43170,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 40978,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          250.7,
+          236.7
+        ]
+      },
+      "option": "shirt.sleeve.regular",
+      "donor": "C2530110",
+      "donor_score": 1.09015,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 250.7,
+      "sleeve_h": 236.7,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 34468,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 40841,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          92.8
+        ],
+        "back": [
+          265.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 92.8,
+      "back_w": 265.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 35987,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "linen",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 56223,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          92.8
+        ],
+        "back": [
+          276.3,
+          456.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 92.8,
+      "back_w": 276.3,
+      "back_h": 456.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 44892,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 45283,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          89.9
+        ],
+        "back": [
+          312.1,
+          442.1
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 89.9,
+      "back_w": 312.1,
+      "back_h": 442.1,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 44029,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "valid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 36342,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          87.0
+        ],
+        "back": [
+          242.0,
+          427.8
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.cuff.gathered",
+      "donor": "C2431239",
+      "donor_score": 0.91462,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "gathered",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 87.0,
+      "back_w": 242.0,
+      "back_h": 427.8,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29223,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          102.1
+        ],
+        "back": [
+          265.3,
+          502.0
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 102.1,
+      "back_w": 265.3,
+      "back_h": 502.0,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 31937,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          298.6,
+          102.1
+        ],
+        "back": [
+          265.3,
+          502.0
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 298.6,
+      "front_h": 102.1,
+      "back_w": 265.3,
+      "back_h": 502.0,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29514,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          102.1
+        ],
+        "back": [
+          276.3,
+          502.0
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 102.1,
+      "back_w": 276.3,
+      "back_h": 502.0,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29801,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          311.0,
+          102.1
+        ],
+        "back": [
+          276.3,
+          502.0
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 311.0,
+      "front_h": 102.1,
+      "back_w": 276.3,
+      "back_h": 502.0,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 33220,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          98.9
+        ],
+        "back": [
+          312.1,
+          486.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 98.9,
+      "back_w": 312.1,
+      "back_h": 486.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 39378,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          351.2,
+          98.9
+        ],
+        "back": [
+          312.1,
+          486.3
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 351.2,
+      "front_h": 98.9,
+      "back_w": 312.1,
+      "back_h": 486.3,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 33318,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          95.7
+        ],
+        "back": [
+          242.0,
+          470.6
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 95.7,
+      "back_w": 242.0,
+      "back_h": 470.6,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2431055",
+      "style": "long",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 29158,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          272.3,
+          95.7
+        ],
+        "back": [
+          242.0,
+          470.6
+        ],
+        "sleeve": [
+          175.3,
+          290.6
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 272.3,
+      "front_h": 95.7,
+      "back_w": 242.0,
+      "back_h": 470.6,
+      "sleeve_w": 175.3,
+      "sleeve_h": 290.6,
+      "host_w": 255.8,
+      "host_h": 459.4
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5810,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 6486,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5399,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8782,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 6924,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 7005,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8568,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "base",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8393,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 15831,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          352.6,
+          535.3
+        ],
+        "back": [
+          618.7,
+          544.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 352.6,
+      "front_h": 535.3,
+      "back_w": 618.7,
+      "back_h": 544.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 18500,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          352.6,
+          535.3
+        ],
+        "back": [
+          618.7,
+          544.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 352.6,
+      "front_h": 535.3,
+      "back_w": 618.7,
+      "back_h": 544.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 17098,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          367.2,
+          535.3
+        ],
+        "back": [
+          644.3,
+          544.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 367.2,
+      "front_h": 535.3,
+      "back_w": 644.3,
+      "back_h": 544.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 15437,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          367.2,
+          535.3
+        ],
+        "back": [
+          644.3,
+          544.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 367.2,
+      "front_h": 535.3,
+      "back_w": 644.3,
+      "back_h": 544.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16407,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          414.8,
+          518.6
+        ],
+        "back": [
+          727.7,
+          527.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 414.8,
+      "front_h": 518.6,
+      "back_w": 727.7,
+      "back_h": 527.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 18800,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          414.8,
+          518.6
+        ],
+        "back": [
+          727.7,
+          527.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 414.8,
+      "front_h": 518.6,
+      "back_w": 727.7,
+      "back_h": 527.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 16109,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          321.6,
+          501.9
+        ],
+        "back": [
+          564.3,
+          510.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 321.6,
+      "front_h": 501.9,
+      "back_w": 564.3,
+      "back_h": 510.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "collar",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 15454,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          321.6,
+          501.9
+        ],
+        "back": [
+          564.3,
+          510.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.collar.open-v-pointed",
+      "donor": "C2530137",
+      "donor_score": 0.7277,
+      "strategies": {
+        "collar": {
+          "mode": "piece_swap",
+          "roles": [
+            "back",
+            "back_body",
+            "back_yoke",
+            "collar",
+            "collar_interlining",
+            "collar_stand",
+            "front",
+            "front_body",
+            "front_left",
+            "front_placket",
+            "front_right",
+            "neck_binding",
+            "neck_rib"
+          ],
+          "slug": "open-v-pointed",
+          "source": "shirt_simple",
+          "reason": "换前后衣身（及领附件）"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 321.6,
+      "front_h": 501.9,
+      "back_w": 564.3,
+      "back_h": 510.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8245,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9592,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 10872,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8207,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 8125,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 6718,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 7154,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 7973,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          93.5,
+          9.7
+        ]
+      },
+      "option": "shirt.sleeve.flutter",
+      "donor": "C2590742",
+      "donor_score": 0.87408,
+      "strategies": {
+        "sleeve": {
+          "mode": "piece_swap",
+          "roles": [
+            "sleeve",
+            "sleeve_left",
+            "sleeve_right"
+          ],
+          "slug": "flutter",
+          "source": "shirt_simple",
+          "reason": "只换袖片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 93.5,
+      "sleeve_h": 9.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9228,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9054,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          553.9
+        ],
+        "back": [
+          526.9,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 553.9,
+      "back_w": 526.9,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 10927,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 10259,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          553.9
+        ],
+        "back": [
+          548.7,
+          526.2
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 553.9,
+      "back_w": 548.7,
+      "back_h": 526.2,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9780,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 10323,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          536.6
+        ],
+        "back": [
+          619.7,
+          509.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 536.6,
+      "back_w": 619.7,
+      "back_h": 509.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9223,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "cuff",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 9578,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          519.3
+        ],
+        "back": [
+          480.6,
+          493.4
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.cuff.regular",
+      "donor": "C2330115",
+      "donor_score": 0.54,
+      "strategies": {
+        "cuff": {
+          "mode": "piece_swap",
+          "roles": [
+            "cuff",
+            "rib_cuff",
+            "sleeve_placket",
+            "sleeve_placket_extension"
+          ],
+          "slug": "regular",
+          "source": "shirt_simple",
+          "reason": "只换袖口片"
+        }
+      },
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 519.3,
+      "back_w": 480.6,
+      "back_h": 493.4,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "woman",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 7048,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          609.3
+        ],
+        "back": [
+          526.9,
+          578.9
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 609.3,
+      "back_w": 526.9,
+      "back_h": 578.9,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "woman",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5746,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.4,
+          609.3
+        ],
+        "back": [
+          526.9,
+          578.9
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 444.4,
+      "front_h": 609.3,
+      "back_w": 526.9,
+      "back_h": 578.9,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "man",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 7172,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          609.3
+        ],
+        "back": [
+          548.7,
+          578.9
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 609.3,
+      "back_w": 548.7,
+      "back_h": 578.9,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "man",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5484,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.8,
+          609.3
+        ],
+        "back": [
+          548.7,
+          578.9
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 462.8,
+      "front_h": 609.3,
+      "back_w": 548.7,
+      "back_h": 578.9,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "elder",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5830,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          590.3
+        ],
+        "back": [
+          619.7,
+          560.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 590.3,
+      "back_w": 619.7,
+      "back_h": 560.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "elder",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 6200,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.7,
+          590.3
+        ],
+        "back": [
+          619.7,
+          560.8
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 522.7,
+      "front_h": 590.3,
+      "back_w": 619.7,
+      "back_h": 560.8,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "youth",
+      "fabric": "poplin",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 6549,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          571.2
+        ],
+        "back": [
+          480.6,
+          542.7
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 571.2,
+      "back_w": 480.6,
+      "back_h": 542.7,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    },
+    {
+      "base": "C2530790",
+      "style": "long",
+      "body": "youth",
+      "fabric": "linen",
+      "status": "invalid",
+      "pipeline": "shirt.simple_piece_swap.v1",
+      "ms": 5755,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          405.3,
+          571.2
+        ],
+        "back": [
+          480.6,
+          542.7
+        ],
+        "sleeve": [
+          478.2,
+          209.7
+        ]
+      },
+      "option": "shirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "strategies": {},
+      "body_sx": null,
+      "body_sy": null,
+      "front_w": 405.3,
+      "front_h": 571.2,
+      "back_w": 480.6,
+      "back_h": 542.7,
+      "sleeve_w": 478.2,
+      "sleeve_h": 209.7,
+      "host_w": 487.9,
+      "host_h": 540.1
+    }
+  ]
+}

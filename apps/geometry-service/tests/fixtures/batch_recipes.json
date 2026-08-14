@@ -1,0 +1,166 @@
+[
+  {
+    "fixture_id": "tshirt_v_neck_puff_retains_missing_sleeve",
+    "family": "tshirt",
+    "base_case_id": "C2590529",
+    "measurements_cm": {
+      "height": 160,
+      "chest": 84,
+      "waist": 68,
+      "shoulder": 39,
+      "neck": 34,
+      "sleeveLength": 58,
+      "upperArm": 28
+    },
+    "selections": {
+      "neckline": "tshirt.neckline.v-neck",
+      "sleeve": "tshirt.sleeve.puff",
+      "garment_length": "tshirt.garment-length.regular"
+    },
+    "base_option_ids": {
+      "neckline": "tshirt.neckline.crew",
+      "sleeve": "tshirt.sleeve.set-in",
+      "garment_length": "tshirt.garment-length.regular"
+    },
+    "expected_requested_groups": [
+      "neckline",
+      "sleeve"
+    ],
+    "allowed_statuses": [
+      "valid"
+    ],
+    "expected_component_statuses": {
+      "neckline": [
+        "applied"
+      ],
+      "sleeve": [
+        "retained_current",
+        "applied"
+      ]
+    }
+  },
+  {
+    "fixture_id": "tshirt_long_length_local_rule",
+    "family": "tshirt",
+    "base_case_id": "C2590529",
+    "measurements_cm": {
+      "height": 168,
+      "chest": 86,
+      "waist": 70,
+      "shoulder": 40,
+      "neck": 35,
+      "sleeveLength": 59,
+      "upperArm": 29
+    },
+    "selections": {
+      "neckline": "tshirt.neckline.crew",
+      "sleeve": "tshirt.sleeve.set-in",
+      "garment_length": "tshirt.garment-length.long"
+    },
+    "base_option_ids": {
+      "neckline": "tshirt.neckline.crew",
+      "sleeve": "tshirt.sleeve.set-in",
+      "garment_length": "tshirt.garment-length.regular"
+    },
+    "expected_requested_groups": [
+      "garment_length"
+    ],
+    "allowed_statuses": [
+      "valid"
+    ],
+    "expected_component_statuses": {
+      "garment_length": [
+        "applied",
+        "retained_current"
+      ]
+    }
+  },
+  {
+    "fixture_id": "real_shirt_sleeve_cuff_line_role_fallback",
+    "family": "shirt",
+    "base_case_id": "C2431105",
+    "measurements_cm": {
+      "height": 160,
+      "chest": 84,
+      "waist": 68,
+      "shoulder": 39,
+      "neck": 34,
+      "sleeveLength": 58,
+      "upperArm": 28
+    },
+    "selections": {
+      "collar": "shirt.collar.pointed",
+      "sleeve": "shirt.sleeve.puff",
+      "garment_length": "shirt.garment-length.regular",
+      "cuff": "shirt.cuff.gathered"
+    },
+    "base_option_ids": {
+      "collar": "shirt.collar.pointed",
+      "sleeve": "shirt.sleeve.regular",
+      "garment_length": "shirt.garment-length.regular",
+      "cuff": "shirt.cuff.regular"
+    },
+    "expected_requested_groups": [
+      "sleeve",
+      "cuff"
+    ],
+    "allowed_statuses": [
+      "valid"
+    ],
+    "expected_component_statuses": {
+      "sleeve": [
+        "applied"
+      ],
+      "cuff": [
+        "retained_current",
+        "applied"
+      ]
+    },
+    "expected_warning_substrings": [
+      "门襟",
+      "退化几何"
+    ]
+  },
+  {
+    "fixture_id": "shirt_length_review_safe",
+    "family": "shirt",
+    "base_case_id": "C2431105",
+    "measurements_cm": {
+      "height": 172,
+      "chest": 90,
+      "waist": 74,
+      "shoulder": 41,
+      "neck": 36,
+      "sleeveLength": 60,
+      "upperArm": 30
+    },
+    "selections": {
+      "collar": "shirt.collar.pointed",
+      "sleeve": "shirt.sleeve.regular",
+      "garment_length": "shirt.garment-length.short",
+      "cuff": "shirt.cuff.regular"
+    },
+    "base_option_ids": {
+      "collar": "shirt.collar.pointed",
+      "sleeve": "shirt.sleeve.regular",
+      "garment_length": "shirt.garment-length.regular",
+      "cuff": "shirt.cuff.regular"
+    },
+    "expected_requested_groups": [
+      "garment_length"
+    ],
+    "allowed_statuses": [
+      "valid"
+    ],
+    "expected_component_statuses": {
+      "garment_length": [
+        "applied",
+        "retained_current"
+      ]
+    },
+    "expected_warning_substrings": [
+      "门襟",
+      "退化几何"
+    ]
+  }
+]

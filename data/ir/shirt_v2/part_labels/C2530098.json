@@ -1,0 +1,144 @@
+{
+  "case_id": "C2530098",
+  "category": "shirt",
+  "part_labels": {
+    "notes": "V型敞开尖领；常规短袖，平直袖口；全开襟；宽松H型；常规衣长。",
+    "collar": {
+      "slug": "open-v-pointed",
+      "label_zh": "V型敞开尖领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.95
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "long",
+      "label_zh": "长款"
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.765361+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "unknown",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该服装为翻领衬衫，不属于T恤或Polo衫类别。领口为古巴领/开襟领，在给定T恤/Polo衫领型选项中无匹配项，故选unknown。袖型为常规正肩袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530098_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "```json\n{\n  \"collar\": {\n    \"slug\": \"open-v-pointed\",\n    \"confidence\": 0.95\n  },\n  \"sleeve_style\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"cuff\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.8\n  },\n  \"placket\": {\n    \"slug\": \"full\",\n    \"confidence\": 0.95\n  },\n  \"silhouette\": {\n    \"slug\": \"relaxed-h\",\n    \"confidence\": 0.85\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"notes\": \"V型敞开尖领；常规短袖，平直袖口；全开襟；宽松H型；常规衣长。\"\n}\n```",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "shirt",
+    "label_zh": "衬衫",
+    "confidence": 0.95,
+    "reason_zh": "实物为带有翻领和全开襟纽扣的梭织短袖衬衫。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "open-v-pointed",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "full",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:39:22.063145+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "open-v-pointed",
+      "label_zh": "V型敞开尖领",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "long",
+      "label_zh": "长款",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:35.939930+00:00"
+}

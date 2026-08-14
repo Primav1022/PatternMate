@@ -1,0 +1,281 @@
+{
+  "ir_version": "1.0",
+  "schema": "ai4manufacturing.pattern_ir.v1.0",
+  "case_id": "C2690313",
+  "created_at": "2026-08-09T08:02:33.529Z",
+  "source_files": {},
+  "design_semantics": {
+    "category": "hoodie",
+    "usage": [
+      "casual"
+    ],
+    "style_tags": [],
+    "coverage": "medium",
+    "fit": "regular",
+    "activity": "medium",
+    "visual_focus": "upper_body",
+    "fabric_skin_friendliness": "unknown",
+    "target_gender": "unknown",
+    "general_shape": "unknown",
+    "silhouette": "H",
+    "_category": "hoodie",
+    "_category_original": "tshirt",
+    "_category_source": "hoodie_27_v1",
+    "_corrected_at": "2026-08-09T15:38:32.416Z"
+  },
+  "layer_annotations": [
+    {
+      "layer": "7",
+      "layer_role": "grainline",
+      "confidence": 1,
+      "source": "layer_7_grainline_policy",
+      "review": "vlm_suggested"
+    }
+  ],
+  "atomic_entities": [
+    {
+      "entity_id": "line_0981",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "100",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            8393.651176,
+            1001.460859
+          ],
+          [
+            8393.651176,
+            793.441813
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    },
+    {
+      "entity_id": "line_1382",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "102",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            6003.22451,
+            210.50881800000002
+          ],
+          [
+            6003.22451,
+            183.341088
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    },
+    {
+      "entity_id": "line_2232",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "104",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            9855.473934,
+            1110.638609
+          ],
+          [
+            9855.473629,
+            910.091715
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    },
+    {
+      "entity_id": "line_2768",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "106",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            7231.920274,
+            1176.060427
+          ],
+          [
+            7231.920274,
+            1048.8084210000002
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    },
+    {
+      "entity_id": "line_2798",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "108",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            6196.158751999999,
+            531.371346
+          ],
+          [
+            6196.158751999999,
+            509.766121
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    },
+    {
+      "entity_id": "line_3355",
+      "source": {
+        "dxf_handle": null,
+        "parent_handle": "10A",
+        "layer": "7",
+        "entity_type": "LINE"
+      },
+      "geometry": {
+        "points": [
+          [
+            7185.64527,
+            433.662995
+          ],
+          [
+            7185.64527,
+            328.58315400000004
+          ]
+        ]
+      },
+      "line_role": "grainline",
+      "piece_id": null,
+      "edge_chain_id": null,
+      "suggestion": null,
+      "review": "auto_approved"
+    }
+  ],
+  "piece_instances": [],
+  "containment_relations": [],
+  "edge_chains": [],
+  "notches": [],
+  "notch_edge_assignments": [],
+  "notch_alignment_relations": [],
+  "seam_relations": [],
+  "writeback_plan": {
+    "order": [
+      "atomic_entities",
+      "piece_instances",
+      "edge_chains",
+      "notches",
+      "seam_relations"
+    ],
+    "layers": [
+      "AI4M_00_INDEX",
+      "AI4M_01_ATOM_NET",
+      "AI4M_01_ATOM_CUT",
+      "AI4M_01_ATOM_SEAM_ALLOWANCE",
+      "AI4M_01_ATOM_STITCH",
+      "AI4M_01_ATOM_INTERNAL",
+      "AI4M_01_ATOM_FOLD",
+      "AI4M_01_ATOM_DART",
+      "AI4M_01_ATOM_GRAIN",
+      "AI4M_01_ATOM_NOTCH",
+      "AI4M_02_EDGE_CHAIN",
+      "AI4M_03_PIECE",
+      "AI4M_04_RELATION",
+      "AI4M_05_QA"
+    ],
+    "preserve_source_geometry": true,
+    "source_geometry_policy": "preserve_original_coordinates",
+    "new_version_only": true
+  },
+  "layout_transform": null,
+  "geometry_edits": null,
+  "review_history": [],
+  "traceability": {
+    "source_geometry": "dxf",
+    "entity_count": 6,
+    "writeback_appid": "AI4MANUFACTURING"
+  },
+  "quality": {},
+  "design_semantics_extra": {
+    "part_labels": {
+      "neckline": {
+        "slug": null,
+        "label_zh": null,
+        "confidence": 0,
+        "needs_human_review": true
+      },
+      "sleeve_style": {
+        "slug": null,
+        "label_zh": null,
+        "confidence": 0,
+        "needs_human_review": true
+      },
+      "garment_length": {
+        "slug": null,
+        "label_zh": null,
+        "confidence": 0,
+        "needs_human_review": true
+      },
+      "front_opening": {
+        "slug": null,
+        "label_zh": null,
+        "confidence": 0,
+        "needs_human_review": true
+      },
+      "special": [],
+      "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag"
+    },
+    "edge_bindings": {},
+    "edge_bindings_at": null,
+    "needs_human_review": [
+      "neckline",
+      "sleeve_style",
+      "garment_length",
+      "front_opening"
+    ],
+    "merged_from": {
+      "part_labels_file": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/annotations/part_labels_non_tshirt/C2690313.json",
+      "merge_script": "merge_hoodie_semantics.mjs",
+      "merge_time": "2026-08-09T15:38:32.416Z",
+      "whitelist": "hoodie_27"
+    }
+  }
+}

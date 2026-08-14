@@ -1,0 +1,148 @@
+{
+  "case_id": "C2530642",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "",
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "confidence": 1.0
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "confidence": 0.8
+    },
+    "cuff": {
+      "slug": "ruffled",
+      "label_zh": "荷叶边袖口"
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 1.0
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式"
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.95
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.771424+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该服装为衬衫款式，领口为高立领并带有系带，根据T恤类选项，高立领最接近high-mock。袖子为常规正肩袖，无特殊设计。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530642_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\n    \"slug\": \"bow-tie\",\n    \"confidence\": 1.0,\n    \"notes\": \"领口有系带形成蝴蝶结造型。\"\n  },\n  \"sleeve_style\": {\n    \"slug\": \"puff\",\n    \"confidence\": 0.8,\n    \"notes\": \"袖山处有轻微抽褶，形成泡泡袖效果。\"\n  },\n  \"cuff\": {\n    \"slug\": \"gathered\",\n    \"confidence\": 0.85,\n    \"notes\": \"袖口有明显的压褶设计，属于抽褶收口。\"\n  },\n  \"placket\": {\n    \"slug\": \"full\",\n    \"confidence\": 1.0,\n    \"notes\": \"前门襟从领口开至下摆，扣子可见。\"\n  },\n  \"silhouette\": {\n    \"slug\": \"relaxed-h\",\n    \"confidence\": 0.9,\n    \"notes\": \"整体呈宽松直筒 H 型。\"\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.95,\n    \"notes\": \"衣长至臀部上方，属于常规长度。\"\n  }\n}",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "带有飘带领及泡泡袖的女式梭织时装上装，符合blouse的特征。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "bow-tie",
+    "sleeve_style": "puff",
+    "cuff": "gathered",
+    "placket": "full",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:43:33.088994+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "ruffled",
+      "label_zh": "荷叶边袖口",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:38.474856+00:00"
+}

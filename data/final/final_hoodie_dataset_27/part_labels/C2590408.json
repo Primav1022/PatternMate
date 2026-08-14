@@ -1,0 +1,56 @@
+{
+  "case_id": "C2590408",
+  "category": "hoodie",
+  "part_labels": {
+    "neckline": {
+      "slug": null,
+      "label_zh": null,
+      "confidence": 0,
+      "needs_human_review": true
+    },
+    "sleeve_style": {
+      "slug": null,
+      "label_zh": null,
+      "confidence": 0,
+      "needs_human_review": true
+    },
+    "garment_length": {
+      "slug": null,
+      "label_zh": null,
+      "confidence": 0,
+      "needs_human_review": true
+    },
+    "front_opening": {
+      "slug": null,
+      "label_zh": null,
+      "confidence": 0,
+      "needs_human_review": true
+    },
+    "special": [],
+    "notes": "⚠️ 自动生成的占位 part_labels，需在服务器平台人工补齐 4 个 tag"
+  },
+  "source": "auto_placeholder_v1",
+  "model": "geometric_heuristic",
+  "reviewed": false,
+  "needs_human_review": true,
+  "needs_human_review_fields": [
+    "neckline",
+    "sleeve_style",
+    "garment_length",
+    "front_opening"
+  ],
+  "needs_human_review_reason": "卫衣数据集 v1 占位，4 类 tag 待人工标注",
+  "ir_piece_roles_detected": [
+    "back_body",
+    "front_body",
+    "sleeve",
+    "sleeve",
+    "sleeve",
+    "back_body",
+    "front_body",
+    "sleeve",
+    "sleeve",
+    "sleeve"
+  ],
+  "created_at": "2026-08-09T23:35:16.980070"
+}

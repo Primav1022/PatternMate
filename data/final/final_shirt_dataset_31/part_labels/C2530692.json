@@ -1,0 +1,135 @@
+{
+  "case_id": "C2530692",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "领型为花边立领（不在四类内故为unknown）；飞袖；前中开半襟并带系带蝴蝶结；合身廓形；常规衣长",
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）"
+    },
+    "sleeve_style": {
+      "slug": "flutter",
+      "label_zh": "飞袖",
+      "confidence": 0.95
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型"
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.771914+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "flutter",
+    "special": [],
+    "notes": "该服装具有高领/半高领带木耳边及系带设计，搭配飞袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530692_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"unknown\", \"confidence\": 0.9},\n  \"sleeve_style\": {\"slug\": \"flutter\", \"confidence\": 0.95},\n  \"cuff\": {\"slug\": \"unknown\", \"confidence\": 0.9},\n  \"placket\": {\"slug\": \"half\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"regular-fit\", \"confidence\": 0.85},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"notes\": \"领型为花边立领（不在四类内故为unknown）；飞袖；前中开半襟并带系带蝴蝶结；合身廓形；常规衣长\"\n}",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "女式时装上装，有荷叶边立领和系带门襟，面料轻薄，符合blouse的特征。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "unknown",
+    "sleeve_style": "flutter",
+    "cuff": "unknown",
+    "placket": "half",
+    "silhouette": "regular-fit",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:33:15.431385+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "flutter",
+      "label_zh": "飞袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "placket": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:38.878957+00:00"
+}

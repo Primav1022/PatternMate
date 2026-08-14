@@ -1,0 +1,63 @@
+case_id,category,neckline,sleeve_style,garment_length,special,pieces,edge_chains,notches,notch_matched,notch_unmatched,match_rate
+C2390279,tshirt,scrunch,set-in,regular,,,43,22,22,0,100.0%
+C2390303,tshirt,high-mock,set-in,regular,,,21,12,12,0,100.0%
+C2390726,tshirt,high-mock,set-in,short,,,39,16,16,0,100.0%
+C2490033,tshirt,polo,set-in,regular,,,18,18,18,0,100.0%
+C2490092,tshirt,v-neck,flutter,regular,,,53,0,0,0,-
+C2490188,tshirt,crew,non_composable,regular,,,34,4,4,0,100.0%
+C2490194,tshirt,high-mock,set-in,regular,,,3,0,0,0,-
+C2490252,tshirt,crew,set-in,regular,,,4,0,0,0,-
+C2490257,tshirt,crew,set-in,long,,,58,15,15,0,100.0%
+C2490278,tshirt,crew,set-in,regular,,,4,0,0,0,-
+C2490320,tshirt,crew,set-in,long,,,3,0,0,0,-
+C2490335,tshirt,crew,set-in,regular,[object Object],,4,0,0,0,-
+C2490340,tshirt,boat,set-in,short,[object Object],,15,0,0,0,-
+C2490383,tshirt,crew,set-in,regular,,,5,0,0,0,-
+C2490439,polo,polo,set-in,regular,,,16,0,0,0,-
+C2490478,tshirt,crew,set-in,regular,[object Object],,8,26,26,0,100.0%
+C2490481,tshirt,crew,set-in,regular,,,51,28,28,0,100.0%
+C2490654,tshirt,crew,set-in,regular,,,40,0,0,0,-
+C2490679,tshirt,crew,non_composable,regular,,,4,0,0,0,-
+C2490681,tshirt,crew,non_composable,short,,,45,24,24,0,100.0%
+C2490682,tshirt,crew,flutter,regular,[object Object],,3,0,0,0,-
+C2490696,tshirt,crew,set-in,short,,,35,0,0,0,-
+C2490697,tshirt,crew,set-in,short,,,3,0,0,0,-
+C2490738,tshirt,non_composable,unknown,short,,,44,4,4,0,100.0%
+C2590045,tshirt,crew,set-in,long,,,12,0,0,0,-
+C2590057,tshirt,crew,set-in,long,,,29,0,0,0,-
+C2590059,tshirt,crew,set-in,short,,,45,0,0,0,-
+C2590064,tshirt,crew,set-in,regular,,,18,10,10,0,100.0%
+C2590072,tshirt,crew,set-in,regular,,,19,22,22,0,100.0%
+C2590079,tshirt,crew,set-in,long,,,21,0,0,0,-
+C2590101,tshirt,crew,set-in,long,,,26,10,10,0,100.0%
+C2590112,tshirt,crew,set-in,long,,,27,18,18,0,100.0%
+C2590125,tshirt,crew,set-in,regular,,,22,0,0,0,-
+C2590153,tshirt,crew,puff,regular,,,9,20,20,0,100.0%
+C2590205,tshirt,crew,set-in,regular,,,24,0,0,0,-
+C2590209,tshirt,crew,raglan,regular,,,35,0,0,0,-
+C2590251,polo,polo,set-in,regular,,,20,24,24,0,100.0%
+C2590273,polo,polo,raglan,regular,,,72,40,40,0,100.0%
+C2590277,polo,polo,set-in,regular,,,37,18,18,0,100.0%
+C2590303,tshirt,crew,set-in,long,,,32,23,23,0,100.0%
+C2590408,tshirt,high-mock,set-in,regular,,,32,16,16,0,100.0%
+C2590412,tshirt,crew,set-in,long,,,38,20,20,0,100.0%
+C2590426,tshirt,crew,set-in,long,,,38,16,16,0,100.0%
+C2590428,tshirt,crew,set-in,long,,,39,16,16,0,100.0%
+C2590436,tshirt,crew,set-in,long,,,20,22,22,0,100.0%
+C2590443,tshirt,v-neck,set-in,regular,,,21,18,18,0,100.0%
+C2590450,tshirt,crew,set-in,regular,,,30,22,22,0,100.0%
+C2590466,tshirt,crew,set-in,regular,,,14,16,16,0,100.0%
+C2590519,tshirt,crew,set-in,regular,,,30,20,20,0,100.0%
+C2590522,tshirt,crew,set-in,short,,,63,29,29,0,100.0%
+C2590529,tshirt,crew,set-in,long,,,38,23,23,0,100.0%
+C2590542,tshirt,crew,set-in,regular,,,33,19,19,0,100.0%
+C2590546,tshirt,crew,set-in,short,,,31,18,18,0,100.0%
+C2590551,tshirt,crew,set-in,long,,,30,28,28,0,100.0%
+C2590582,tshirt,crew,set-in,regular,,,55,18,18,0,100.0%
+C2590734,tshirt,boat,batwing,regular,[object Object],,27,0,0,0,-
+C2590742,tshirt,crew,flutter,long,,,56,31,31,0,100.0%
+C2590782,tshirt,crew,set-in,short,,,29,14,14,0,100.0%
+C2690425,tshirt,v-neck,raglan,long,,,69,24,24,0,100.0%
+C2690430,tshirt,crew,set-in,short,,,46,23,12,11,52.2%
+C2690433,tshirt,crew,set-in,regular,,,74,21,21,0,100.0%
+C2690452,tshirt,crew,set-in,regular,,,42,23,23,0,100.0%

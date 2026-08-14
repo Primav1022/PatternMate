@@ -1,0 +1,378 @@
+{
+  "version": "v1",
+  "asset_extension": "png",
+  "options": [
+    {
+      "id": "shirt.silhouette.relaxed-h",
+      "family": "shirt",
+      "group": "silhouette",
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/silhouette/relaxed-h/thumbnail.svg"
+    },
+    {
+      "id": "shirt.silhouette.fitted-x",
+      "family": "shirt",
+      "group": "silhouette",
+      "slug": "fitted-x",
+      "label_zh": "X型",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/silhouette/fitted-x/thumbnail.svg"
+    },
+    {
+      "id": "shirt.silhouette.oversized",
+      "family": "shirt",
+      "group": "silhouette",
+      "slug": "oversized",
+      "label_zh": "Oversize",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/silhouette/oversized/thumbnail.svg"
+    },
+    {
+      "id": "shirt.silhouette.regular-fit",
+      "family": "shirt",
+      "group": "silhouette",
+      "slug": "regular-fit",
+      "label_zh": "合身款式",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/silhouette/regular-fit/thumbnail.svg"
+    },
+    {
+      "id": "shirt.silhouette.a-line",
+      "family": "shirt",
+      "group": "silhouette",
+      "slug": "a-line",
+      "label_zh": "A型",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/silhouette/a-line/thumbnail.svg"
+    },
+    {
+      "id": "shirt.collar.bow-tie",
+      "family": "shirt",
+      "group": "collar",
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/collar/bow-tie/thumbnail.svg"
+    },
+    {
+      "id": "shirt.collar.pointed",
+      "family": "shirt",
+      "group": "collar",
+      "slug": "pointed",
+      "label_zh": "正装尖领",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/collar/pointed/thumbnail.svg"
+    },
+    {
+      "id": "shirt.collar.peter-pan",
+      "family": "shirt",
+      "group": "collar",
+      "slug": "peter-pan",
+      "label_zh": "娃娃领",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/collar/peter-pan/thumbnail.svg"
+    },
+    {
+      "id": "shirt.collar.casual-wide-lapel",
+      "family": "shirt",
+      "group": "collar",
+      "slug": "casual-wide-lapel",
+      "label_zh": "休闲翻领",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/collar/casual-wide-lapel/thumbnail.svg"
+    },
+    {
+      "id": "shirt.collar.open-v-pointed",
+      "family": "shirt",
+      "group": "collar",
+      "slug": "open-v-pointed",
+      "label_zh": "V型敞开尖领",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/collar/open-v-pointed/thumbnail.svg"
+    },
+    {
+      "id": "shirt.placket.full",
+      "family": "shirt",
+      "group": "placket",
+      "slug": "full",
+      "label_zh": "全开襟",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/placket/full/thumbnail.svg"
+    },
+    {
+      "id": "shirt.placket.half",
+      "family": "shirt",
+      "group": "placket",
+      "slug": "half",
+      "label_zh": "半开襟",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/placket/half/thumbnail.svg"
+    },
+    {
+      "id": "shirt.placket.concealed",
+      "family": "shirt",
+      "group": "placket",
+      "slug": "concealed",
+      "label_zh": "隐形暗扣门襟",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/placket/concealed/thumbnail.svg"
+    },
+    {
+      "id": "shirt.placket.ruffled",
+      "family": "shirt",
+      "group": "placket",
+      "slug": "ruffled",
+      "label_zh": "花边门襟",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/placket/ruffled/thumbnail.svg"
+    },
+    {
+      "id": "shirt.placket.diagonal",
+      "family": "shirt",
+      "group": "placket",
+      "slug": "diagonal",
+      "label_zh": "斜襟",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/placket/diagonal/thumbnail.svg"
+    },
+    {
+      "id": "shirt.sleeve.regular",
+      "family": "shirt",
+      "group": "sleeve",
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/sleeve/regular/thumbnail.svg"
+    },
+    {
+      "id": "shirt.sleeve.puff",
+      "family": "shirt",
+      "group": "sleeve",
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/sleeve/puff/thumbnail.svg"
+    },
+    {
+      "id": "shirt.sleeve.bell",
+      "family": "shirt",
+      "group": "sleeve",
+      "slug": "bell",
+      "label_zh": "喇叭袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/sleeve/bell/thumbnail.svg"
+    },
+    {
+      "id": "shirt.sleeve.flutter",
+      "family": "shirt",
+      "group": "sleeve",
+      "slug": "flutter",
+      "label_zh": "飞袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/sleeve/flutter/thumbnail.svg"
+    },
+    {
+      "id": "shirt.sleeve.batwing",
+      "family": "shirt",
+      "group": "sleeve",
+      "slug": "batwing",
+      "label_zh": "蝙蝠袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/sleeve/batwing/thumbnail.svg"
+    },
+    {
+      "id": "shirt.cuff.regular",
+      "family": "shirt",
+      "group": "cuff",
+      "slug": "regular",
+      "label_zh": "常规袖口",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/cuff/regular/thumbnail.svg"
+    },
+    {
+      "id": "shirt.cuff.ruffled",
+      "family": "shirt",
+      "group": "cuff",
+      "slug": "ruffled",
+      "label_zh": "花边袖口",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/cuff/ruffled/thumbnail.svg"
+    },
+    {
+      "id": "shirt.cuff.gathered",
+      "family": "shirt",
+      "group": "cuff",
+      "slug": "gathered",
+      "label_zh": "抽褶袖口",
+      "thumbnail": "/ui-assets/v1/pattern-options/shirt/cuff/gathered/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.crew",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "crew",
+      "label_zh": "圆领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/crew/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.v-neck",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "v-neck",
+      "label_zh": "V领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/v-neck/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.polo",
+      "family": "tshirt",
+      "compatible_families": [
+        "tshirt",
+        "shirt"
+      ],
+      "group": "neckline",
+      "slug": "polo",
+      "label_zh": "Polo领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/polo/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.high-mock",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "high-mock",
+      "label_zh": "高领/半高领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/high-mock/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.cowl",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "cowl",
+      "label_zh": "荡领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/cowl/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.scrunch",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "scrunch",
+      "label_zh": "堆堆领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/scrunch/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.boat",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "boat",
+      "label_zh": "一字船领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/boat/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.neckline.asymmetric",
+      "family": "tshirt",
+      "group": "neckline",
+      "slug": "asymmetric",
+      "label_zh": "斜领",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/neckline/asymmetric/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.sleeve.raglan",
+      "family": "tshirt",
+      "group": "sleeve",
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/sleeve/raglan/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.sleeve.batwing",
+      "family": "tshirt",
+      "group": "sleeve",
+      "slug": "batwing",
+      "label_zh": "蝙蝠袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/sleeve/batwing/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.sleeve.set-in",
+      "family": "tshirt",
+      "group": "sleeve",
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/sleeve/set-in/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.sleeve.flutter",
+      "family": "tshirt",
+      "group": "sleeve",
+      "slug": "flutter",
+      "label_zh": "飞袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/sleeve/flutter/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.sleeve.puff",
+      "family": "tshirt",
+      "group": "sleeve",
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/sleeve/puff/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.special.side-waist-pleats",
+      "family": "tshirt",
+      "group": "special",
+      "slug": "side-waist-pleats",
+      "label_zh": "侧腰捏褶",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/special/side-waist-pleats/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.special.waist-gathers",
+      "family": "tshirt",
+      "group": "special",
+      "slug": "waist-gathers",
+      "label_zh": "腰围抽褶",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/special/waist-gathers/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.special.wrap-v",
+      "family": "tshirt",
+      "group": "special",
+      "slug": "wrap-v",
+      "label_zh": "V领交叉围裹",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/special/wrap-v/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.special.shoulder-pleats",
+      "family": "tshirt",
+      "group": "special",
+      "slug": "shoulder-pleats",
+      "label_zh": "肩线捏褶",
+      "thumbnail": "/ui-assets/v1/pattern-options/tshirt/special/shoulder-pleats/thumbnail.svg"
+    },
+    {
+      "id": "tshirt.garment-length.short",
+      "family": "tshirt",
+      "group": "garment_length",
+      "slug": "short",
+      "label_zh": "短款衣长",
+      "thumbnail": ""
+    },
+    {
+      "id": "tshirt.garment-length.regular",
+      "family": "tshirt",
+      "group": "garment_length",
+      "slug": "regular",
+      "label_zh": "常规衣长",
+      "thumbnail": ""
+    },
+    {
+      "id": "tshirt.garment-length.long",
+      "family": "tshirt",
+      "group": "garment_length",
+      "slug": "long",
+      "label_zh": "长款衣长",
+      "thumbnail": ""
+    },
+    {
+      "id": "shirt.garment-length.short",
+      "family": "shirt",
+      "group": "garment_length",
+      "slug": "short",
+      "label_zh": "短款衣长",
+      "thumbnail": ""
+    },
+    {
+      "id": "shirt.garment-length.regular",
+      "family": "shirt",
+      "group": "garment_length",
+      "slug": "regular",
+      "label_zh": "常规衣长",
+      "thumbnail": ""
+    },
+    {
+      "id": "shirt.garment-length.long",
+      "family": "shirt",
+      "group": "garment_length",
+      "slug": "long",
+      "label_zh": "长款衣长",
+      "thumbnail": ""
+    }
+  ]
+}

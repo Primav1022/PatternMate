@@ -1,0 +1,150 @@
+{
+  "case_id": "C2530028",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "V型敞开尖领；常规袖；常规袖口；半开襟；宽松H型廓形；常规衣长",
+    "collar": {
+      "slug": "open-v-pointed",
+      "label_zh": "V型敞开尖领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.85
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.8
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.85
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.764168+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "polo",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该服装具有典型的Polo领和正肩袖结构。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530028_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"open-v-pointed\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.85},\n  \"cuff\": {\"slug\": \"regular\", \"confidence\": 0.8},\n  \"placket\": {\"slug\": \"half\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"relaxed-h\", \"confidence\": 0.85},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"notes\": \"V型敞开尖领；常规袖；常规袖口；半开襟；宽松H型廓形；常规衣长\"\n}",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "该衣物为梭织面料，有领，V领开口，整体风格偏向女式时装上装。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "open-v-pointed",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "half",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:37:31.917473+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "open-v-pointed",
+      "label_zh": "V型敞开尖领",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "half",
+      "label_zh": "半开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:35.725381+00:00"
+}

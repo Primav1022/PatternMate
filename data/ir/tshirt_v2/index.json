@@ -1,0 +1,673 @@
+{
+  "version": "tshirt-v2",
+  "count": 62,
+  "matched": 44,
+  "missing_case_ids": [
+    "C2490033",
+    "C2490340",
+    "C2490439",
+    "C2490654",
+    "C2490696",
+    "C2590045",
+    "C2590057",
+    "C2590059",
+    "C2590079",
+    "C2590125",
+    "C2590251",
+    "C2590273",
+    "C2590277",
+    "C2590303",
+    "C2590742",
+    "C2690425",
+    "C2690433",
+    "C2690452"
+  ],
+  "rows": [
+    {
+      "case_id": "C2390279",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2390279.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2390279.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2390279.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2390303",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2390303.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2390303.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2390303.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2390726",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2390726.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2390726.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2390726.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490033",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490033.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2490092",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490092.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490092.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490092.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490188",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490188.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490188.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490188.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490194",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490194.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490194.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490194.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490252",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490252.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490252.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490252.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490257",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490257.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490257.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490257.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490278",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490278.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490278.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490278.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490320",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490320.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490320.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490320.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490335",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490335.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490335.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490335.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490340",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490340.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2490383",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490383.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490383.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490383.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490439",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490439.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2490478",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490478.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490478.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490478.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490481",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490481.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490481.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490481.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490654",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490654.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2490679",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490679.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490679.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490679.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490681",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490681.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490681.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490681.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490682",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490682.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490682.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490682.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490696",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490696.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2490697",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490697.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490697.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490697.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2490738",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2490738.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2490738.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2490738.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590045",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590045.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590057",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590057.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590059",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590059.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590064",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590064.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590064.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590064.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590072",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590072.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590072.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590072.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590079",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590079.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590101",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590101.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590101.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590101.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590112",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590112.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590112.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590112.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590125",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590125.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590153",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590153.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590153.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590153.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590205",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590205.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590205.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590205.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590209",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590209.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590209.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590209.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590251",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590251.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590273",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590273.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590277",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590277.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590303",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590303.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590408",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590408.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590408.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590408.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590412",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590412.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590412.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590412.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590426",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590426.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590426.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590426.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590428",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590428.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590428.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590428.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590436",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590436.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590436.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590436.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590443",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590443.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590443.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590443.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590450",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590450.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590450.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590450.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590466",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590466.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590466.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590466.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590519",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590519.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590519.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590519.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590522",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590522.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590522.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590522.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590529",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590529.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590529.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590529.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590542",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590542.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590542.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590542.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590546",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590546.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590546.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590546.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590551",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590551.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590551.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590551.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590582",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590582.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590582.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590582.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590734",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590734.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590734.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590734.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2590742",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590742.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2590782",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2590782.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2590782.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2590782.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": true,
+      "data_status": "tryon_ready"
+    },
+    {
+      "case_id": "C2690425",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2690425.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2690430",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2690430.pattern-ir.json",
+      "dxf": "data/seed/dxf/v1_annotated/C2690430.annotated.dxf",
+      "dxf_candidates": [
+        "data/seed/dxf/v1_annotated/C2690430.annotated.dxf"
+      ],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "preview_ready"
+    },
+    {
+      "case_id": "C2690433",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2690433.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    },
+    {
+      "case_id": "C2690452",
+      "ir": "data/ir/tshirt_v2/pattern_ir/C2690452.pattern-ir.json",
+      "dxf": null,
+      "dxf_candidates": [],
+      "dxf_conflict": false,
+      "donor_allowed": false,
+      "data_status": "reference_only"
+    }
+  ]
+}

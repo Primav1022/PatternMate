@@ -1,0 +1,4441 @@
+{
+  "schema": "chi27.minimal-remix-matrix.v4-sleeve-cap",
+  "total": 96,
+  "ok": 90,
+  "fail": 6,
+  "ok_rate": 0.9375,
+  "elapsed_s": 74.21,
+  "axes": {
+    "bases": [
+      "C2590529",
+      "C2490257",
+      "C2490278"
+    ],
+    "styles": [
+      "base",
+      "neck",
+      "sleeve",
+      "long"
+    ],
+    "bodies": [
+      "woman",
+      "man",
+      "elder",
+      "youth"
+    ],
+    "fabrics": [
+      "cotton",
+      "tencel"
+    ]
+  },
+  "by_base": {
+    "C2590529": {
+      "n": 32,
+      "ok": 32,
+      "ok_rate": 1.0
+    },
+    "C2490257": {
+      "n": 32,
+      "ok": 26,
+      "ok_rate": 0.8125
+    },
+    "C2490278": {
+      "n": 32,
+      "ok": 32,
+      "ok_rate": 1.0
+    }
+  },
+  "by_style": {
+    "base": {
+      "n": 24,
+      "ok": 22,
+      "ok_rate": 0.9167
+    },
+    "neck": {
+      "n": 24,
+      "ok": 22,
+      "ok_rate": 0.9167
+    },
+    "sleeve": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "long": {
+      "n": 24,
+      "ok": 22,
+      "ok_rate": 0.9167
+    }
+  },
+  "by_body": {
+    "woman": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "man": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "elder": {
+      "n": 24,
+      "ok": 24,
+      "ok_rate": 1.0
+    },
+    "youth": {
+      "n": 24,
+      "ok": 18,
+      "ok_rate": 0.75
+    }
+  },
+  "by_fabric": {
+    "cotton": {
+      "n": 48,
+      "ok": 45,
+      "ok_rate": 0.9375
+    },
+    "tencel": {
+      "n": 48,
+      "ok": 45,
+      "ok_rate": 0.9375
+    }
+  },
+  "grading_checks": {
+    "tencel_ge_cotton_width": {
+      "n": 45,
+      "ok": 45,
+      "ok_rate": 1.0
+    },
+    "elder_ge_youth_width": {
+      "n": 18,
+      "ok": 18,
+      "ok_rate": 1.0
+    },
+    "long_ge_base_height": {
+      "n": 22,
+      "ok": 8,
+      "ok_rate": 0.3636
+    }
+  },
+  "sleeve_cap_match": {
+    "sleeve_style_rows": 24,
+    "applied": 8,
+    "mean_err": 0.0074
+  },
+  "fail_reasons": {
+    "front_aspect": 6
+  },
+  "fail_rows": [
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 412,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 362,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 779,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 764,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 363,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 777,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    }
+  ],
+  "rows": [
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 869,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          585.6,
+          829.4
+        ],
+        "back": [
+          585.6,
+          880.2
+        ],
+        "sleeve": [
+          413.8,
+          395.0
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 585.6,
+      "front_h": 829.4,
+      "back_w": 585.6,
+      "back_h": 880.2,
+      "sleeve_w": 413.8,
+      "sleeve_h": 395.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 579.129
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1034,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          611.1,
+          865.5
+        ],
+        "back": [
+          611.1,
+          918.5
+        ],
+        "sleeve": [
+          450.6,
+          404.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 611.1,
+      "front_h": 865.5,
+      "back_w": 611.1,
+      "back_h": 918.5,
+      "sleeve_w": 450.6,
+      "sleeve_h": 404.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 604.309
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 973,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          609.8,
+          829.4
+        ],
+        "back": [
+          609.8,
+          880.2
+        ],
+        "sleeve": [
+          454.9,
+          407.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 609.8,
+      "front_h": 829.4,
+      "back_w": 609.8,
+      "back_h": 880.2,
+      "sleeve_w": 454.9,
+      "sleeve_h": 407.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 583.921
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 888,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          636.3,
+          865.5
+        ],
+        "back": [
+          636.4,
+          918.5
+        ],
+        "sleeve": [
+          495.3,
+          414.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 636.3,
+      "front_h": 865.5,
+      "back_w": 636.4,
+      "back_h": 918.5,
+      "sleeve_w": 495.3,
+      "sleeve_h": 414.6,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 609.309
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 885,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          688.8,
+          803.5
+        ],
+        "back": [
+          688.8,
+          852.7
+        ],
+        "sleeve": [
+          580.8,
+          325.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 688.8,
+      "front_h": 803.5,
+      "back_w": 688.8,
+      "back_h": 852.7,
+      "sleeve_w": 580.8,
+      "sleeve_h": 325.7,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 585.724
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 953,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          718.7,
+          838.4
+        ],
+        "back": [
+          718.7,
+          889.8
+        ],
+        "sleeve": [
+          623.9,
+          339.9
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 718.7,
+      "front_h": 838.4,
+      "back_w": 718.7,
+      "back_h": 889.8,
+      "sleeve_w": 623.9,
+      "sleeve_h": 339.9,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 611.191
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 984,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          534.1,
+          777.6
+        ],
+        "back": [
+          534.1,
+          825.2
+        ],
+        "sleeve": [
+          339.0,
+          370.4
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 534.1,
+      "front_h": 777.6,
+      "back_w": 534.1,
+      "back_h": 825.2,
+      "sleeve_w": 339.0,
+      "sleeve_h": 370.4,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 540.022
+    },
+    {
+      "base": "C2590529",
+      "style": "base",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 660,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          557.3,
+          811.4
+        ],
+        "back": [
+          557.3,
+          861.1
+        ],
+        "sleeve": [
+          369.2,
+          381.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 557.3,
+      "front_h": 811.4,
+      "back_w": 557.3,
+      "back_h": 861.1,
+      "sleeve_w": 369.2,
+      "sleeve_h": 381.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 563.501
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 897,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          585.6,
+          829.4
+        ],
+        "back": [
+          585.6,
+          880.2
+        ],
+        "sleeve": [
+          413.8,
+          395.0
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 585.6,
+      "front_h": 829.4,
+      "back_w": 585.6,
+      "back_h": 880.2,
+      "sleeve_w": 413.8,
+      "sleeve_h": 395.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 579.129
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 1008,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          611.1,
+          865.5
+        ],
+        "back": [
+          611.1,
+          918.5
+        ],
+        "sleeve": [
+          450.6,
+          404.2
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 611.1,
+      "front_h": 865.5,
+      "back_w": 611.1,
+      "back_h": 918.5,
+      "sleeve_w": 450.6,
+      "sleeve_h": 404.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 604.309
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 950,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          609.8,
+          829.4
+        ],
+        "back": [
+          609.8,
+          880.2
+        ],
+        "sleeve": [
+          454.9,
+          407.2
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 609.8,
+      "front_h": 829.4,
+      "back_w": 609.8,
+      "back_h": 880.2,
+      "sleeve_w": 454.9,
+      "sleeve_h": 407.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 583.921
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 1063,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          636.3,
+          865.5
+        ],
+        "back": [
+          636.4,
+          918.5
+        ],
+        "sleeve": [
+          495.3,
+          414.6
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 636.3,
+      "front_h": 865.5,
+      "back_w": 636.4,
+      "back_h": 918.5,
+      "sleeve_w": 495.3,
+      "sleeve_h": 414.6,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 609.309
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 1055,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          688.8,
+          803.5
+        ],
+        "back": [
+          688.8,
+          852.7
+        ],
+        "sleeve": [
+          580.8,
+          325.7
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 688.8,
+      "front_h": 803.5,
+      "back_w": 688.8,
+      "back_h": 852.7,
+      "sleeve_w": 580.8,
+      "sleeve_h": 325.7,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 585.724
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 1133,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          718.7,
+          838.4
+        ],
+        "back": [
+          718.7,
+          889.8
+        ],
+        "sleeve": [
+          623.9,
+          339.9
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 718.7,
+      "front_h": 838.4,
+      "back_w": 718.7,
+      "back_h": 889.8,
+      "sleeve_w": 623.9,
+      "sleeve_h": 339.9,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 611.191
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 1180,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          534.1,
+          777.6
+        ],
+        "back": [
+          534.1,
+          825.2
+        ],
+        "sleeve": [
+          339.0,
+          370.4
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 534.1,
+      "front_h": 777.6,
+      "back_w": 534.1,
+      "back_h": 825.2,
+      "sleeve_w": 339.0,
+      "sleeve_h": 370.4,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 540.022
+    },
+    {
+      "base": "C2590529",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 1019,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          557.3,
+          811.4
+        ],
+        "back": [
+          557.3,
+          861.1
+        ],
+        "sleeve": [
+          369.2,
+          381.2
+        ]
+      },
+      "option": "tshirt.neckline.v-neck",
+      "donor": "C2590443",
+      "donor_score": 1.11697,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 557.3,
+      "front_h": 811.4,
+      "back_w": 557.3,
+      "back_h": 861.1,
+      "sleeve_w": 369.2,
+      "sleeve_h": 381.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 563.501
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1295,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          585.6,
+          829.4
+        ],
+        "back": [
+          585.6,
+          880.2
+        ],
+        "sleeve": [
+          335.1,
+          314.9
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 585.6,
+      "front_h": 829.4,
+      "back_w": 585.6,
+      "back_h": 880.2,
+      "sleeve_w": 335.1,
+      "sleeve_h": 314.9,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0001,
+      "cap_ease": 1.08,
+      "cap_ah": 579.129
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1468,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          611.1,
+          865.5
+        ],
+        "back": [
+          611.1,
+          918.5
+        ],
+        "sleeve": [
+          364.9,
+          328.8
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 611.1,
+      "front_h": 865.5,
+      "back_w": 611.1,
+      "back_h": 918.5,
+      "sleeve_w": 364.9,
+      "sleeve_h": 328.8,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0034,
+      "cap_ease": 1.08,
+      "cap_ah": 604.309
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1489,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          609.8,
+          829.4
+        ],
+        "back": [
+          609.8,
+          880.2
+        ],
+        "sleeve": [
+          454.9,
+          439.6
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 609.8,
+      "front_h": 829.4,
+      "back_w": 609.8,
+      "back_h": 880.2,
+      "sleeve_w": 454.9,
+      "sleeve_h": 439.6,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0014,
+      "cap_ease": 1.08,
+      "cap_ah": 583.921
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1592,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          636.3,
+          865.5
+        ],
+        "back": [
+          636.4,
+          918.5
+        ],
+        "sleeve": [
+          495.3,
+          459.0
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 636.3,
+      "front_h": 865.5,
+      "back_w": 636.4,
+      "back_h": 918.5,
+      "sleeve_w": 495.3,
+      "sleeve_h": 459.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.003,
+      "cap_ease": 1.08,
+      "cap_ah": 609.309
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 2270,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          688.8,
+          803.5
+        ],
+        "back": [
+          688.8,
+          852.7
+        ],
+        "sleeve": [
+          580.8,
+          430.2
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 688.8,
+      "front_h": 803.5,
+      "back_w": 688.8,
+      "back_h": 852.7,
+      "sleeve_w": 580.8,
+      "sleeve_h": 430.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0097,
+      "cap_ease": 1.08,
+      "cap_ah": 585.724
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1612,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          718.7,
+          838.4
+        ],
+        "back": [
+          718.7,
+          889.8
+        ],
+        "sleeve": [
+          623.9,
+          449.0
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 718.7,
+      "front_h": 838.4,
+      "back_w": 718.7,
+      "back_h": 889.8,
+      "sleeve_w": 623.9,
+      "sleeve_h": 449.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0111,
+      "cap_ease": 1.08,
+      "cap_ah": 611.191
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1142,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          534.1,
+          777.6
+        ],
+        "back": [
+          534.1,
+          825.2
+        ],
+        "sleeve": [
+          280.7,
+          272.9
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 534.1,
+      "front_h": 777.6,
+      "back_w": 534.1,
+      "back_h": 825.2,
+      "sleeve_w": 280.7,
+      "sleeve_h": 272.9,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0131,
+      "cap_ease": 1.08,
+      "cap_ah": 540.022
+    },
+    {
+      "base": "C2590529",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1316,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          557.3,
+          811.4
+        ],
+        "back": [
+          557.3,
+          861.1
+        ],
+        "sleeve": [
+          305.7,
+          285.0
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2530790",
+      "donor_score": 0.95775,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 557.3,
+      "front_h": 811.4,
+      "back_w": 557.3,
+      "back_h": 861.1,
+      "sleeve_w": 305.7,
+      "sleeve_h": 285.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0177,
+      "cap_ease": 1.08,
+      "cap_ah": 563.501
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 804,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          585.6,
+          829.4
+        ],
+        "back": [
+          585.6,
+          880.2
+        ],
+        "sleeve": [
+          413.8,
+          395.0
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 585.6,
+      "front_h": 829.4,
+      "back_w": 585.6,
+      "back_h": 880.2,
+      "sleeve_w": 413.8,
+      "sleeve_h": 395.0,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 579.129
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 901,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          611.1,
+          865.5
+        ],
+        "back": [
+          611.1,
+          918.5
+        ],
+        "sleeve": [
+          450.6,
+          404.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 611.1,
+      "front_h": 865.5,
+      "back_w": 611.1,
+      "back_h": 918.5,
+      "sleeve_w": 450.6,
+      "sleeve_h": 404.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 604.309
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 851,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          609.8,
+          829.4
+        ],
+        "back": [
+          609.8,
+          880.2
+        ],
+        "sleeve": [
+          454.9,
+          407.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 609.8,
+      "front_h": 829.4,
+      "back_w": 609.8,
+      "back_h": 880.2,
+      "sleeve_w": 454.9,
+      "sleeve_h": 407.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 583.921
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1417,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          636.3,
+          865.5
+        ],
+        "back": [
+          636.4,
+          918.5
+        ],
+        "sleeve": [
+          495.3,
+          414.6
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 636.3,
+      "front_h": 865.5,
+      "back_w": 636.4,
+      "back_h": 918.5,
+      "sleeve_w": 495.3,
+      "sleeve_h": 414.6,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 609.309
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1259,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          688.8,
+          803.5
+        ],
+        "back": [
+          688.8,
+          852.7
+        ],
+        "sleeve": [
+          580.8,
+          325.7
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 688.8,
+      "front_h": 803.5,
+      "back_w": 688.8,
+      "back_h": 852.7,
+      "sleeve_w": 580.8,
+      "sleeve_h": 325.7,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 585.724
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1084,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          718.7,
+          838.4
+        ],
+        "back": [
+          718.7,
+          889.8
+        ],
+        "sleeve": [
+          623.9,
+          339.9
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 718.7,
+      "front_h": 838.4,
+      "back_w": 718.7,
+      "back_h": 889.8,
+      "sleeve_w": 623.9,
+      "sleeve_h": 339.9,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 611.191
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 658,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          534.1,
+          777.6
+        ],
+        "back": [
+          534.1,
+          825.2
+        ],
+        "sleeve": [
+          339.0,
+          370.4
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 534.1,
+      "front_h": 777.6,
+      "back_w": 534.1,
+      "back_h": 825.2,
+      "sleeve_w": 339.0,
+      "sleeve_h": 370.4,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 540.022
+    },
+    {
+      "base": "C2590529",
+      "style": "long",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 690,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          557.3,
+          811.4
+        ],
+        "back": [
+          557.3,
+          861.1
+        ],
+        "sleeve": [
+          369.2,
+          381.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 557.3,
+      "front_h": 811.4,
+      "back_w": 557.3,
+      "back_h": 861.1,
+      "sleeve_w": 369.2,
+      "sleeve_h": 381.2,
+      "host_w": 564.8,
+      "host_h": 746.0,
+      "cap_applied": true,
+      "cap_err": 0.0,
+      "cap_ease": 1.04,
+      "cap_ah": 563.501
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 384,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          425.7,
+          1018.5
+        ],
+        "back": [
+          505.6,
+          947.3
+        ],
+        "sleeve": [
+          329.1,
+          720.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 425.7,
+      "front_h": 1018.5,
+      "back_w": 505.6,
+      "back_h": 947.3,
+      "sleeve_w": 329.1,
+      "sleeve_h": 720.5,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 439.766
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 392,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.3,
+          1062.7
+        ],
+        "back": [
+          527.6,
+          988.5
+        ],
+        "sleeve": [
+          358.3,
+          751.8
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 444.3,
+      "front_h": 1062.7,
+      "back_w": 527.6,
+      "back_h": 988.5,
+      "sleeve_w": 358.3,
+      "sleeve_h": 751.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 458.887
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 951,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          443.4,
+          1018.5
+        ],
+        "back": [
+          526.5,
+          947.3
+        ],
+        "sleeve": [
+          361.8,
+          836.9
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 443.4,
+      "front_h": 1018.5,
+      "back_w": 526.5,
+      "back_h": 947.3,
+      "sleeve_w": 361.8,
+      "sleeve_h": 836.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 440.847
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 408,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.6,
+          1062.7
+        ],
+        "back": [
+          549.4,
+          988.5
+        ],
+        "sleeve": [
+          393.9,
+          873.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 462.6,
+      "front_h": 1062.7,
+      "back_w": 549.4,
+      "back_h": 988.5,
+      "sleeve_w": 393.9,
+      "sleeve_h": 873.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 460.014
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 404,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          500.8,
+          986.6
+        ],
+        "back": [
+          594.7,
+          917.7
+        ],
+        "sleeve": [
+          461.9,
+          814.8
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 500.8,
+      "front_h": 986.6,
+      "back_w": 594.7,
+      "back_h": 917.7,
+      "sleeve_w": 461.9,
+      "sleeve_h": 814.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 431.832
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 388,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.5,
+          1029.5
+        ],
+        "back": [
+          620.6,
+          957.6
+        ],
+        "sleeve": [
+          496.1,
+          850.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 522.5,
+      "front_h": 1029.5,
+      "back_w": 620.6,
+      "back_h": 957.6,
+      "sleeve_w": 496.1,
+      "sleeve_h": 850.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 450.607
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 412,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "base",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 362,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 791,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          425.7,
+          1018.5
+        ],
+        "back": [
+          505.6,
+          947.3
+        ],
+        "sleeve": [
+          329.1,
+          720.5
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 425.7,
+      "front_h": 1018.5,
+      "back_w": 505.6,
+      "back_h": 947.3,
+      "sleeve_w": 329.1,
+      "sleeve_h": 720.5,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 439.766
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 1335,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.3,
+          1062.7
+        ],
+        "back": [
+          527.6,
+          988.5
+        ],
+        "sleeve": [
+          358.3,
+          751.8
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 444.3,
+      "front_h": 1062.7,
+      "back_w": 527.6,
+      "back_h": 988.5,
+      "sleeve_w": 358.3,
+      "sleeve_h": 751.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 458.887
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 929,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          443.4,
+          1018.5
+        ],
+        "back": [
+          526.5,
+          947.3
+        ],
+        "sleeve": [
+          361.8,
+          836.9
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 443.4,
+      "front_h": 1018.5,
+      "back_w": 526.5,
+      "back_h": 947.3,
+      "sleeve_w": 361.8,
+      "sleeve_h": 836.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 440.847
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 819,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.6,
+          1062.7
+        ],
+        "back": [
+          549.4,
+          988.5
+        ],
+        "sleeve": [
+          393.9,
+          873.2
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 462.6,
+      "front_h": 1062.7,
+      "back_w": 549.4,
+      "back_h": 988.5,
+      "sleeve_w": 393.9,
+      "sleeve_h": 873.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 460.014
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 800,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          500.8,
+          986.6
+        ],
+        "back": [
+          594.7,
+          917.7
+        ],
+        "sleeve": [
+          461.9,
+          814.8
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 500.8,
+      "front_h": 986.6,
+      "back_w": 594.7,
+      "back_h": 917.7,
+      "sleeve_w": 461.9,
+      "sleeve_h": 814.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 431.832
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 808,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.5,
+          1029.5
+        ],
+        "back": [
+          620.6,
+          957.6
+        ],
+        "sleeve": [
+          496.1,
+          850.2
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 522.5,
+      "front_h": 1029.5,
+      "back_w": 620.6,
+      "back_h": 957.6,
+      "sleeve_w": 496.1,
+      "sleeve_h": 850.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 450.607
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 779,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 764,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2390726",
+      "donor_score": 1.1936,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1974,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          460.0,
+          988.7
+        ],
+        "back": [
+          471.3,
+          977.0
+        ],
+        "sleeve": [
+          460.7,
+          363.3
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 460.0,
+      "front_h": 988.7,
+      "back_w": 471.3,
+      "back_h": 977.0,
+      "sleeve_w": 460.7,
+      "sleeve_h": 363.3,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 904.237
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1857,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          480.0,
+          1031.7
+        ],
+        "back": [
+          491.8,
+          1019.5
+        ],
+        "sleeve": [
+          501.7,
+          379.1
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 480.0,
+      "front_h": 1031.7,
+      "back_w": 491.8,
+      "back_h": 1019.5,
+      "sleeve_w": 501.7,
+      "sleeve_h": 379.1,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 943.551
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1771,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          479.1,
+          988.7
+        ],
+        "back": [
+          490.8,
+          977.0
+        ],
+        "sleeve": [
+          506.5,
+          421.9
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 479.1,
+      "front_h": 988.7,
+      "back_w": 490.8,
+      "back_h": 977.0,
+      "sleeve_w": 506.5,
+      "sleeve_h": 421.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 904.237
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1668,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          499.9,
+          1031.7
+        ],
+        "back": [
+          512.2,
+          1019.5
+        ],
+        "sleeve": [
+          551.5,
+          440.3
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 499.9,
+      "front_h": 1031.7,
+      "back_w": 512.2,
+      "back_h": 1019.5,
+      "sleeve_w": 551.5,
+      "sleeve_h": 440.3,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 943.551
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 2002,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          541.1,
+          957.8
+        ],
+        "back": [
+          554.4,
+          946.5
+        ],
+        "sleeve": [
+          646.6,
+          410.8
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 541.1,
+      "front_h": 957.8,
+      "back_w": 554.4,
+      "back_h": 946.5,
+      "sleeve_w": 646.6,
+      "sleeve_h": 410.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 875.979
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1757,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          564.6,
+          999.5
+        ],
+        "back": [
+          578.5,
+          987.6
+        ],
+        "sleeve": [
+          694.5,
+          428.7
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 564.6,
+      "front_h": 999.5,
+      "back_w": 578.5,
+      "back_h": 987.6,
+      "sleeve_w": 694.5,
+      "sleeve_h": 428.7,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 914.065
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 1620,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          419.6,
+          926.9
+        ],
+        "back": [
+          429.9,
+          915.9
+        ],
+        "sleeve": [
+          377.5,
+          305.8
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 419.6,
+      "front_h": 926.9,
+      "back_w": 429.9,
+      "back_h": 915.9,
+      "sleeve_w": 377.5,
+      "sleeve_h": 305.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 847.722
+    },
+    {
+      "base": "C2490257",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 1486,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          437.8,
+          967.2
+        ],
+        "back": [
+          448.6,
+          955.8
+        ],
+        "sleeve": [
+          411.0,
+          319.1
+        ]
+      },
+      "option": "tshirt.sleeve.raglan",
+      "donor": "C2690425",
+      "donor_score": 1.01711,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 437.8,
+      "front_h": 967.2,
+      "back_w": 448.6,
+      "back_h": 955.8,
+      "sleeve_w": 411.0,
+      "sleeve_h": 319.1,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.03,
+      "cap_ah": 884.579
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 781,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          425.7,
+          1018.5
+        ],
+        "back": [
+          505.6,
+          947.3
+        ],
+        "sleeve": [
+          329.1,
+          720.5
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 425.7,
+      "front_h": 1018.5,
+      "back_w": 505.6,
+      "back_h": 947.3,
+      "sleeve_w": 329.1,
+      "sleeve_h": 720.5,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 439.766
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 358,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          444.3,
+          1062.7
+        ],
+        "back": [
+          527.6,
+          988.5
+        ],
+        "sleeve": [
+          358.3,
+          751.8
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 444.3,
+      "front_h": 1062.7,
+      "back_w": 527.6,
+      "back_h": 988.5,
+      "sleeve_w": 358.3,
+      "sleeve_h": 751.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 458.887
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 429,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          443.4,
+          1018.5
+        ],
+        "back": [
+          526.5,
+          947.3
+        ],
+        "sleeve": [
+          361.8,
+          836.9
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 443.4,
+      "front_h": 1018.5,
+      "back_w": 526.5,
+      "back_h": 947.3,
+      "sleeve_w": 361.8,
+      "sleeve_h": 836.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 440.847
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 533,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          462.6,
+          1062.7
+        ],
+        "back": [
+          549.4,
+          988.5
+        ],
+        "sleeve": [
+          393.9,
+          873.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 462.6,
+      "front_h": 1062.7,
+      "back_w": 549.4,
+      "back_h": 988.5,
+      "sleeve_w": 393.9,
+      "sleeve_h": 873.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 460.014
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 490,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          500.8,
+          986.6
+        ],
+        "back": [
+          594.7,
+          917.7
+        ],
+        "sleeve": [
+          461.9,
+          814.8
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 500.8,
+      "front_h": 986.6,
+      "back_w": 594.7,
+      "back_h": 917.7,
+      "sleeve_w": 461.9,
+      "sleeve_h": 814.8,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 431.832
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 407,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          522.5,
+          1029.5
+        ],
+        "back": [
+          620.6,
+          957.6
+        ],
+        "sleeve": [
+          496.1,
+          850.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 522.5,
+      "front_h": 1029.5,
+      "back_w": 620.6,
+      "back_h": 957.6,
+      "sleeve_w": 496.1,
+      "sleeve_h": 850.2,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 450.607
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 363,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          388.3,
+          954.8
+        ],
+        "back": [
+          461.1,
+          888.1
+        ],
+        "sleeve": [
+          269.6,
+          606.6
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 388.3,
+      "front_h": 954.8,
+      "back_w": 461.1,
+      "back_h": 888.1,
+      "sleeve_w": 269.6,
+      "sleeve_h": 606.6,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 411.636
+    },
+    {
+      "base": "C2490257",
+      "style": "long",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 777,
+      "ok": false,
+      "issues": [
+        "front_aspect=2.46"
+      ],
+      "sizes": {
+        "front": [
+          405.2,
+          996.3
+        ],
+        "back": [
+          481.2,
+          926.7
+        ],
+        "sleeve": [
+          293.6,
+          632.9
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 405.2,
+      "front_h": 996.3,
+      "back_w": 481.2,
+      "back_h": 926.7,
+      "sleeve_w": 293.6,
+      "sleeve_h": 632.9,
+      "host_w": 449.1,
+      "host_h": 857.8,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 429.533
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          553.2,
+          685.9
+        ],
+        "back": [
+          586.8,
+          678.6
+        ],
+        "sleeve": [
+          409.5,
+          428.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 553.2,
+      "front_h": 685.9,
+      "back_w": 586.8,
+      "back_h": 678.6,
+      "sleeve_w": 409.5,
+      "sleeve_h": 428.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 503.136
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          577.3,
+          715.8
+        ],
+        "back": [
+          612.3,
+          708.1
+        ],
+        "sleeve": [
+          445.9,
+          446.8
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 577.3,
+      "front_h": 715.8,
+      "back_w": 612.3,
+      "back_h": 708.1,
+      "sleeve_w": 445.9,
+      "sleeve_h": 446.8,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 525.011
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 48,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          576.1,
+          685.9
+        ],
+        "back": [
+          611.1,
+          678.6
+        ],
+        "sleeve": [
+          432.3,
+          477.6
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 576.1,
+      "front_h": 685.9,
+      "back_w": 611.1,
+      "back_h": 678.6,
+      "sleeve_w": 432.3,
+      "sleeve_h": 477.6,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 508.316
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          601.2,
+          715.8
+        ],
+        "back": [
+          637.7,
+          708.1
+        ],
+        "sleeve": [
+          470.7,
+          498.3
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 601.2,
+      "front_h": 715.8,
+      "back_w": 637.7,
+      "back_h": 708.1,
+      "sleeve_w": 470.7,
+      "sleeve_h": 498.3,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 530.417
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 46,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          650.7,
+          664.5
+        ],
+        "back": [
+          690.2,
+          657.4
+        ],
+        "sleeve": [
+          473.4,
+          398.8
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.00911,
+      "shrink": 0.04,
+      "front_w": 650.7,
+      "front_h": 664.5,
+      "back_w": 690.2,
+      "back_h": 657.4,
+      "sleeve_w": 473.4,
+      "sleeve_h": 398.8,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 513.982
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          679.0,
+          693.4
+        ],
+        "back": [
+          720.2,
+          686.0
+        ],
+        "sleeve": [
+          508.5,
+          416.2
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.05299,
+      "shrink": 0.08,
+      "front_w": 679.0,
+      "front_h": 693.4,
+      "back_w": 720.2,
+      "back_h": 686.0,
+      "sleeve_w": 508.5,
+      "sleeve_h": 416.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 536.329
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          504.6,
+          643.1
+        ],
+        "back": [
+          535.2,
+          636.2
+        ],
+        "sleeve": [
+          344.9,
+          370.5
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 0.97656,
+      "shrink": 0.04,
+      "front_w": 504.6,
+      "front_h": 643.1,
+      "back_w": 535.2,
+      "back_h": 636.2,
+      "sleeve_w": 344.9,
+      "sleeve_h": 370.5,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 468.534
+    },
+    {
+      "base": "C2490278",
+      "style": "base",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          526.5,
+          671.0
+        ],
+        "back": [
+          558.5,
+          663.8
+        ],
+        "sleeve": [
+          375.5,
+          386.7
+        ]
+      },
+      "option": null,
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.01902,
+      "shrink": 0.08,
+      "front_w": 526.5,
+      "front_h": 671.0,
+      "back_w": 558.5,
+      "back_h": 663.8,
+      "sleeve_w": 375.5,
+      "sleeve_h": 386.7,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 488.905
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 113,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          553.2,
+          685.9
+        ],
+        "back": [
+          586.8,
+          678.6
+        ],
+        "sleeve": [
+          409.5,
+          428.2
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.03684,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 553.2,
+      "front_h": 685.9,
+      "back_w": 586.8,
+      "back_h": 678.6,
+      "sleeve_w": 409.5,
+      "sleeve_h": 428.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 503.136
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 109,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          577.3,
+          715.8
+        ],
+        "back": [
+          612.3,
+          708.1
+        ],
+        "sleeve": [
+          445.9,
+          446.8
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.08192,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 577.3,
+      "front_h": 715.8,
+      "back_w": 612.3,
+      "back_h": 708.1,
+      "sleeve_w": 445.9,
+      "sleeve_h": 446.8,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 525.011
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 110,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          576.1,
+          685.9
+        ],
+        "back": [
+          611.1,
+          678.6
+        ],
+        "sleeve": [
+          432.3,
+          477.6
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.07974,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 576.1,
+      "front_h": 685.9,
+      "back_w": 611.1,
+      "back_h": 678.6,
+      "sleeve_w": 432.3,
+      "sleeve_h": 477.6,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 508.316
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 111,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          601.2,
+          715.8
+        ],
+        "back": [
+          637.7,
+          708.1
+        ],
+        "sleeve": [
+          470.7,
+          498.3
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.12669,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 601.2,
+      "front_h": 715.8,
+      "back_w": 637.7,
+      "back_h": 708.1,
+      "sleeve_w": 470.7,
+      "sleeve_h": 498.3,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 530.417
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 109,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          650.7,
+          664.5
+        ],
+        "back": [
+          690.2,
+          657.4
+        ],
+        "sleeve": [
+          473.4,
+          398.8
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.21953,
+      "body_sy": 1.00911,
+      "shrink": 0.04,
+      "front_w": 650.7,
+      "front_h": 664.5,
+      "back_w": 690.2,
+      "back_h": 657.4,
+      "sleeve_w": 473.4,
+      "sleeve_h": 398.8,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 513.982
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 116,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          679.0,
+          693.4
+        ],
+        "back": [
+          720.2,
+          686.0
+        ],
+        "sleeve": [
+          508.5,
+          416.2
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 1.27255,
+      "body_sy": 1.05299,
+      "shrink": 0.08,
+      "front_w": 679.0,
+      "front_h": 693.4,
+      "back_w": 720.2,
+      "back_h": 686.0,
+      "sleeve_w": 508.5,
+      "sleeve_h": 416.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 536.329
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "invalid",
+      "ms": 111,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          504.6,
+          643.1
+        ],
+        "back": [
+          535.2,
+          636.2
+        ],
+        "sleeve": [
+          344.9,
+          370.5
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 0.94565,
+      "body_sy": 0.97656,
+      "shrink": 0.04,
+      "front_w": 504.6,
+      "front_h": 643.1,
+      "back_w": 535.2,
+      "back_h": 636.2,
+      "sleeve_w": 344.9,
+      "sleeve_h": 370.5,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 468.534
+    },
+    {
+      "base": "C2490278",
+      "style": "neck",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "invalid",
+      "ms": 113,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          526.5,
+          671.0
+        ],
+        "back": [
+          558.5,
+          663.8
+        ],
+        "sleeve": [
+          375.5,
+          386.7
+        ]
+      },
+      "option": "tshirt.neckline.high-mock",
+      "donor": "C2490194",
+      "donor_score": 0.74762,
+      "body_sx": 0.98676,
+      "body_sy": 1.01902,
+      "shrink": 0.08,
+      "front_w": 526.5,
+      "front_h": 671.0,
+      "back_w": 558.5,
+      "back_h": 663.8,
+      "sleeve_w": 375.5,
+      "sleeve_h": 386.7,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 488.905
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 482,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          553.2,
+          685.9
+        ],
+        "back": [
+          586.8,
+          678.6
+        ],
+        "sleeve": [
+          540.5,
+          462.9
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.03684,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 553.2,
+      "front_h": 685.9,
+      "back_w": 586.8,
+      "back_h": 678.6,
+      "sleeve_w": 540.5,
+      "sleeve_h": 462.9,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 503.136
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 503,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          577.3,
+          715.8
+        ],
+        "back": [
+          612.3,
+          708.1
+        ],
+        "sleeve": [
+          588.6,
+          483.1
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.08192,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 577.3,
+      "front_h": 715.8,
+      "back_w": 612.3,
+      "back_h": 708.1,
+      "sleeve_w": 588.6,
+      "sleeve_h": 483.1,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 525.011
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 519,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          576.1,
+          685.9
+        ],
+        "back": [
+          611.1,
+          678.6
+        ],
+        "sleeve": [
+          576.5,
+          521.7
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.07974,
+      "body_sy": 1.04167,
+      "shrink": 0.04,
+      "front_w": 576.1,
+      "front_h": 685.9,
+      "back_w": 611.1,
+      "back_h": 678.6,
+      "sleeve_w": 576.5,
+      "sleeve_h": 521.7,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 508.316
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 532,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          601.2,
+          715.8
+        ],
+        "back": [
+          637.7,
+          708.1
+        ],
+        "sleeve": [
+          627.7,
+          544.4
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.12669,
+      "body_sy": 1.08696,
+      "shrink": 0.08,
+      "front_w": 601.2,
+      "front_h": 715.8,
+      "back_w": 637.7,
+      "back_h": 708.1,
+      "sleeve_w": 627.7,
+      "sleeve_h": 544.4,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 530.417
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 520,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          650.7,
+          664.5
+        ],
+        "back": [
+          690.2,
+          657.4
+        ],
+        "sleeve": [
+          658.9,
+          454.7
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.21953,
+      "body_sy": 1.00911,
+      "shrink": 0.04,
+      "front_w": 650.7,
+      "front_h": 664.5,
+      "back_w": 690.2,
+      "back_h": 657.4,
+      "sleeve_w": 658.9,
+      "sleeve_h": 454.7,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 513.982
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 529,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          679.0,
+          693.4
+        ],
+        "back": [
+          720.2,
+          686.0
+        ],
+        "sleeve": [
+          707.7,
+          474.5
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 1.27255,
+      "body_sy": 1.05299,
+      "shrink": 0.08,
+      "front_w": 679.0,
+      "front_h": 693.4,
+      "back_w": 720.2,
+      "back_h": 686.0,
+      "sleeve_w": 707.7,
+      "sleeve_h": 474.5,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 536.329
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 450,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          504.6,
+          643.1
+        ],
+        "back": [
+          535.2,
+          636.2
+        ],
+        "sleeve": [
+          452.2,
+          397.9
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 0.94565,
+      "body_sy": 0.97656,
+      "shrink": 0.04,
+      "front_w": 504.6,
+      "front_h": 643.1,
+      "back_w": 535.2,
+      "back_h": 636.2,
+      "sleeve_w": 452.2,
+      "sleeve_h": 397.9,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 468.534
+    },
+    {
+      "base": "C2490278",
+      "style": "sleeve",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 463,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          526.5,
+          671.0
+        ],
+        "back": [
+          558.5,
+          663.8
+        ],
+        "sleeve": [
+          492.3,
+          415.2
+        ]
+      },
+      "option": "tshirt.sleeve.puff",
+      "donor": "C2590153",
+      "donor_score": 0.64498,
+      "body_sx": 0.98676,
+      "body_sy": 1.01902,
+      "shrink": 0.08,
+      "front_w": 526.5,
+      "front_h": 671.0,
+      "back_w": 558.5,
+      "back_h": 663.8,
+      "sleeve_w": 492.3,
+      "sleeve_h": 415.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.08,
+      "cap_ah": 488.905
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "woman",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 48,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          553.2,
+          754.5
+        ],
+        "back": [
+          586.8,
+          746.4
+        ],
+        "sleeve": [
+          450.5,
+          471.0
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.03684,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 553.2,
+      "front_h": 754.5,
+      "back_w": 586.8,
+      "back_h": 746.4,
+      "sleeve_w": 450.5,
+      "sleeve_h": 471.0,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 541.172
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "woman",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 48,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          577.3,
+          787.3
+        ],
+        "back": [
+          612.3,
+          778.9
+        ],
+        "sleeve": [
+          490.5,
+          491.5
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.08192,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 577.3,
+      "front_h": 787.3,
+      "back_w": 612.3,
+      "back_h": 778.9,
+      "sleeve_w": 490.5,
+      "sleeve_h": 491.5,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 564.702
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "man",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 46,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          576.1,
+          754.5
+        ],
+        "back": [
+          611.1,
+          746.4
+        ],
+        "sleeve": [
+          475.5,
+          525.3
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.07974,
+      "body_sy": 1.14583,
+      "shrink": 0.04,
+      "front_w": 576.1,
+      "front_h": 754.5,
+      "back_w": 611.1,
+      "back_h": 746.4,
+      "sleeve_w": 475.5,
+      "sleeve_h": 525.3,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 546.211
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "man",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 48,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          601.2,
+          787.3
+        ],
+        "back": [
+          637.7,
+          778.9
+        ],
+        "sleeve": [
+          517.8,
+          548.2
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.12669,
+      "body_sy": 1.19565,
+      "shrink": 0.08,
+      "front_w": 601.2,
+      "front_h": 787.3,
+      "back_w": 637.7,
+      "back_h": 778.9,
+      "sleeve_w": 517.8,
+      "sleeve_h": 548.2,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 569.959
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "elder",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 49,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          650.7,
+          731.0
+        ],
+        "back": [
+          690.2,
+          723.1
+        ],
+        "sleeve": [
+          520.7,
+          438.7
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.21953,
+      "body_sy": 1.11003,
+      "shrink": 0.04,
+      "front_w": 650.7,
+      "front_h": 731.0,
+      "back_w": 690.2,
+      "back_h": 723.1,
+      "sleeve_w": 520.7,
+      "sleeve_h": 438.7,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 550.116
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "elder",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 48,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          679.0,
+          762.7
+        ],
+        "back": [
+          720.2,
+          754.6
+        ],
+        "sleeve": [
+          559.3,
+          457.8
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 1.27255,
+      "body_sy": 1.15829,
+      "shrink": 0.08,
+      "front_w": 679.0,
+      "front_h": 762.7,
+      "back_w": 720.2,
+      "back_h": 754.6,
+      "sleeve_w": 559.3,
+      "sleeve_h": 457.8,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 574.034
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "youth",
+      "fabric": "cotton",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          504.6,
+          707.4
+        ],
+        "back": [
+          535.2,
+          699.8
+        ],
+        "sleeve": [
+          379.4,
+          407.6
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.94565,
+      "body_sy": 1.07422,
+      "shrink": 0.04,
+      "front_w": 504.6,
+      "front_h": 707.4,
+      "back_w": 535.2,
+      "back_h": 699.8,
+      "sleeve_w": 379.4,
+      "sleeve_h": 407.6,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 504.282
+    },
+    {
+      "base": "C2490278",
+      "style": "long",
+      "body": "youth",
+      "fabric": "tencel",
+      "status": "valid",
+      "ms": 47,
+      "ok": true,
+      "issues": [],
+      "sizes": {
+        "front": [
+          526.5,
+          738.1
+        ],
+        "back": [
+          558.5,
+          730.2
+        ],
+        "sleeve": [
+          413.1,
+          425.3
+        ]
+      },
+      "option": "tshirt.garment-length.long",
+      "donor": null,
+      "donor_score": null,
+      "body_sx": 0.98676,
+      "body_sy": 1.12092,
+      "shrink": 0.08,
+      "front_w": 526.5,
+      "front_h": 738.1,
+      "back_w": 558.5,
+      "back_h": 730.2,
+      "sleeve_w": 413.1,
+      "sleeve_h": 425.3,
+      "host_w": 549.8,
+      "host_h": 655.0,
+      "cap_applied": false,
+      "cap_err": null,
+      "cap_ease": 1.04,
+      "cap_ah": 526.207
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "C2590214",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2590214_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "confidence": 0.9
+    },
+    "special": [],
+    "notes": "圆领插肩袖卫衣式样T恤"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"raglan\", \"confidence\": 0.90},\n  \"special\": [],\n  \"notes\": \"圆领插肩袖卫衣式样T恤\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 1.0,
+    "reason_zh": "该衣物是针织材质，长袖圆领，无帽子，符合无帽卫衣的特征。",
+    "signals": []
+  }
+}

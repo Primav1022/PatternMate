@@ -1,0 +1,35 @@
+{
+  "case_id": "C2390270",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2390270_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "confidence": 0.85
+    },
+    "special": [],
+    "notes": "经典圆领黑白条纹长袖上衣，正肩袖设计，无特殊结构。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"set-in\", \"confidence\": 0.85},\n  \"special\": [],\n  \"notes\": \"经典圆领黑白条纹长袖上衣，正肩袖设计，无特殊结构。\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "实物为厚质面料的黑白条纹无帽卫衣，领口和下摆有螺纹收口。",
+    "signals": [
+      "fleece"
+    ]
+  }
+}

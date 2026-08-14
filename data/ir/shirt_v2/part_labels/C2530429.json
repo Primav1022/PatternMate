@@ -1,0 +1,143 @@
+{
+  "case_id": "C2530429",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "领口为带褶皱的立领，不在词表内；袖山有轻微泡泡袖效果；袖口为常规克夫；前门襟有明显荷叶边装饰；廓形为宽松H型；衣长常规。",
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖"
+    },
+    "cuff": {
+      "slug": "gathered",
+      "label_zh": "抽褶袖口"
+    },
+    "placket": {
+      "slug": "ruffled",
+      "label_zh": "花边门襟",
+      "confidence": 0.95
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.8
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.768541+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "puff",
+    "special": [],
+    "notes": "领口为立领带荷叶边，与高领（high-mock）选项最为接近；袖子为正肩泡泡袖；无特殊设计。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530429_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "```json\n{\n  \"collar\": {\n    \"slug\": \"non_composable\",\n    \"confidence\": 0.95\n  },\n  \"sleeve_style\": {\n    \"slug\": \"puff\",\n    \"confidence\": 0.85\n  },\n  \"cuff\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"placket\": {\n    \"slug\": \"ruffled\",\n    \"confidence\": 0.95\n  },\n  \"silhouette\": {\n    \"slug\": \"relaxed-h\",\n    \"confidence\": 0.8\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9\n  },\n  \"notes\": \"领口为带褶皱的立领，不在词表内；袖山有轻微泡泡袖效果；袖口为常规克夫；前门襟有明显荷叶边装饰；廓形为宽松H型；衣长常规。\"\n}\n```",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "带有荷叶边装饰和门襟纽扣的女性时装梭织上衣，符合blouse定义。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "non_composable",
+    "sleeve_style": "puff",
+    "cuff": "regular",
+    "placket": "ruffled",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:31:43.481337+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "gathered",
+      "label_zh": "抽褶袖口",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "ruffled",
+      "label_zh": "花边门襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:37.536755+00:00"
+}

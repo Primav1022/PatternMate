@@ -1,0 +1,173 @@
+{
+  "case_id": "C2431055",
+  "category": "shirt",
+  "part_labels": {
+    "notes": "",
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "confidence": 0.8
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "fitted-x",
+      "label_zh": "X型",
+      "confidence": 0.95
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.758603+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "高领蕾丝款式，采用正肩袖设计。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2431055_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "```json\n{\n  \"collar\": {\n    \"slug\": \"non_composable\",\n    \"confidence\": 0.95,\n    \"notes\": \"领口为荷叶边立领，不在词表四类中，且无法组合。\"\n  },\n  \"sleeve_style\": {\n    \"slug\": \"puff\",\n    \"confidence\": 0.8,\n    \"notes\": \"袖山处有轻微的抽褶和蓬起，属于泡泡袖的范畴。\"\n  },\n  \"cuff\": {\n    \"slug\": \"non_composable\",\n    \"confidence\": 0.9,\n    \"notes\": \"袖口为蕾丝面料的简单收边，无克夫、无抽褶、无荷叶边，无法归类。\"\n  },\n  \"placket\": {\n    \"slug\": \"full\",\n    \"confidence\": 0.9,\n    \"notes\": \"前门襟从领口一直开到腰部以下，为全开襟设计。\"\n  },\n  \"silhouette\": {\n    \"slug\": \"fitted-x\",\n    \"confidence\": 0.95,\n    \"notes\": \"腰部收紧，下摆有荷叶边外扩，呈明显的X型廓形。\"\n  },\n  \"garment_length\": {\n    \"slug\": \"regular\",\n    \"confidence\": 0.9,\n    \"notes\": \"衣长至臀部上方，属于常规衣长。\"\n  }\n}\n```",
+  "gemini_prelabel": {
+    "collar": "non_composable",
+    "sleeve_style": "puff",
+    "cuff": "non_composable",
+    "placket": "full",
+    "silhouette": "fitted-x",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:03:10.131224+00:00",
+  "reviewed_by": "expert",
+  "category_prev": "shirt",
+  "category_reclassify": {
+    "category": "shirt",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "这是一件蕾丝材质的女式时装上衣，具有明显的blouse气质和前门襟纽扣。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "edge_bindings": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "pending_annotation",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "pending_annotation",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "fitted-x",
+      "label_zh": "X型",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "pending_annotation",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:33.394336+00:00",
+  "part_labels_original": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "puff",
+      "label_zh": "泡泡袖",
+      "confidence": 0.8
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断"
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "fitted-x",
+      "label_zh": "X型",
+      "confidence": 0.95
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "shirt_label_review_state": "edge_bindings_pending",
+  "edge_bindings_pending_at": "2026-08-09T05:55:33.527Z"
+}

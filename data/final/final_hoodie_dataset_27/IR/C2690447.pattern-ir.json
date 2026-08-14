@@ -1,0 +1,128 @@
+{
+  "ir_version": "1.0",
+  "schema": "ai4manufacturing.pattern_ir.v1.0",
+  "case_id": "C2690447",
+  "created_at": "2026-07-25T20:27:02+0800",
+  "source_files": {
+    "files": [
+      "originals/C2690447_sample.jpg"
+    ]
+  },
+  "design_semantics": {
+    "category": "hoodie",
+    "usage": [
+      "casual"
+    ],
+    "style_tags": [
+      "unisex",
+      "casual",
+      "athleisure",
+      "streetwear",
+      "commuter",
+      "vintage_washed",
+      "punk"
+    ],
+    "coverage": "high",
+    "fit": "regular",
+    "activity": "medium",
+    "visual_focus": "none",
+    "fabric_skin_friendliness": "soft",
+    "target_gender": "unisex",
+    "general_shape": "healthy",
+    "silhouette": "H"
+  },
+  "layer_annotations": [],
+  "atomic_entities": [],
+  "piece_instances": [],
+  "containment_relations": [],
+  "edge_chains": [],
+  "notches": [],
+  "notch_edge_assignments": [],
+  "notch_alignment_relations": [],
+  "seam_relations": [],
+  "writeback_plan": {
+    "order": [
+      "atomic_entities",
+      "piece_instances",
+      "edge_chains",
+      "notches",
+      "seam_relations"
+    ],
+    "preserve_source_geometry": true,
+    "new_version_only": true
+  },
+  "review_history": [],
+  "traceability": {
+    "source_geometry": "dxf",
+    "entity_count": 0,
+    "writeback_appid": "AI4MANUFACTURING"
+  },
+  "quality": {
+    "entity_count": 0,
+    "unreviewed_line_count": 0,
+    "unknown_line_type_count": 0,
+    "unknown_piece_role_count": 0,
+    "key_entity_count": 0,
+    "unreviewed_key_entity_count": 0,
+    "low_confidence_key_entity_count": 0,
+    "piece_roles": [],
+    "edge_semantics": [],
+    "line_types": [],
+    "missing_piece_roles": [
+      "front_body",
+      "back_body"
+    ],
+    "missing_edge_semantics": [
+      "neckline",
+      "shoulder",
+      "side_seam",
+      "hem"
+    ],
+    "seam_count": 0,
+    "approved_seam_count": 0,
+    "pending_seam_count": 0,
+    "seam_types": [],
+    "missing_seam_types": [
+      "shoulder",
+      "side_seam"
+    ],
+    "ir_ready": false,
+    "warnings": [
+      "No DXF entities parsed",
+      "Missing key piece roles: front_body, back_body",
+      "Missing key edge semantics: neckline, shoulder, side_seam, hem"
+    ],
+    "ir_completeness": "empty_shell",
+    "needs_reassembly": true
+  },
+  "design_semantics_extra": {
+    "part_labels": {
+      "neckline": {
+        "slug": "unknown",
+        "label_zh": "未知",
+        "source": "needs_human_review"
+      },
+      "sleeve_style": {
+        "slug": null,
+        "label_zh": null,
+        "source": "needs_human_review"
+      },
+      "garment_length": {
+        "slug": null,
+        "label_zh": null,
+        "source": "needs_human_review"
+      },
+      "front_opening": {
+        "slug": "pullover",
+        "label_zh": "套头",
+        "source": "geometric_inferred"
+      }
+    },
+    "needs_human_review": [
+      "neckline",
+      "sleeve_style",
+      "garment_length"
+    ],
+    "needs_human_review_reason": "fields require manual annotation on server platform"
+  }
+}

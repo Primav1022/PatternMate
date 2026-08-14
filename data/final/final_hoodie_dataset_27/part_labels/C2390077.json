@@ -1,0 +1,35 @@
+{
+  "case_id": "C2390077",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2390077_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 0.0
+    },
+    "sleeve_style": {
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "confidence": 0.0
+    },
+    "special": [],
+    "notes": "该T恤为圆领设计，袖型为正肩袖，无特殊结构设计。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "```json\n{\n  \"neckline\": {\n    \"slug\": \"crew\",\n    \"confidence\": 0.0\n  },\n  \"sleeve_style\": {\n    \"slug\": \"set-in\",\n    \"confidence\": 0.0\n  },\n  \"special\": [],\n  \"notes\": \"该T恤为圆领设计，袖型为正肩袖，无特殊结构设计。\"\n}\n```",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "该样衣为厚实螺纹针织材质，无帽、无翻领及门襟，符合无帽卫衣定义。",
+    "signals": [
+      "fleece"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "C2490437",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2490437_sample.png",
+  "part_labels": {
+    "neckline": {
+      "slug": "high-mock",
+      "label_zh": "高领/半高领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "confidence": 0.98
+    },
+    "special": [],
+    "notes": "高领带抽绳，插肩袖设计"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"high-mock\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"raglan\", \"confidence\": 0.98},\n  \"special\": [],\n  \"notes\": \"高领带抽绳，插肩袖设计\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "该衣物为厚针织长袖上衣，有高领和抽绳，无帽子，符合无帽卫衣的特征。",
+    "signals": [
+      "collar"
+    ]
+  }
+}

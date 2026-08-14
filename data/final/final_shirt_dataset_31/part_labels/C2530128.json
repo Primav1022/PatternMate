@@ -1,0 +1,149 @@
+{
+  "case_id": "C2530128",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "系带蝴蝶结领；常规装袖；常规克夫；全开襟；合身廓形；常规衣长",
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "confidence": 0.9
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "confidence": 0.9
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "confidence": 0.9
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型"
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.9
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.766140+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "unknown",
+    "sleeve_style": "set-in",
+    "special": [],
+    "notes": "该服装带有飘带领结构，不在选项范围内，故领口判为无法判断"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530128_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"bow-tie\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"cuff\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"placket\": {\"slug\": \"full\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"regular-fit\", \"confidence\": 0.85},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.9},\n  \"notes\": \"系带蝴蝶结领；常规装袖；常规克夫；全开襟；合身廓形；常规衣长\"\n}",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 1.0,
+    "reason_zh": "该服装为女式上装，面料有光泽感，带有飘带领结设计，整体呈现出明显的时装衬衫/blouse气质，且为梭织面料。",
+    "signals": [
+      "collar",
+      "placket",
+      "woven"
+    ]
+  },
+  "gemini_prelabel": {
+    "collar": "bow-tie",
+    "sleeve_style": "regular",
+    "cuff": "regular",
+    "placket": "full",
+    "silhouette": "regular-fit",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:40:56.374609+00:00",
+  "reviewed_by": "expert",
+  "edge_bindings": {
+    "collar": {
+      "slug": "bow-tie",
+      "label_zh": "系带蝴蝶结领",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "领下口",
+        "翻折线",
+        "前领圈",
+        "后领圈"
+      ],
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "regular",
+      "label_zh": "常规袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "regular",
+      "label_zh": "常规袖克夫",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖口",
+        "袖口装接",
+        "袖衩"
+      ],
+      "targets": []
+    },
+    "placket": {
+      "slug": "full",
+      "label_zh": "全开襟",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "门襟线",
+        "前中线"
+      ],
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "a-line",
+      "label_zh": "A型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:36.193047+00:00"
+}

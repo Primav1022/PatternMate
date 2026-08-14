@@ -1,0 +1,33 @@
+{
+  "case_id": "C2590280",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2590280_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "crew",
+      "label_zh": "圆领",
+      "confidence": 1.0
+    },
+    "sleeve_style": {
+      "slug": "set-in",
+      "label_zh": "正肩袖",
+      "confidence": 1.0
+    },
+    "special": [],
+    "notes": "这是一款拼色长袖圆领T恤，袖子为正肩袖。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"crew\", \"confidence\": 1.0},\n  \"sleeve_style\": {\"slug\": \"set-in\", \"confidence\": 1.0},\n  \"special\": [],\n  \"notes\": \"这是一款拼色长袖圆领T恤，袖子为正肩袖。\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "该衣物为长袖圆领针织上衣，无帽子、无翻领和门襟扣，材质看起来是厚实的卫衣面料，符合无帽卫衣的特征。",
+    "signals": []
+  }
+}

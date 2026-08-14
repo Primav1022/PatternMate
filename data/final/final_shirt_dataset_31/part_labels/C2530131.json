@@ -1,0 +1,134 @@
+{
+  "case_id": "C2530131",
+  "category": "blouse",
+  "part_labels": {
+    "notes": "立领结构不在四类领型词表内故判为unknown；常规袖；无可见前门襟；宽松H型；常规衣长",
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）"
+    },
+    "sleeve_style": {
+      "slug": "bell",
+      "label_zh": "喇叭袖"
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "confidence": 0.7
+    },
+    "placket": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）"
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "confidence": 0.8
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "confidence": 0.8
+    }
+  },
+  "vocab_family": "shirt",
+  "compose_binding_ref": "part_labels_vocab_shirt.v1.json#compose_binding",
+  "reviewed": true,
+  "source_queue": "part_labels_non_tshirt",
+  "seeded_at": "2026-08-08T09:23:10.766448+00:00",
+  "legacy_tshirt_prelabel": {
+    "neckline": "high-mock",
+    "sleeve_style": "raglan",
+    "special": [],
+    "notes": "高领设计且带有前领捏褶，袖型为插肩袖。"
+  },
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2530131_sample.jpg",
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "raw_response": "{\n  \"collar\": {\"slug\": \"unknown\", \"confidence\": 0.9},\n  \"sleeve_style\": {\"slug\": \"regular\", \"confidence\": 0.8},\n  \"cuff\": {\"slug\": \"unknown\", \"confidence\": 0.7},\n  \"placket\": {\"slug\": \"unknown\", \"confidence\": 0.9},\n  \"silhouette\": {\"slug\": \"relaxed-h\", \"confidence\": 0.8},\n  \"garment_length\": {\"slug\": \"regular\", \"confidence\": 0.8},\n  \"notes\": \"立领结构不在四类领型词表内故判为unknown；常规袖；无可见前门襟；宽松H型；常规衣长\"\n}",
+  "gemini_prelabel": {
+    "collar": "unknown",
+    "sleeve_style": "regular",
+    "cuff": "unknown",
+    "placket": "unknown",
+    "silhouette": "relaxed-h",
+    "garment_length": "regular"
+  },
+  "reviewed_at": "2026-08-08T10:07:18.884386+00:00",
+  "reviewed_by": "expert",
+  "category_prev": "blouse",
+  "category_reclassify": {
+    "category": "blouse",
+    "label_zh": "雪纺/女式衬衫",
+    "confidence": 0.95,
+    "reason_zh": "面料轻薄下垂且具有时装感的梭织面料，胸前有褶皱设计，属于典型的女式时装上装。",
+    "signals": [
+      "woven",
+      "collar"
+    ]
+  },
+  "edge_bindings": {
+    "collar": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "sleeve_style": {
+      "slug": "bell",
+      "label_zh": "喇叭袖",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "袖窿",
+        "袖山",
+        "袖口"
+      ],
+      "targets": []
+    },
+    "cuff": {
+      "slug": "unknown",
+      "label_zh": "无法判断",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "placket": {
+      "slug": "non_composable",
+      "label_zh": "不可组合（仅放码）",
+      "status": "skipped_unknown",
+      "match_source": null,
+      "edge_roles_zh": null,
+      "targets": []
+    },
+    "silhouette": {
+      "slug": "relaxed-h",
+      "label_zh": "宽松H型",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "腰围线",
+        "胸围线"
+      ],
+      "targets": []
+    },
+    "garment_length": {
+      "slug": "regular",
+      "label_zh": "常规",
+      "status": "planned",
+      "match_source": "none",
+      "edge_roles_zh": [
+        "侧缝线",
+        "纵向结构线",
+        "下摆"
+      ],
+      "targets": []
+    }
+  },
+  "edge_bindings_at": "2026-08-08T11:32:36.268636+00:00"
+}

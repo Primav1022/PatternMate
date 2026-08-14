@@ -1,0 +1,36 @@
+{
+  "case_id": "C2590337",
+  "category": "sweatshirt",
+  "image": "/Users/primav/Documents/博一/CHI27库淑兰服装/CHI27_AI4Manufacturing/ir_corpus_0807/v1_images/C2590337_sample.jpg",
+  "part_labels": {
+    "neckline": {
+      "slug": "high-mock",
+      "label_zh": "高领/半高领",
+      "confidence": 0.95
+    },
+    "sleeve_style": {
+      "slug": "raglan",
+      "label_zh": "插肩袖",
+      "confidence": 0.95
+    },
+    "special": [],
+    "notes": "半高领设计，搭配插肩袖长袖T恤结构。"
+  },
+  "source": "gemini",
+  "model": "gemini-2.5-flash",
+  "reviewed": false,
+  "raw_response": "{\n  \"neckline\": {\"slug\": \"high-mock\", \"confidence\": 0.95},\n  \"sleeve_style\": {\"slug\": \"raglan\", \"confidence\": 0.95},\n  \"special\": [],\n  \"notes\": \"半高领设计，搭配插肩袖长袖T恤结构。\"\n}",
+  "vocab_family": "tshirt",
+  "compose_binding_ref": "part_labels_vocab_tshirt.v1.json#compose_binding",
+  "category_prev": "tshirt",
+  "category_reclassify": {
+    "category": "sweatshirt",
+    "label_zh": "卫衣(无帽)",
+    "confidence": 0.95,
+    "reason_zh": "该服装为无帽的高领针织卫衣/抓绒衫，质地较厚且无帽子。",
+    "signals": [
+      "collar",
+      "fleece"
+    ]
+  }
+}
