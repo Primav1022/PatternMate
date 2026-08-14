@@ -1,0 +1,7 @@
+-r requirements.txt
+torch>=2.4
+smplx>=0.1.28
+trimesh>=4.4
+warp-lang>=1.8
+scipy>=1.13
+chumpy==0.70

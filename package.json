@@ -1,28 +1,21 @@
 {
-  "name": "patternmate",
+  "name": "chi27-ai4manufacturing",
   "private": true,
-  "packageManager": "pnpm@11.16.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "node src/compositionDraft.test.mjs && node src/uiClarity.test.mjs",
-    "test:ui": "node src/uiClarity.test.mjs",
-    "geometry": "bash scripts/run-geometry.sh",
-    "test:geometry": "cd apps/geometry-service && PYTHONPATH=\"$PWD:$PWD/../../_handoff_pack/scripts\" CHI27_ROOT=\"$PWD/../..\" .venv/bin/python -m unittest discover -s tests -v"
-  },
-  "dependencies": {
-    "@vitejs/plugin-react": "4.3.4",
-    "vite": "4.5.5",
-    "typescript": "5.4.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "three": "0.170.0"
-  },
-  "devDependencies": {
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
-    "@types/three": "0.170.0"
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:geometry": ".venv\\Scripts\\python.exe -m uvicorn app:app --app-dir apps/geometry-service --host 127.0.0.1 --port 8788",
+    "dev:tryon": "powershell -ExecutionPolicy Bypass -File scripts/run-tryon.ps1",
+    "setup:tryon": "powershell -ExecutionPolicy Bypass -File scripts/setup-tryon.ps1",
+    "dev:local": ".venv\\Scripts\\python.exe scripts/dev-local.py",
+    "build:web": "npm --prefix apps/web run build",
+    "validate-assets": "node packages/catalogs/scripts/validate-assets.mjs",
+    "sync:local-config": "node scripts/sync-local-config.mjs",
+    "sync-ir": "node packages/catalogs/scripts/sync-ir.mjs",
+    "index:tshirt-v2": ".venv\\Scripts\\python.exe scripts/rebuild-tshirt-index.py",
+    "index:garments-v2": ".venv\\Scripts\\python.exe scripts/rebuild-tshirt-index.py",
+    "test:catalogs": "node packages/catalogs/scripts/validate-assets.mjs",
+    "test:geometry": ".venv\\Scripts\\python.exe -m unittest discover -s apps/geometry-service/tests -v",
+    "dev:worker": "npm --prefix apps/worker run dev",
+    "deploy:worker": "npm --prefix apps/worker run deploy"
   }
 }

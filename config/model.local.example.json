@@ -1,0 +1,11 @@
+{
+  "apiBaseUrl": "http://127.0.0.1:8787",
+  "geometryBaseUrl": "http://127.0.0.1:8788",
+  "model": {
+    "enabled": false,
+    "provider": "aliyun",
+    "baseUrl": "fill-your-aliyun-openai-compatible-base-url",
+    "name": "fill-your-model-name",
+    "apiKey": "fill-your-api-key"
+  }
+}

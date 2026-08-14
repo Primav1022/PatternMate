@@ -1,39 +1,42 @@
-# PatternMate
+# CHI27 AI4Manufacturing
 
-从人体尺寸、服装偏好到纸样组合与印花预览的服装设计工具。
+云端服装设计与工业制版工作台。当前仓库包含：
 
-- 在线使用：https://primav1022.github.io/PatternMate/
-- 源码：本仓库
+- `apps/web`：React + Vite 工作台，固定为 2D 流程，不含 3D 入口。
+- `apps/worker`：Cloudflare Worker API、D1、R2 和 Queue 编排。
+- `apps/geometry-service`：Python/FastAPI 几何服务，可作为 Cloudflare Container 运行。
+- `packages/catalogs`：版型、面料、工艺清单与素材校验器。
+- `data/seed`：需要导入 R2 的参考图与系统印花素材。
 
-在线版前端托管在 GitHub Pages，对话 / 生图 / 纸样 / 试穿目前都打到演示机。**仓库里不含任何 API Key**。Cloudflare Worker 代码在 `workers/api/`，演示机关机后再切。
+## 本地开发
 
-本地 `.env` 不要提交。
-
-## 目录
-
-| 路径 | 内容 |
-|---|---|
-| `src/` | React/Vite 前端 |
-| `apps/geometry-service/` | 原子规则与纸样组合 |
-| `data/ir/`、`data/seed/dxf/`、`data/final/` | 规则用 IR / DXF / 整理数据集 |
-| `public/` | 参考图与 UI 资源 |
-
-## 本地运行
-
-```bash
-cp .env.example .env
-pnpm install
-bash scripts/run-geometry.sh
-pnpm run dev -- --port 5173
+```powershell
+npm install
+npm run validate-assets
+npm run sync:local-config
+npm run dev:web
 ```
 
-把模型地址和密钥写在本地 `.env`，不要提交。
+本地模型/API 配置集中在 `config/model.local.json`（该文件不会提交到 Git）。阿里或其他 OpenAI 兼容接口填写 `model.provider/baseUrl/name/apiKey`，确认无误后将 `model.enabled` 改为 `true`；`npm run dev:local` 会只把密钥注入 Python 几何服务，密钥不会进入浏览器。`npm run sync:local-config` 仍可同步 Worker 与前端的非敏感地址配置。
 
-健康检查：`curl -s http://127.0.0.1:8788/health`
+几何服务：
 
-## 品类管线
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r apps/geometry-service/requirements.txt
+uvicorn app:app --app-dir apps/geometry-service --reload --port 8788
+```
 
-| 品类 | 默认 execution_mode |
-|---|---|
-| T 恤 | `simple_piece_swap` |
-| 衬衫 | `shirt_strategy` |
+首次安装后也可以直接使用：
+
+```powershell
+npm run dev:geometry
+npm run dev:web
+```
+
+两个命令分别在两个终端运行。浏览器进入“编辑搭配”后，每次选择都会调用本地几何服务生成完整试样 DXF；“下载全部数据”会实际下载包含 R12 DXF、生产清单和几何校验报告的 ZIP。运行 `npm run test:geometry` 可检查全部版型选项。
+
+Cloudflare 部署前请先阅读 [`docs/CLOUD_DEPLOYMENT.md`](docs/CLOUD_DEPLOYMENT.md)。
+
+素材投放规则见 [`docs/ASSET_INTAKE.md`](docs/ASSET_INTAKE.md)。

@@ -18,4 +18,8 @@ apps/geometry-service/.venv/
 .backup/
 .superpowers/
 images/
-apps/web/
+apps/web/node_modules/
+apps/web/dist/
+apps/web/F:/
+config/model.local.json
+*.bak-*
