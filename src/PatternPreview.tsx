@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from './Language';
-import { aiBase, geometryBase, tryonBase } from './apiBase';
-import { Research3D } from './Research3D';
+import { aiBase, geometryBase } from './apiBase';
 import { garmentPath, necklinePath, specialDesignLines } from './garmentGeometry';
 
 export type CompositionRecipe = {
@@ -288,7 +287,7 @@ function withViewBox(svg: string, viewBox: string): string {
   return viewBox ? svg.replace(/viewBox="[^"]+"/, `viewBox="${viewBox}"`) : svg;
 }
 
-export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, seedPreviewUrl, styleVersions = [], activeVersionId = '', onRestoreVersion, onGeneratedPreview, onReplaceSelection, onExport, onValidationChange, onCompositionChange }: {
+export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, seedPreviewUrl, styleVersions = [], activeVersionId = '', onRestoreVersion, onGeneratedPreview, onReplaceSelection, onUndo, canUndo = false, onExport, onValidationChange, onCompositionChange }: {
   recipe: CompositionRecipe;
   baseCoverUrl?: string;
   generationRevision?: number;
@@ -298,6 +297,8 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   onRestoreVersion?: (version: any) => void;
   onGeneratedPreview?: (url: string, input: Record<string, any>, revision: number) => void;
   onReplaceSelection: (group: string, optionId: string) => void;
+  onUndo?: () => void;
+  canUndo?: boolean;
   onExport: () => void;
   onValidationChange?: (ready: boolean) => void;
   onCompositionChange?: (summary: { recipe_hash: string; pieces: Piece[]; sizing_profile: Record<string, string | number> }) => void;
@@ -311,8 +312,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [layers] = useState<Record<string, boolean>>({ front: true, back: true, sleeve: true, neck: true, placket: true, cuff: true, other: true });
   const [informationLayers] = useState<Record<string, boolean>>({ seam: true, fold: true, notch: true, grainline: true });
-  const [viewMode, setViewMode] = useState<'design' | 'dxf' | 'tryon'>('design');
-  const [panelPreviewAvailable, setPanelPreviewAvailable] = useState(false);
+  const [viewMode, setViewMode] = useState<'design' | 'dxf'>('design');
   const [attemptedReplacement, setAttemptedReplacement] = useState('');
   const [showUngraded, setShowUngraded] = useState(false);
   const [ungradedSvg, setUngradedSvg] = useState('');
@@ -329,15 +329,6 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   useEffect(() => { validationCallback.current = onValidationChange; }, [onValidationChange]);
   useEffect(() => { compositionCallback.current = onCompositionChange; }, [onCompositionChange]);
   useEffect(() => { setShowUngraded(false); setUngradedSvg(''); setSharedViewBox(''); ungradedCase.current = ''; }, [serializedRecipe]);
-  useEffect(() => {
-    const controller = new AbortController();
-    const base = tryonBase();
-    fetch(`${base}/research/health`, { signal: controller.signal })
-      .then((response) => response.ok ? response.json() : null)
-      .then((health) => setPanelPreviewAvailable(Boolean(health?.enabled && health?.cloth_solver_available)))
-      .catch(() => setPanelPreviewAvailable(false));
-    return () => controller.abort();
-  }, []);
 
   useEffect(() => {
     const requestRevision = ++revision.current;
@@ -378,13 +369,6 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
 
   const visibleResult = result?.status === 'valid' ? result : lastValid || result;
   const currentReady = Boolean(!loading && result?.status === 'valid' && composedRecipeKey === serializedRecipe);
-  const currentTryonDescriptor = result?.status === 'valid' ? result.tryon_descriptor : undefined;
-  const currentTryonReady = Boolean(
-    currentReady
-    && currentTryonDescriptor?.version === 'patternmate.tryon.v2'
-    && currentTryonDescriptor.recipe_hash === result?.recipe_hash
-    && currentTryonDescriptor.validation?.tryon_ready,
-  );
   useEffect(() => {
     validationCallback.current?.(currentReady);
   }, [currentReady]);
@@ -449,8 +433,8 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
 
   return <div className="pattern-workbench" style={{ '--fabric-color': recipe.fabric_color || '#ffffff' } as React.CSSProperties}>
     <div className={`pattern-stage ${viewMode === 'design' ? 'design-mode' : ''}`}>
-      <div className="pattern-title">{viewMode === 'design' ? t('设计预览', 'Design preview') : viewMode === 'tryon' ? t('3D 试穿', '3D try-on') : showUngraded ? t('纸样预览（放码前）', 'Pattern preview (before grading)') : t('纸样预览', 'Pattern preview')} · {recipe.family === 'tshirt' ? t('T恤', 'T-shirt') : t('衬衫', 'Shirt')}{recipe.base_case_id ? ` · ${recipe.base_case_id}` : ''}{gradeHint}</div>
-      <div className="pattern-view-switch"><button className={viewMode === 'dxf' ? 'active' : ''} onClick={() => setViewMode('dxf')}>{t('专业DXF', 'Professional DXF')}</button><button className={viewMode === 'design' ? 'active' : ''} onClick={() => setViewMode('design')}>{t('2D设计预览', '2D Preview')}</button>{recipe.family === 'tshirt' && <button disabled={!panelPreviewAvailable || !currentTryonReady} title={!panelPreviewAvailable ? t('请启用 3D 服务以查看试穿效果', 'Enable the 3D service to inspect the try-on preview') : !currentTryonReady ? t(`当前 DXF 尚未具备完整试穿接口：${currentTryonDescriptor?.validation?.errors?.join('、') || '请先生成并通过校验'}`, `The current DXF is not ready for try-on: ${currentTryonDescriptor?.validation?.errors?.join(', ') || 'generate and validate it first'}`) : t('使用当前 DXF、人体与面料进行布料仿真', 'Simulate the current DXF with the body and fabric')} className={viewMode === 'tryon' ? 'active' : ''} onClick={() => currentTryonReady && setViewMode('tryon')}>{t('3D试穿预览', '3D Try-on Preview')}</button>}</div>
+      <div className="pattern-title">{viewMode === 'design' ? t('设计预览', 'Design preview') : showUngraded ? t('纸样预览（放码前）', 'Pattern preview (before grading)') : t('纸样预览', 'Pattern preview')} · {recipe.family === 'tshirt' ? t('T恤', 'T-shirt') : t('衬衫', 'Shirt')}{recipe.base_case_id ? ` · ${recipe.base_case_id}` : ''}{gradeHint}</div>
+      <div className="pattern-view-switch"><button className={viewMode === 'dxf' ? 'active' : ''} onClick={() => setViewMode('dxf')}>{t('专业DXF', 'Professional DXF')}</button><button className={viewMode === 'design' ? 'active' : ''} onClick={() => setViewMode('design')}>{t('2D设计预览', '2D Preview')}</button></div>
       <div className="design-preview-stage" style={{ display: viewMode === 'design' ? undefined : 'none' }}>
         <DesignOverview recipe={recipe} patternContext={designPatternContext} ready={designReady} generationRevision={generationRevision} seedPreviewUrl={seedPreviewUrl} onGenerated={onGeneratedPreview} />
         {styleVersions.length > 0 && <div className="design-version-rail" aria-label={t('搭配版本', 'Style versions')}>
@@ -462,7 +446,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
           ))}
         </div>}
       </div>
-      {viewMode === 'tryon' && currentTryonDescriptor ? <div className="tryon-preview-stage"><Research3D mode="tryon" measurements={recipe.measurements_cm} sex={recipe.sex} recipe={recipe} composition={currentTryonDescriptor} /></div> : viewMode !== 'design' && <div className="pattern-scroll pannable" style={{ '--grid-size': `${32 * zoom}px` } as React.CSSProperties} onPointerDown={startPan} onPointerMove={movePan} onPointerUp={() => { panDrag.current = null; }} onPointerCancel={() => { panDrag.current = null; }} onWheel={wheelZoom}>
+      {viewMode !== 'design' && <div className="pattern-scroll pannable" style={{ '--grid-size': `${32 * zoom}px` } as React.CSSProperties} onPointerDown={startPan} onPointerMove={movePan} onPointerUp={() => { panDrag.current = null; }} onPointerCancel={() => { panDrag.current = null; }} onWheel={wheelZoom}>
         {svg
           ? <div className="dxf-svg complete-dxf" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} dangerouslySetInnerHTML={{ __html: svg }} />
           : <div className="dxf-empty">{t('正在准备完整纸样…', 'Preparing complete pattern…')}</div>}
@@ -477,7 +461,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
         {!replacement && <span>{t('没有通过服务端预校验的自动替代项，请保留上一个结果并手动调整版片。', 'No server-validated replacement is available. Keep the previous result and adjust manually.')}</span>}
         <div><button onClick={() => setResult(lastValid)}>{t('保留上一个', 'Keep previous')}</button>{replacement && <button className="primary" onClick={() => { setAttemptedReplacement(`${replacement[0]}:${replacement[1][0].option_id}`); onReplaceSelection(replacement[0], replacement[1][0].option_id); }}>{t('使用已验证的', 'Use validated')} “{replacement[1][0].label}”</button>}</div>
       </div>}
-      {viewMode === 'dxf' && <div className="pattern-tools"><button onClick={() => setZoom((value) => Math.max(.35, value - .15))}>－</button><span>{Math.round(zoom * 100)}%</span><button onClick={() => setZoom((value) => Math.min(3.5, value + .15))}>＋</button><button className="icon" data-tip={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} aria-label={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="7" height="9" rx="1" /><rect x="11" y="2" width="7" height="5" rx="1" /><rect x="11" y="9" width="7" height="9" rx="1" /><rect x="2" y="13" width="7" height="5" rx="1" /></svg></button><button className={`icon ${showUngraded ? 'active' : ''}`} data-tip={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} aria-label={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} onClick={() => { void toggleUngraded(); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h8.5v13H4z" /><path d="M7.5 3.5V16.5H16V6.5H11.5V3.5z" /></svg></button><button className="icon pattern-download" disabled={!currentReady} data-tip={t('下载当前试样 DXF', 'Download current trial DXF')} aria-label={t('下载当前试样 DXF', 'Download current trial DXF')} onClick={onExport}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v9" /><path d="M6.5 9.5 10 13l3.5-3.5" /><path d="M4 16.5h12" /></svg></button></div>}
+      {viewMode === 'dxf' && <div className="pattern-tools"><button onClick={() => setZoom((value) => Math.max(.35, value - .15))}>－</button><span>{Math.round(zoom * 100)}%</span><button onClick={() => setZoom((value) => Math.min(3.5, value + .15))}>＋</button><button disabled={!canUndo} onClick={() => onUndo?.()}>{t('撤回', 'Undo')}</button><button className="icon" data-tip={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} aria-label={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="7" height="9" rx="1" /><rect x="11" y="2" width="7" height="5" rx="1" /><rect x="11" y="9" width="7" height="9" rx="1" /><rect x="2" y="13" width="7" height="5" rx="1" /></svg></button><button className={`icon ${showUngraded ? 'active' : ''}`} data-tip={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} aria-label={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} onClick={() => { void toggleUngraded(); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h8.5v13H4z" /><path d="M7.5 3.5V16.5H16V6.5H11.5V3.5z" /></svg></button><button className="icon pattern-download" disabled={!currentReady} data-tip={t('下载当前试样 DXF', 'Download current trial DXF')} aria-label={t('下载当前试样 DXF', 'Download current trial DXF')} onClick={onExport}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v9" /><path d="M6.5 9.5 10 13l3.5-3.5" /><path d="M4 16.5h12" /></svg></button></div>}
     </div>
   </div>;
 }

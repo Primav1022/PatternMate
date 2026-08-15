@@ -5,27 +5,19 @@ import json
 import math
 from copy import deepcopy
 from dataclasses import asdict
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from geometry_ops import bounds_of_entities, entity_length, entity_points, role_edge_length, transform_entity
-from interface_morph import match_neck_to_neckline, match_sleeve_cap_to_armhole
 from tryon_descriptor import build_tryon_descriptor
-from batch_executor import entity_hash, execute_batch_preview
-from batch_planner import build_composition_plan
 from run_experiments import (
     ARMHOLE_ROLES,
-    BODY_ROLES,
     NECKLINE_ROLES,
-    NECK_ROLES,
     SLEEVE_CAP_ROLES,
-    SLEEVE_ROLES,
     piece_entities,
     role_map,
     scale_piece_group,
     scale_sleeve_anisotropic,
-    sleeve_length_axis,
 )
 
 
@@ -37,7 +29,7 @@ PURE_SLEEVE_ROLES = {"sleeve", "sleeve_left", "sleeve_right"}
 CUFF_ROLES = {"cuff", "rib_cuff", "sleeve_placket", "sleeve_placket_extension"}
 
 # Compose/preview: keep labeled pieces only. Unmatched fused DXF lines are dropped.
-_PREVIEW_DROP_PIECE_ROLES = {"unknown", "", "none", "unlabeled"}
+_PREVIEW_DROP_PIECE_ROLES = {"unknown", "", "none", "unlabeled", "scrap"}
 _PREVIEW_DROP_LINE_ROLES = {
     "drill_hole", "text", "construction", "auxiliary", "grainline",
 }
@@ -48,13 +40,6 @@ _PREVIEW_DROP_LINE_ROLES = {
 def _entity_points(entity: dict[str, Any]) -> list[list[float]]:
     points = (entity.get("geometry") or {}).get("points") or []
     return [p for p in points if isinstance(p, (list, tuple)) and len(p) >= 2]
-
-
-def _is_closed_cut(entity: dict[str, Any], tol: float = 1.0) -> bool:
-    pts = _entity_points(entity)
-    if len(pts) < 3:
-        return False
-    return math.hypot(float(pts[0][0]) - float(pts[-1][0]), float(pts[0][1]) - float(pts[-1][1])) <= tol
 
 
 def _is_labeled_piece_entity(entity: dict[str, Any]) -> bool:
@@ -68,9 +53,11 @@ def _is_labeled_piece_entity(entity: dict[str, Any]) -> bool:
 
 
 def prefer_piece_cut_outlines(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Keep labeled-piece geometry only. Drop unmatched fused DXF lines."""
-    from preview_outline import build_closed_preview_outline
+    """Keep labeled-piece geometry only. Drop unmatched fused DXF lines.
 
+    Never convex-hull a piece: hull fills armhole/neck and becomes the
+    compose source, so grading morphs a slab instead of the cut.
+    """
     scrap = _PREVIEW_DROP_LINE_ROLES
     by_role: dict[str, list[dict[str, Any]]] = {}
     for entity in entities:
@@ -92,22 +79,8 @@ def prefer_piece_cut_outlines(entities: list[dict[str, Any]]) -> list[dict[str, 
                 if len(_entity_points(entity)) >= 2
                 and str(entity.get("line_role") or "").lower() not in scrap
             ]
-            if not usable:
-                continue
-            if any(_is_closed_cut(entity) for entity in usable):
+            if usable:
                 out.extend(usable)
-                continue
-            try:
-                out.append(
-                    build_closed_preview_outline(
-                        usable,
-                        piece_role=role,
-                        entity_id=f"{piece_id}:cut_outline",
-                        piece_id=piece_id,
-                    )
-                )
-            except ValueError:
-                out.append(max(usable, key=lambda entity: len(_entity_points(entity))))
     return out
 
 
@@ -383,7 +356,9 @@ def remix_readiness(ir: dict[str, Any]) -> tuple[bool, list[str]]:
         reasons.append("missing_back_body")
     if not roles & PURE_SLEEVE_ROLES:
         # Shirt hosts may be cuff-integrated / sleeveless; still usable for collar/body swaps.
-        if family != "shirt":
+        # T-shirt flutter/sleeveless are body-integrated: no independent sleeve piece.
+        sleeve_slug = _label_slug(ir, "sleeve")
+        if family != "shirt" and sleeve_slug not in {"flutter", "sleeveless"}:
             reasons.append("missing_sleeve")
     # Prefer neckline on body pieces. Shirts often park neckline on unlabeled
     # pieces or only have collar / collar_attach geometry — still a valid host.
@@ -544,6 +519,80 @@ def add_cuff_style_guides(entities: list[dict[str, Any]], slug: str) -> list[dic
     return entities + annotations
 
 
+def _piece_area(rows: list[dict[str, Any]]) -> float:
+    bounds = bounds_of_entities(rows)
+    if not bounds:
+        return 0.0
+    return max(0.0, bounds[2] - bounds[0]) * max(0.0, bounds[3] - bounds[1])
+
+
+def _primary_body_piece_keys(entities: list[dict[str, Any]]) -> set[tuple[str, str]]:
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for entity in entities:
+        role = str(entity.get("_piece_role") or "")
+        if role not in FRONT_ROLES | BACK_ROLES:
+            continue
+        grouped.setdefault((str(entity.get("piece_id") or ""), role), []).append(entity)
+    best: dict[str, tuple[float, tuple[str, str]]] = {}
+    for key, rows in grouped.items():
+        family = "front" if key[1] in FRONT_ROLES else "back"
+        area = _piece_area(rows)
+        if family not in best or area > best[family][0]:
+            best[family] = (area, key)
+    return {row[1] for row in best.values()}
+
+
+def _ring_path(count: int, start: int, end: int, reverse: bool) -> list[int]:
+    if count <= 0:
+        return []
+    if not reverse:
+        if start <= end:
+            return list(range(start, end + 1))
+        return list(range(start, count)) + list(range(0, end + 1))
+    if start >= end:
+        return list(range(start, end - 1, -1))
+    return list(range(start, -1, -1)) + list(range(count - 1, end - 1, -1))
+
+
+def _splice_neck_span(
+    points: list[list[float]],
+    start: list[float],
+    end: list[float],
+    redraw,
+    max_dist: float,
+) -> list[list[float]] | None:
+    if len(points) < 16:
+        return None
+    closed = math.hypot(points[0][0] - points[-1][0], points[0][1] - points[-1][1]) <= 1.0
+    ring = points[:-1] if closed and len(points) > 1 else points
+
+    def nearest(target: list[float]) -> tuple[int, float]:
+        best_i, best_d = 0, float("inf")
+        for index, point in enumerate(ring):
+            dist = math.hypot(point[0] - target[0], point[1] - target[1])
+            if dist < best_d:
+                best_i, best_d = index, dist
+        return best_i, best_d
+
+    i, dist_i = nearest(start)
+    j, dist_j = nearest(end)
+    if dist_i > max_dist or dist_j > max_dist or i == j:
+        return None
+    count = len(ring)
+    forward = _ring_path(count, i, j, False)
+    reverse = _ring_path(count, i, j, True)
+    def mean_y(indexes: list[int]) -> float:
+        return sum(ring[k][1] for k in indexes) / max(len(indexes), 1)
+    span = forward if mean_y(forward) >= mean_y(reverse) else reverse
+    if len(span) < 3:
+        return None
+    chosen = set(span)
+    out = [redraw(p[0], p[1]) if index in chosen else p[:] for index, p in enumerate(ring)]
+    if closed:
+        out.append(out[0][:])
+    return out
+
+
 def reshape_body_neckline(
     entities: list[dict[str, Any]], ir: dict[str, Any], slug: str
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -555,9 +604,14 @@ def reshape_body_neckline(
     centroid, so adjacent shoulder geometry stays locked.
     """
     entity_by_id = {entity.get("entity_id"): entity for entity in entities}
+    entity_by_key = {
+        (str(entity.get("piece_id") or ""), str(entity.get("entity_id") or "")): entity
+        for entity in entities
+    }
     piece_entities_current: dict[str, list[dict[str, Any]]] = {}
     for entity in entities:
-        piece_entities_current.setdefault(entity.get("piece_id") or "", []).append(entity)
+        piece_entities_current.setdefault(str(entity.get("piece_id") or ""), []).append(entity)
+    primary = _primary_body_piece_keys(entities)
 
     # Some v1 edge-chain records point at a different connected component's
     # piece_id. The atomic entity carries the reliable physical piece role, so
@@ -565,9 +619,10 @@ def reshape_body_neckline(
     chains_by_piece: dict[tuple[str, str], list[str]] = {}
     for entity in entities:
         piece_role = str(entity.get("_piece_role") or "")
-        if piece_role not in FRONT_ROLES | BACK_ROLES or str(entity.get("line_role") or "") != "neckline":
-            continue
+        line_role = str(entity.get("line_role") or "").lower()
         key = (str(entity.get("piece_id") or ""), piece_role)
+        if key not in primary or "neckline" not in line_role:
+            continue
         chains_by_piece.setdefault(key, []).append(str(entity.get("entity_id")))
 
     # Newer annotations keep the role on the atomic entity, while some source
@@ -577,13 +632,14 @@ def reshape_body_neckline(
         if "neckline" not in str(chain.get("edge_role") or ""):
             continue
         for entity_id in chain.get("ordered_entity_ids") or []:
-            entity = entity_by_id.get(entity_id)
+            chain_piece = str(chain.get("piece_id") or "")
+            entity = entity_by_key.get((chain_piece, str(entity_id))) or entity_by_id.get(entity_id)
             if not entity:
                 continue
             piece_role = str(entity.get("_piece_role") or "")
-            if piece_role not in FRONT_ROLES | BACK_ROLES:
-                continue
             key = (str(entity.get("piece_id") or ""), piece_role)
+            if key not in primary:
+                continue
             ids = chains_by_piece.setdefault(key, [])
             if str(entity_id) not in ids:
                 ids.append(str(entity_id))
@@ -596,7 +652,7 @@ def reshape_body_neckline(
             physical_body_pieces.setdefault((str(entity.get("piece_id") or ""), piece_role), []).append(entity)
 
     for key, piece_entities in physical_body_pieces.items():
-        if key in chains_by_piece:
+        if key not in primary or key in chains_by_piece:
             continue
         bounds = bounds_of_entities(piece_entities)
         if not bounds:
@@ -656,13 +712,13 @@ def reshape_body_neckline(
     if not chain_rows:
         return entities, {"applied": False, "reason": "host_neckline_chain_missing", "slug": slug}
 
-    changed: dict[str, dict[str, Any]] = {}
+    changed: dict[tuple[str, str], dict[str, Any]] = {}
     reports = []
     for piece_id, piece_role, ids in chain_rows:
         chain_points = [
             point
             for entity_id in ids
-            for point in entity_points(entity_by_id[entity_id])
+            for point in entity_points(entity_by_key.get((piece_id, entity_id)) or entity_by_id[entity_id])
         ]
         if len(chain_points) < 2:
             continue
@@ -691,7 +747,7 @@ def reshape_body_neckline(
 
         front_depth = {
             "crew": 0.18,
-            "v-neck": 0.48,
+            "v-neck": 0.72,
             "polo": 0.17,
             "high-mock": 0.07,
             "cowl": 0.25,
@@ -745,10 +801,28 @@ def reshape_body_neckline(
                 duplicate_ids.append(str(candidate.get("entity_id")))
 
         for entity_id in ids + duplicate_ids:
-            changed_entity = _map_points(entity_by_id[entity_id], redraw)
+            source = entity_by_key.get((piece_id, entity_id)) or entity_by_id[entity_id]
+            changed_entity = _map_points(source, redraw)
             if entity_id in inferred_ids:
                 changed_entity["line_role"] = "neckline"
-            changed[entity_id] = changed_entity
+            changed[(piece_id, entity_id)] = changed_entity
+        for candidate in piece_entities_current.get(piece_id, []):
+            cid = str(candidate.get("entity_id") or "")
+            if not cid or cid in ids or cid in duplicate_ids:
+                continue
+            spliced = _splice_neck_span(
+                entity_points(candidate),
+                start,
+                end,
+                redraw,
+                max(12.0, chord_length * 0.12),
+            )
+            if spliced:
+                item = deepcopy(candidate)
+                geometry = dict(item.get("geometry") or {})
+                geometry["points"] = spliced
+                item["geometry"] = geometry
+                changed[(piece_id, cid)] = item
         reports.append(
             {
                 "piece_id": piece_id,
@@ -761,7 +835,10 @@ def reshape_body_neckline(
             }
         )
 
-    return [changed.get(entity.get("entity_id"), entity) for entity in entities], {
+    return [
+        changed.get((str(entity.get("piece_id") or ""), str(entity.get("entity_id") or "")), entity)
+        for entity in entities
+    ], {
         "applied": bool(changed),
         "slug": slug,
         "chains": reports,
@@ -957,6 +1034,47 @@ _FIT_EASE_CM = {
     "oversized": 16.0,
 }
 
+_SIZE_BASES = {
+    "female": {
+        "height": 160.0, "chest": 84.0, "shoulder": 38.88, "neck": 34.0,
+        "sleeve": 58.0, "upper_arm": 28.0, "waist": 68.0, "mode": "gbt_1335_2_2008_female",
+    },
+    "male_general": {
+        "height": 175.0, "chest": 92.0, "shoulder": 44.0, "neck": 39.0,
+        "sleeve": 60.0, "upper_arm": 32.0, "waist": 78.0, "mode": "male_general_trial",
+    },
+}
+
+
+def _sex_prototype_scales(sex: str) -> dict[str, Any]:
+    """Map female/unisex source blocks onto the male prototype before grading."""
+    identity = {
+        "applied": False,
+        "mode": "source",
+        "width": 1.0,
+        "length": 1.0,
+        "sleeve_length": 1.0,
+        "sleeve_width": 1.0,
+        "neck": 1.0,
+    }
+    if sex != "male_general":
+        return identity
+    src = _SIZE_BASES["female"]
+    dst = _SIZE_BASES["male_general"]
+    chest = (dst["chest"] + 8.0) / (src["chest"] + 8.0)
+    waist = (dst["waist"] + 4.0) / (src["waist"] + 4.0)
+    width = chest * 0.78 + waist * 0.22
+    shoulder = dst["shoulder"] / src["shoulder"]
+    return {
+        "applied": True,
+        "mode": "female_to_male_prototype",
+        "width": width * 0.72 + shoulder * 0.28,
+        "length": dst["height"] / src["height"],
+        "sleeve_length": dst["sleeve"] / src["sleeve"],
+        "sleeve_width": chest * 0.55 + (dst["upper_arm"] / src["upper_arm"]) * 0.45,
+        "neck": dst["neck"] / src["neck"],
+    }
+
 
 def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
     if recipe.get("skip_grading"):
@@ -971,17 +1089,15 @@ def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
             "fit": str(recipe.get("fit") or "regular"),
             "waist_scale": 1.0,
             "material_shrink_rate": 0.0,
+            "prototype": _sex_prototype_scales(""),
         }
     measurements = recipe.get("measurements_cm") or {}
-    sex = recipe.get("sex", "female")
-    if sex == "male_general":
-        base_height, base_chest, base_shoulder, base_neck, base_sleeve, base_upper_arm = 175.0, 92.0, 44.0, 39.0, 60.0, 32.0
-        base_waist = 78.0
-        mode = "male_general_trial"
-    else:
-        base_height, base_chest, base_shoulder, base_neck, base_sleeve, base_upper_arm = 160.0, 84.0, 38.88, 34.0, 58.0, 28.0
-        base_waist = 68.0
-        mode = "gbt_1335_2_2008_female"
+    sex = str(recipe.get("sex") or "female")
+    base = _SIZE_BASES["male_general"] if sex == "male_general" else _SIZE_BASES["female"]
+    base_height, base_chest, base_shoulder = base["height"], base["chest"], base["shoulder"]
+    base_neck, base_sleeve, base_upper_arm, base_waist = base["neck"], base["sleeve"], base["upper_arm"], base["waist"]
+    mode = str(base["mode"])
+    prototype = _sex_prototype_scales(sex)
     height = _measurement_number(measurements, "height", base_height)
     chest = _measurement_number(measurements, "chest", base_chest)
     waist = _measurement_number(measurements, "waist", chest * 0.78)
@@ -1012,17 +1128,25 @@ def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
     elif material_id.startswith("tshirt."):
         shrink_rate = 0.025
     shrink_correction = 1.0 / max(1.0 - shrink_rate, 0.8)
+    grade_width = (width_scale * 0.72 + shoulder_scale * 0.28) * shrink_correction
+    grade_length = height / base_height * shrink_correction
+    grade_sleeve_length = sleeve / base_sleeve
+    grade_sleeve_width = (width_scale * 0.55 + upper_arm / base_upper_arm * 0.45) * shrink_correction
+    grade_neck = neck / base_neck
     profile = {
         "mode": mode,
-        "width": max(0.82, min(1.28, (width_scale * 0.72 + shoulder_scale * 0.28) * shrink_correction)),
-        "length": max(0.85, min(1.25, height / base_height * shrink_correction)),
-        "sleeve_length": max(0.82, min(1.25, sleeve / base_sleeve)),
-        "sleeve_width": max(0.85, min(1.24, (width_scale * 0.55 + upper_arm / base_upper_arm * 0.45) * shrink_correction)),
-        "neck": max(0.85, min(1.18, neck / base_neck)),
+        "width": max(0.75, min(1.55, grade_width * float(prototype["width"]))),
+        "length": max(0.80, min(1.45, grade_length * float(prototype["length"]))),
+        "sleeve_length": max(0.75, min(1.45, grade_sleeve_length * float(prototype["sleeve_length"]))),
+        "sleeve_width": max(0.80, min(1.45, grade_sleeve_width * float(prototype["sleeve_width"]))),
+        "neck": max(0.80, min(1.35, grade_neck * float(prototype["neck"]))),
         "ease_cm": ease,
         "fit": fit,
         "waist_scale": round(waist_scale, 4),
         "material_shrink_rate": shrink_rate,
+        "prototype": {key: round(value, 5) if isinstance(value, float) else value for key, value in prototype.items()},
+        "grade_width": round(grade_width, 5),
+        "grade_length": round(grade_length, 5),
     }
     constraints = recipe.get("intent_constraints") or {}
     if constraints.get("sleeve") == "short":
@@ -1366,6 +1490,9 @@ def _compose_batch_preview(
         if family not in compatible:
             raise ValueError(f"{option['label_zh']} 不兼容当前品类")
 
+    from batch_executor import entity_hash, execute_batch_preview
+    from batch_planner import build_composition_plan
+
     profile = grading_profile(recipe)
     scaled_entities = _scale_complete_base(base_ir, profile)
     scaled_ir = {**base_ir, "atomic_entities": scaled_entities}
@@ -1446,7 +1573,7 @@ def resolve_execution_mode(recipe: dict[str, Any]) -> str:
         if requested == "batch_preview" and recipe.get("sandbox_compare"):
             return "batch_preview"
         return "shirt_strategy"
-    return requested or "legacy"
+    raise ValueError(f"不支持的品类 {family}")
 
 
 def compose_recipe(
@@ -1467,193 +1594,4 @@ def compose_recipe(
         return compose_shirt(recipe, index, catalog)
     if mode == "batch_preview":
         return _compose_batch_preview(recipe, index, catalog)
-
-    family = recipe["family"]
-    base_case_id = recipe["base_case_id"]
-    base_ir = index.get(base_case_id)
-    if not base_ir:
-        raise ValueError(f"找不到基础纸样 {base_case_id}")
-    actual_family = normalize_family((base_ir.get("design_semantics") or {}).get("category"))
-    if actual_family != family:
-        raise ValueError(f"基础纸样 {base_case_id} 属于 {actual_family}，不能在 {family} 工作台中组合")
-
-    option_by_id = {option["id"]: option for option in catalog["options"]}
-    profile = grading_profile(recipe)
-    entities = _scale_complete_base(base_ir, profile)
-    selections = recipe.get("selections") or {}
-    base_option_ids = recipe.get("base_option_ids") or {}
-    sources: dict[str, Any] = {"base": base_case_id}
-    interface_meta: dict[str, Any] = {}
-
-    silhouette_id = selections.get("silhouette")
-    special_id = selections.get("special")
-    shape_id = silhouette_id or special_id
-    if shape_id and shape_id not in set(base_option_ids.values()):
-        option = option_by_id.get(shape_id)
-        if option:
-            body = [entity for entity in entities if entity.get("_piece_role") in FRONT_ROLES | BACK_ROLES]
-            others = [entity for entity in entities if entity.get("_piece_role") not in FRONT_ROLES | BACK_ROLES]
-            if option["slug"] == "relaxed-h":
-                body = scale_piece_group(body, sx=1.06, sy=1.02)
-            elif option["slug"] == "oversized":
-                body = scale_piece_group(body, sx=1.12, sy=1.08)
-            body = _piecewise_shape(body, option["slug"])
-            entities = others + body
-            sources[option["group"]] = base_case_id
-
-    constraints = recipe.get("intent_constraints") or {}
-    short_sleeve = constraints.get("sleeve") == "short"
-    sleeveless = constraints.get("sleeve") == "sleeveless"
-    if short_sleeve:
-        entities = [entity for entity in entities if entity.get("_piece_role") not in CUFF_ROLES]
-        sources["intent_sleeve"] = "short"
-    elif sleeveless:
-        host = _host_ir(base_ir, entities)
-        armhole_length = role_edge_length(host, ARMHOLE_ROLES, FRONT_ROLES | BACK_ROLES)
-        entities = [entity for entity in entities if entity.get("_piece_role") not in PURE_SLEEVE_ROLES | CUFF_ROLES]
-        sources["intent_sleeve"] = "sleeveless"
-        sources["armhole_finish"] = "narrow_hem_or_binding_trial"
-        interface_meta["armhole_finish"] = {"applied": armhole_length > 0, "length_mm": round(armhole_length, 3), "rule": "retain_host_armhole_remove_sleeve_and_cuff"}
-    target_length_cm = constraints.get("target_length_cm")
-    if target_length_cm:
-        body_roles = FRONT_ROLES | BACK_ROLES | {"back_yoke", "front_placket"}
-        body = [entity for entity in entities if entity.get("_piece_role") in body_roles]
-        others = [entity for entity in entities if entity.get("_piece_role") not in body_roles]
-        bounds = bounds_of_entities(body)
-        if bounds:
-            current_height = max(bounds[3] - bounds[1], 1.0)
-            body = scale_piece_group(body, sx=1.0, sy=max(0.55, min(1.45, float(target_length_cm) * 10.0 / current_height)))
-            entities = others + body
-            sources["target_length_cm"] = float(target_length_cm)
-
-    group_order = ["neckline", "collar", "placket", "sleeve", "cuff"]
-    for group in group_order:
-        if (short_sleeve and group == "cuff") or (sleeveless and group in {"sleeve", "cuff"}):
-            continue
-        option_id = selections.get(group)
-        if not option_id:
-            continue
-        if option_id == base_option_ids.get(group):
-            continue
-        option = option_by_id.get(option_id)
-        if not option:
-            raise ValueError(f"未知版型选项 {option_id}")
-        compatible = set(option.get("compatible_families") or [option["family"]])
-        if family not in compatible:
-            raise ValueError(f"{option['label_zh']} 不兼容当前品类")
-        donor_case_id, confidence, reasons = choose_donor(option, index, base_case_id)
-        if not donor_case_id or reasons:
-            raise ValueError(reasons[0] if reasons else f"{option['label_zh']} 没有可用来源")
-        donor_ir = index[donor_case_id]
-        exact_donor = _label_slug(donor_ir, group) == option["slug"]
-        replacement = _entities_for_roles(donor_ir, REPLACE_ROLES_BY_GROUP[group])
-        replacement = _select_replacement_components(replacement, group, option["slug"])
-        replacement = _modify_component(replacement, group, option["slug"], donor_ir)
-        if group == "sleeve" and short_sleeve:
-            replacement = scale_sleeve_anisotropic(
-                replacement,
-                length_scale=0.46,
-                width_scale=1.0,
-                ir=donor_ir,
-            )
-        if group in {"neckline", "collar"}:
-            entities, body_neckline_meta = reshape_body_neckline(entities, base_ir, option["slug"])
-            interface_meta["body_neckline"] = body_neckline_meta
-        if group == "sleeve":
-            host = _host_ir(base_ir, entities)
-            armhole = role_edge_length(host, ARMHOLE_ROLES, FRONT_ROLES | BACK_ROLES)
-            if armhole > 0:
-                replacement, meta = match_sleeve_cap_to_armhole(replacement, donor_ir, armhole, ease=1.04)
-                if abs(float(meta.get("length_error") or 0.0)) > 2.0:
-                    replacement, meta = match_sleeve_cap_to_armhole(replacement, donor_ir, armhole, ease=1.04)
-                    meta["retry"] = True
-                interface_meta["sleeve"] = meta
-        elif group in {"neckline", "collar"}:
-            host = _host_ir(base_ir, entities)
-            neckline = role_edge_length(host, NECKLINE_ROLES, FRONT_ROLES | BACK_ROLES)
-            if neckline > 0:
-                replacement, meta = match_neck_to_neckline(replacement, donor_ir, neckline)
-                after = float(meta.get("length_after") or 0.0)
-                target = float(meta.get("target_length") or neckline)
-                if after > 0 and abs(after - target) > 2.0:
-                    correction = max(0.03, min(5.0, target / after))
-                    replacement = scale_piece_group(replacement, sx=correction, sy=correction)
-                    meta["post_scale_correction"] = round(correction, 5)
-                    meta["length_after"] = round(after * correction, 3)
-                    meta["length_error"] = round(after * correction - target, 3)
-                    meta["length_error_ratio"] = round((after * correction - target) / max(target, 1e-6), 5)
-                interface_meta["neck"] = meta
-        elif group == "placket":
-            body_bounds = bounds_of_entities(
-                [entity for entity in entities if entity.get("_piece_role") in FRONT_ROLES]
-            )
-            placket_bounds = bounds_of_entities(replacement)
-            if body_bounds and placket_bounds:
-                host_height = body_bounds[3] - body_bounds[1]
-                donor_height = max(placket_bounds[3] - placket_bounds[1], 1.0)
-                target_ratio = 0.4 if option["slug"] == "half" else 1.0
-                axis = "y" if donor_height >= placket_bounds[2] - placket_bounds[0] else "x"
-                scale = max(0.35, min(2.5, host_height * target_ratio / donor_height))
-                replacement = scale_piece_group(
-                    replacement, sx=scale if axis == "x" else 1.0, sy=scale if axis == "y" else 1.0
-                )
-        elif group == "cuff":
-            sleeve_bounds = bounds_of_entities(
-                [entity for entity in entities if entity.get("_piece_role") in PURE_SLEEVE_ROLES]
-            )
-            cuff_bounds = bounds_of_entities(replacement)
-            if sleeve_bounds and cuff_bounds:
-                target = min(sleeve_bounds[2] - sleeve_bounds[0], sleeve_bounds[3] - sleeve_bounds[1])
-                current = max(cuff_bounds[2] - cuff_bounds[0], cuff_bounds[3] - cuff_bounds[1], 1.0)
-                replacement = scale_piece_group(replacement, sx=max(0.6, min(1.8, target / current)), sy=1.0)
-            replacement = add_cuff_style_guides(replacement, option["slug"])
-        entities = _replace_roles(entities, REPLACE_ROLES_BY_GROUP[group], replacement)
-        sources[group] = {
-            "case_id": donor_case_id,
-            "option_id": option_id,
-            "confidence": confidence,
-            "geometry_rule": option["geometry_rule"],
-            "mapping_mode": "exact_component" if exact_donor else "parametric_from_closest_component",
-        }
-
-    entities = _normalize_physical_components(filter_preview_entities(entities))
-    validation = _validate(family, entities, interface_meta, sources)
-    _downgrade_review_only_batch_errors(validation, family)
-    laid_out = _layout_complete(entities, gap=52.0 if recipe.get("compact_layout") else 90.0)
-    replacement_candidates: dict[str, list[dict[str, str]]] = {}
-    if suggest_replacements and not validation["trial_ready"]:
-        for group, current_id in selections.items():
-            if not current_id:
-                continue
-            verified: list[dict[str, str]] = []
-            for option in catalog["options"]:
-                compatible = set(option.get("compatible_families") or [option["family"]])
-                if option["group"] != group or option["id"] == current_id or family not in compatible:
-                    continue
-                candidate_recipe = {**recipe, "selections": {**selections, group: option["id"]}}
-                try:
-                    _, candidate_meta = compose_recipe(candidate_recipe, index, catalog, suggest_replacements=False)
-                except (KeyError, TypeError, ValueError):
-                    continue
-                if candidate_meta["validation"]["trial_ready"]:
-                    verified.append({"option_id": option["id"], "label": option["label_zh"]})
-                    break
-            if verified:
-                replacement_candidates[group] = verified
-    canonical = json.dumps(recipe, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    recipe_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
-    tryon_descriptor = build_tryon_descriptor(entities, recipe_hash, family)
-    meta = {
-        "recipe_hash": recipe_hash,
-        "family": family,
-        "sizing_profile": profile,
-        "source_measurements": source_measurements(base_ir),
-        "tryon_descriptor": tryon_descriptor,
-        "sources": sources,
-        "pieces": _piece_summary(laid_out),
-        "paper_info": _paper_info(laid_out),
-        "validation": validation,
-        "replacement_candidates": replacement_candidates,
-        "status": "valid" if validation["valid"] else "invalid",
-    }
-    return laid_out, meta
+    raise ValueError(f"不支持的 execution_mode: {mode}")

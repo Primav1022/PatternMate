@@ -93,6 +93,7 @@ class BatchExecutorTests(unittest.TestCase):
         }
         donor_ir = {
             "case_id": "DONOR_PUFF",
+            "design_semantics_extra": {"part_labels": {"sleeve_style": {"slug": "puff"}}},
             "piece_instances": [{"piece_id": "d_sleeve", "piece_role": "sleeve"}],
             "atomic_entities": [closed_line("donor-sleeve", "d_sleeve", [[0, 0], [80, -15], [160, 0], [140, 130], [20, 130]], "pattern_boundary")],
         }

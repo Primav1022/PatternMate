@@ -7,6 +7,7 @@ import { CompositionRecipe, PatternPreview } from './PatternPreview';
 import { ComposeSandbox } from './ComposeSandbox';
 import { ShirtSandbox } from './ShirtSandbox';
 import { SleeveVlmSandbox } from './SleeveVlmSandbox';
+import { RelabelQueue } from './RelabelQueue';
 import { LanguageProvider, useLanguage } from './Language';
 import { asset } from './asset';
 import { geometryBase, textBase } from './apiBase';
@@ -267,6 +268,7 @@ function App() {
   const [measureError, setMeasureError] = useState('');
   const [selections, setSelections] = useState<Record<string, string | null>>(defaultSelections('tshirt'));
   const [submittedSelections, setSubmittedSelections] = useState<Record<string, string | null>>(defaultSelections('tshirt'));
+  const [patternUndo, setPatternUndo] = useState<Array<{ selections: Record<string, string | null>; submitted: Record<string, string | null> }>>([]);
   const [materialId, setMaterialId] = useState(fabricOptions.find((item) => item.family === 'tshirt')?.id || '');
   const [fabricColor, setFabricColor] = useState('#ffffff');
   const [processId, setProcessId] = useState(processOptions[0].id);
@@ -499,14 +501,25 @@ function App() {
     const baseSelections = { ...defaultSelections(next.family), ...next.baseOptionIds };
     setSelections(baseSelections);
     setSubmittedSelections(baseSelections);
+    setPatternUndo([]);
     const nextMaterial = fabricOptions.find((item) => item.family === next.family)?.id || '';
     setMaterialId(nextMaterial); setSubmittedMaterialId(nextMaterial);
     setSubmittedFabricColor(fabricColor); setSubmittedProcessId(processId);
     setFinalDesignPreview(null); setDesignPreviewRevision(0); setStyleVersions([]);
   };
   const setSelection = (group: string, optionId: string | null) => {
+    setPatternUndo((old) => [...old.slice(-9), { selections, submitted: submittedSelections }]);
     const next = { ...selections, [group]: optionId };
     setSelections(next);
+    setCompositionReady(false);
+    setStylingConfirmed(false);
+  };
+  const undoPattern = () => {
+    const previous = patternUndo[patternUndo.length - 1];
+    if (!previous) return;
+    setPatternUndo((old) => old.slice(0, -1));
+    setSelections(previous.selections);
+    setSubmittedSelections(previous.submitted);
     setCompositionReady(false);
     setStylingConfirmed(false);
   };
@@ -656,7 +669,7 @@ function App() {
     </aside><section className="canvas-area">
       {step === 'measure' && <MeasureCanvas saved={measurementsSaved} measurements={measurements} sex={sex} />}
       {step === 'design' && <ReferenceGrid items={referenceItems} scores={referenceScores} order={referenceOrder} selected={selectedReference} onSelect={(item) => item.id === selectedReference ? setSelectedReference('') : chooseReference(item.id)} onConfirm={(item) => { chooseReference(item.id); setReferenceConfirmed(true); setStep('styling'); }} status={catalogStatus} />}
-      {step === 'styling' && <PatternPreview recipe={recipe} baseCoverUrl={selectedReferenceInfo.coverUrl} generationRevision={designPreviewRevision} seedPreviewUrl={finalDesignPreview?.revision === designPreviewRevision ? finalDesignPreview.url : undefined} styleVersions={styleVersions} activeVersionId={styleVersions.find((row) => row.revision === designPreviewRevision && row.designUrl === finalDesignPreview?.url)?.id} onRestoreVersion={restoreStyleVersion} onGeneratedPreview={(url, input, revision) => setFinalDesignPreview({ url, input, revision })} onReplaceSelection={setSelection} onExport={exportAll} onValidationChange={(ready) => { setCompositionReady(ready); }} onCompositionChange={setCompositionSummary} />}
+      {step === 'styling' && <PatternPreview recipe={recipe} baseCoverUrl={selectedReferenceInfo.coverUrl} generationRevision={designPreviewRevision} seedPreviewUrl={finalDesignPreview?.revision === designPreviewRevision ? finalDesignPreview.url : undefined} styleVersions={styleVersions} activeVersionId={styleVersions.find((row) => row.revision === designPreviewRevision && row.designUrl === finalDesignPreview?.url)?.id} onRestoreVersion={restoreStyleVersion} onGeneratedPreview={(url, input, revision) => setFinalDesignPreview({ url, input, revision })} onReplaceSelection={setSelection} onUndo={undoPattern} canUndo={patternUndo.length > 0} onExport={exportAll} onValidationChange={(ready) => { setCompositionReady(ready); }} onCompositionChange={setCompositionSummary} />}
       {step === 'print' && <PrintDesignPreview src={printPreviewUrl || finalDesignPreview?.url || ''} />}
     </section></main>{facetEditor && <TagCorrectionModal facets={semanticFacets} activeKey={facetEditor} selected={facetSelections} setActiveKey={setFacetEditor} onChoose={chooseFacet} onClose={() => setFacetEditor(null)} />}{printCompatibilityWarning && <DigitalPrintWarning isPrint={processId.endsWith('.print')} onBack={() => setPrintCompatibilityWarning(false)} onSkip={() => { const noPrintDesign = { ...designState, printSkipped: true, print: { ...designState.print, face_modes: { front: 'none', back: 'none' }, density_asset_ids: { front: null, back: null }, placements: [], assets: [] } }; setPrintCompatibilityWarning(false); setPrintModes({ front: 'none', back: 'none' }); setStylingConfirmed(true); void exportAll(noPrintDesign); }} />}{projectNameEditing && <div className="reference-modal-backdrop" onMouseDown={() => setProjectNameEditing(false)}><div className="project-name-modal" onMouseDown={(event) => event.stopPropagation()}><h2>{t('编辑项目名称', 'Edit project name')}</h2><input autoFocus aria-label={t('完整项目名称', 'Full project name')} value={projectNameDraft} onChange={(event) => setProjectNameDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && projectNameDraft.trim()) { setProjectName(projectNameDraft.trim()); setProjectNameEditing(false); } if (event.key === 'Escape') setProjectNameEditing(false); }} /><div><button onClick={() => setProjectNameEditing(false)}>{t('取消', 'Cancel')}</button><button className="primary" disabled={!projectNameDraft.trim()} onClick={() => { setProjectName(projectNameDraft.trim()); setProjectNameEditing(false); }}>{t('保存名称', 'Save name')}</button></div></div></div>}</div>;
 }
@@ -734,10 +747,6 @@ function DesignPanel({ message, setMessage, analyze, analyzing, serviceReady, in
     t('也可以先跳过品类，直接打字说风格、场合或袖型。', 'Or skip the category and type a style, occasion, or sleeve.'),
     t('不确定就点「先跳过」，我再问你穿去哪、要什么版型。', 'Not sure? Skip for now — I will ask where you wear it and what fit you want.'),
   ];
-  const waitHints = [
-    t('还没决定的话，点一个最接近的选项就行。', 'If you are unsure, pick the closest option.'),
-    t('也可以直接打字，或点「先跳过」。', 'You can also type below, or skip for now.'),
-  ];
   const last = intentMessages.length - 1;
   const idle = !analyzing && !message.trim();
   const replyButtons = (options: { value: string; label_zh: string; label_en: string }[]) => <div className="design-quick-replies">{options.map((option) => <button key={option.value} className={option.value === '_skip' ? 'skip' : undefined} disabled={analyzing || !serviceReady} onClick={() => pickOption(option)}>{language === 'zh' ? option.label_zh : option.label_en}</button>)}</div>;
@@ -748,8 +757,8 @@ function DesignPanel({ message, setMessage, analyze, analyzing, serviceReady, in
       {intentMessages.map((item: string, index: number) => {
         const live = index === last && !analyzing;
         const hasOptions = live && generatedCard?.options?.length > 0;
-        const lines = live ? [assistantMessages[index], ...(hasOptions ? waitHints : [])].filter(Boolean) : [assistantMessages[index]];
-        return <React.Fragment key={`${index}-${item}`}><div className="design-message user"><span>{item}</span></div>{assistantMessages[index] && (live ? <AssistantBubble lines={lines} options={hasOptions} idle={idle}>{hasOptions && replyButtons(generatedCard.options)}</AssistantBubble> : <div className="design-message assistant"><small>{t('设计助手', 'Design assistant')}</small><span>{assistantMessages[index]}</span></div>)}</React.Fragment>;
+        const lines = live ? [assistantMessages[index]].filter(Boolean) : [assistantMessages[index]];
+        return <React.Fragment key={`${index}-${item}`}><div className="design-message user"><span>{item}</span></div>{assistantMessages[index] && (live ? <AssistantBubble lines={lines} options={hasOptions} idle={false}>{hasOptions && replyButtons(generatedCard.options)}</AssistantBubble> : <div className="design-message assistant"><small>{t('设计助手', 'Design assistant')}</small><span>{assistantMessages[index]}</span></div>)}</React.Fragment>;
       })}
       {analyzing && thinking}
     </div>
@@ -847,8 +856,8 @@ function MeasureCanvas({ saved }: { saved: boolean; measurements: Measurements; 
 }
 function ReferenceGrid({ items, scores: _scores, order, selected, onSelect, onConfirm, status }: { items: ReferenceItem[]; scores: Record<string, number>; order: string[]; selected: string; onSelect: (item: ReferenceItem) => void; onConfirm: (item: ReferenceItem) => void; status: 'loading' | 'ready' | 'offline' }) {
   const { t } = useLanguage();
-  const positions = new Map(order.map((id, index) => [id, index]));
-  const sorted = order.length ? [...items].sort((a, b) => (positions.get(a.id) ?? 9999) - (positions.get(b.id) ?? 9999)) : items;
+  const byId = new Map(items.map((item) => [item.id, item]));
+  const sorted = order.length ? order.map((id) => byId.get(id)).filter((item): item is ReferenceItem => Boolean(item)) : items;
   if (!sorted.length) {
     return <div className="reference-grid-empty"><span className="reference-loading-mark">↻</span><strong>{status === 'offline' ? t('正在重新连接设计服务', 'Reconnecting to the design service') : t('正在载入参考库', 'Loading reference library')}</strong></div>;
   }
@@ -874,8 +883,14 @@ function isShirtSandboxRoute() {
   return hash === 'shirt-sandbox' || hash === 'sandbox/shirt' || new URLSearchParams(window.location.search).has('shirt-sandbox');
 }
 
+function isRelabelRoute() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  return hash === 'relabel' || hash === 'sandbox/relabel' || new URLSearchParams(window.location.search).has('relabel');
+}
+
 function Root() {
-  const [route, setRoute] = useState<'app' | 'sandbox' | 'sleeve-vlm' | 'shirt-sandbox'>(() => {
+  const [route, setRoute] = useState<'app' | 'sandbox' | 'sleeve-vlm' | 'shirt-sandbox' | 'relabel'>(() => {
+    if (isRelabelRoute()) return 'relabel';
     if (isShirtSandboxRoute()) return 'shirt-sandbox';
     if (isSleeveVlmSandboxRoute()) return 'sleeve-vlm';
     if (isComposeSandboxRoute()) return 'sandbox';
@@ -883,7 +898,8 @@ function Root() {
   });
   useEffect(() => {
     const sync = () => {
-      if (isShirtSandboxRoute()) setRoute('shirt-sandbox');
+      if (isRelabelRoute()) setRoute('relabel');
+      else if (isShirtSandboxRoute()) setRoute('shirt-sandbox');
       else if (isSleeveVlmSandboxRoute()) setRoute('sleeve-vlm');
       else if (isComposeSandboxRoute()) setRoute('sandbox');
       else setRoute('app');
@@ -895,6 +911,7 @@ function Root() {
       window.removeEventListener('popstate', sync);
     };
   }, []);
+  if (route === 'relabel') return <RelabelQueue />;
   if (route === 'shirt-sandbox') return <ShirtSandbox />;
   if (route === 'sleeve-vlm') return <SleeveVlmSandbox />;
   if (route === 'sandbox') return <ComposeSandbox />;

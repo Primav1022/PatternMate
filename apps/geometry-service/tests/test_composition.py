@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
 import unittest
@@ -226,6 +227,59 @@ class CompositionEngineTests(unittest.TestCase):
         self.assertEqual("sleeveless", meta["sources"]["intent_sleeve"])
         self.assertGreater(meta["validation"]["metrics"]["armhole_finish"]["length_mm"], 0)
         self.assertTrue(meta["validation"]["trial_ready"])
+
+    def test_c2390279_vneck_and_boat_pass_validation(self) -> None:
+        path = ROOT / "data" / "ir" / "tshirt_v2" / "pattern_ir" / "C2390279.pattern-ir.json"
+        if not path.exists():
+            self.skipTest("missing C2390279 tshirt v2 IR")
+        ir = json.loads(path.read_text(encoding="utf-8"))
+        ir["_source_format"] = "tshirt_pattern_ir_v2"
+        index = {**self.index, "C2390279": ir}
+        for option_id, mode in (
+            ("tshirt.neckline.v-neck", "neckline_edge_reshape"),
+            ("tshirt.neckline.boat", "neckline_edge_reshape"),
+        ):
+            recipe = self.recipe("tshirt", {**self.defaults("tshirt"), "neckline": option_id})
+            recipe["base_case_id"] = "C2390279"
+            recipe["base_option_ids"] = {"neckline": "tshirt.neckline.crew", "sleeve": "tshirt.sleeve.set-in"}
+            _, meta = compose_recipe(recipe, index, self.catalog)
+            self.assertTrue(meta["validation"]["valid"], meta["validation"]["errors"])
+            self.assertNotIn("基础纸样缺少可重绘的前后片领圈", "".join(meta["validation"]["errors"]))
+            self.assertEqual(mode, (meta["sources"].get("neckline") or {}).get("mode"))
+
+    def test_c2390279_vneck_changes_front_outline_not_sleeve(self) -> None:
+        path = ROOT / "data" / "ir" / "tshirt_v2" / "pattern_ir" / "C2390279.pattern-ir.json"
+        ir = json.loads(path.read_text(encoding="utf-8"))
+        ir["_source_format"] = "tshirt_pattern_ir_v2"
+        from simple_compose import _annotate, _keep_largest_clusters
+        from composition_engine import entity_points, bounds_of_entities, reshape_body_neckline
+
+        ents = _keep_largest_clusters(_annotate(ir))
+        sleeve_before = {
+            str(e.get("entity_id")): e.get("geometry")
+            for e in ents
+            if e.get("_piece_role") == "sleeve"
+        }
+        front_before = next(e for e in ents if e.get("piece_id") == "C2390279:piece:front_body:01" and len(entity_points(e)) > 80)
+        crew_pts = entity_points(front_before)
+        crew_box = bounds_of_entities([front_before])
+        after, meta = reshape_body_neckline(ents, {**ir, "atomic_entities": ents}, "v-neck")
+        self.assertTrue(meta["applied"])
+        self.assertTrue(all(row["piece_role"] in {"front_body", "back_body"} for row in meta["chains"]))
+        sleeve_after = {
+            str(e.get("entity_id")): e.get("geometry")
+            for e in after
+            if e.get("_piece_role") == "sleeve"
+        }
+        self.assertEqual(sleeve_before, sleeve_after)
+        front_after = next(e for e in after if e.get("entity_id") == front_before.get("entity_id") and e.get("piece_id") == front_before.get("piece_id"))
+        v_pts = entity_points(front_after)
+        self.assertNotEqual(crew_pts, v_pts)
+        self.assertLess(min(p[1] for p in v_pts), min(p[1] for p in crew_pts) + (crew_box[3] - crew_box[1]) * 0.02)
+        # V-neck should push the top-center of the closed outline downward (smaller max y) or inward.
+        crew_top = max(p[1] for p in crew_pts if abs(p[0] - (crew_box[0] + crew_box[2]) / 2) < (crew_box[2] - crew_box[0]) * 0.12)
+        v_top = max(p[1] for p in v_pts if abs(p[0] - (crew_box[0] + crew_box[2]) / 2) < (crew_box[2] - crew_box[0]) * 0.12)
+        self.assertLess(v_top, crew_top - 8.0)
 
 
 if __name__ == "__main__":

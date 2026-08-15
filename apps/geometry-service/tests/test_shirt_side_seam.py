@@ -104,5 +104,47 @@ class ShirtSideSeamTests(unittest.TestCase):
         self.assertEqual(out[1]["geometry"], extra["geometry"])
 
 
+class BodyStructureGradeTests(unittest.TestCase):
+    def test_chest_lets_out_hem_not_shoulder(self) -> None:
+        from shirt_side_seam import grade_body_structure
+
+        armhole = {
+            "entity_id": "ah",
+            "piece_id": "front",
+            "_piece_role": "front_body",
+            "line_role": "armhole_front",
+            "geometry": {"points": [[0, 140], [8, 170], [0, 185]]},
+        }
+        host = _closed("h", "front", "front_body", _rect(0, 0, 100, 200, n=10))
+        out, meta = grade_body_structure([host, armhole], width_sx=1.2, length_sy=1.0, neck_s=1.0)
+        self.assertTrue(meta["applied"])
+        pts = next(e for e in out if e["entity_id"] == "h")["geometry"]["points"]
+        self.assertAlmostEqual(_width_at(pts, 200, tol=6), 100, delta=2)
+        self.assertGreater(_width_at(pts, 0, tol=6), 115)
+        self.assertEqual(out[1]["geometry"], armhole["geometry"])
+
+    def test_length_grows_below_chest_only(self) -> None:
+        from shirt_side_seam import grade_body_structure
+
+        host = _closed("h", "front", "front_body", _rect(0, 0, 100, 200, n=10))
+        src = host["geometry"]["points"]
+        out, _ = grade_body_structure([host], width_sx=1.0, length_sy=1.2, neck_s=1.0)
+        pts = out[0]["geometry"]["points"]
+        self.assertAlmostEqual(max(p[1] for p in pts), max(p[1] for p in src), delta=0.5)
+        self.assertLess(min(p[1] for p in pts), min(p[1] for p in src) - 8)
+
+    def test_neck_does_not_share_chest_width(self) -> None:
+        from shirt_side_seam import grade_body_structure
+
+        host = _closed("h", "front", "front_body", _rect(0, 0, 100, 200, n=10))
+        src = host["geometry"]["points"]
+        out, _ = grade_body_structure([host], width_sx=1.0, length_sy=1.0, neck_s=1.25)
+        pts = out[0]["geometry"]["points"]
+        self.assertAlmostEqual(_width_at(pts, 0, tol=6), 100, delta=2)
+        src_inner = [p[0] for p in src if abs(p[1] - 200) <= 6 and abs(p[0] - 50) <= 32]
+        out_inner = [p[0] for p in pts if abs(p[1] - 200) <= 6 and 2 < p[0] < 98]
+        self.assertGreater(max(out_inner) - min(out_inner), max(src_inner) - min(src_inner) + 4)
+
+
 if __name__ == "__main__":
     unittest.main()

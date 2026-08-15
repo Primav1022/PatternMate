@@ -195,6 +195,8 @@ def _dense_panel_mesh(boundary: list[list[float]], target_edge_mm: float = 12.0)
     # Some valid-looking but noisy DXF rings make Triangle spend unbounded time.
     min_x, max_x = min(point[0] for point in boundary), max(point[0] for point in boundary)
     min_y, max_y = min(point[1] for point in boundary), max(point[1] for point in boundary)
+    if max_x - min_x < 1.0 or max_y - min_y < 1.0:
+        return boundary_points, [], list(range(len(boundary_points)))
     interior: list[list[float]] = []
     def boundary_distance(point: list[float]) -> float:
         best = float("inf")
@@ -218,7 +220,10 @@ def _dense_panel_mesh(boundary: list[list[float]], target_edge_mm: float = 12.0)
     vertices = boundary_points + interior
     if len(vertices) < 3:
         return vertices, [], list(range(len(boundary_points)))
-    simplices = Delaunay(np.asarray(vertices, dtype=np.float64)).simplices.tolist()
+    try:
+        simplices = Delaunay(np.asarray(vertices, dtype=np.float64)).simplices.tolist()
+    except Exception:
+        return vertices, [], list(range(len(boundary_points)))
     triangles: list[list[int]] = []
     for triangle in simplices:
         points = [vertices[index] for index in triangle]

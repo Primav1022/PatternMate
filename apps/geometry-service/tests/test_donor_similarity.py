@@ -21,16 +21,14 @@ def line(entity_id: str, piece_id: str, points: list[list[float]], line_role: st
 
 
 class DonorSimilarityTests(unittest.TestCase):
-    def base_ir(self) -> dict:
+    def base_ir(self, case_id: str = "BASE") -> dict:
         return {
-            "case_id": "BASE",
+            "case_id": case_id,
+            "design_semantics": {"category": "tshirt", "fit": "regular", "target_gender": "unisex"},
+            "design_semantics_extra": {"part_labels": {"neckline": {"slug": "crew"}, "sleeve_style": {"slug": "set-in"}}},
             "piece_instances": [
                 {"piece_id": "front", "piece_role": "front_body"},
                 {"piece_id": "back", "piece_role": "back_body"},
-            ],
-            "edge_chains": [
-                chain("front-neck", "front", "neckline", ["front-neck"]),
-                chain("back-neck", "back", "neckline", ["back-neck"]),
             ],
             "atomic_entities": [
                 line("front-neck", "front", [[0, 0], [50, 0], [100, 0]]),
@@ -38,48 +36,53 @@ class DonorSimilarityTests(unittest.TestCase):
             ],
         }
 
-    def donor_ir(self, case_id: str, width: float, review: str = "approved", neckline_slug: str = "crew") -> dict:
+    def donor_ir(self, case_id: str, neckline_slug: str = "crew", sleeve_slug: str = "set-in", fit: str = "regular") -> dict:
         return {
             "case_id": case_id,
-            "design_semantics_extra": {"part_labels": {"neckline": {"slug": neckline_slug}}},
+            "design_semantics": {"category": "tshirt", "fit": fit, "target_gender": "unisex"},
+            "design_semantics_extra": {"part_labels": {"neckline": {"slug": neckline_slug}, "sleeve_style": {"slug": sleeve_slug}}},
             "piece_instances": [
                 {"piece_id": "front", "piece_role": "front_body"},
                 {"piece_id": "back", "piece_role": "back_body"},
             ],
-            "edge_chains": [
-                {**chain("front-neck", "front", "neckline", ["front-neck"]), "review": review},
-                {**chain("back-neck", "back", "neckline", ["back-neck"]), "review": review},
-            ],
             "atomic_entities": [
-                line("front-neck", "front", [[0, 0], [width / 2, 0], [width, 0]]),
-                line("back-neck", "back", [[0, 0], [width, 0]]),
+                line("front-neck", "front", [[0, 0], [50, 0], [100, 0]]),
+                line("back-neck", "back", [[0, 0], [100, 0]]),
             ],
         }
 
-    def test_rank_donors_is_limited_and_explains_weighted_scores(self) -> None:
+    def test_rank_donors_filters_fields_and_skips_host(self) -> None:
+        host = self.base_ir("BASE")
         donors = {
-            "D1": self.donor_ir("D1", 102),
-            "D2": self.donor_ir("D2", 140),
-            "D3": self.donor_ir("D3", 92, review="unknown"),
-            "D4": self.donor_ir("D4", 210),
+            "BASE": host,
+            "D1": self.donor_ir("D1"),
+            "D2": self.donor_ir("D2"),
+            "D3": self.donor_ir("D3"),
+            "D4": self.donor_ir("D4"),
         }
-        rows = rank_donors("neckline", self.base_ir(), donors, max_donors=3)
-        self.assertEqual(3, len(rows))
-        self.assertEqual("D1", rows[0].case_id)
-        self.assertGreater(rows[0].score, rows[1].score)
+        rows = rank_donors("neckline", host, donors, max_donors=3)
+        self.assertEqual(["D1", "D2", "D3"], [row.case_id for row in rows])
         for row in rows:
-            self.assertEqual({"interface", "topology", "proportion", "quality", "label_match"}, set(row.breakdown))
-            self.assertGreaterEqual(row.score, 0)
-            self.assertLessEqual(row.score, 1.25)
+            self.assertIn("label_match", row.breakdown)
+            self.assertIn("field_hits", row.breakdown)
 
     def test_rank_donors_prefers_matching_part_label_slug(self) -> None:
         donors = {
-            "CREW_CLOSE": self.donor_ir("CREW_CLOSE", 102, neckline_slug="crew"),
-            "VNECK_FAR": self.donor_ir("VNECK_FAR", 180, neckline_slug="v-neck"),
+            "CREW_CLOSE": self.donor_ir("CREW_CLOSE", neckline_slug="crew"),
+            "VNECK_FAR": self.donor_ir("VNECK_FAR", neckline_slug="v-neck"),
         }
         rows = rank_donors("neckline", self.base_ir(), donors, max_donors=2, target_option_id="tshirt.neckline.v-neck")
         self.assertEqual(["VNECK_FAR"], [row.case_id for row in rows])
         self.assertEqual(1.0, rows[0].breakdown["label_match"])
+
+    def test_rank_donors_prefers_same_remaining_fields(self) -> None:
+        donors = {
+            "OTHER_FIT": self.donor_ir("OTHER_FIT", neckline_slug="v-neck", fit="oversized"),
+            "SAME_FIT": self.donor_ir("SAME_FIT", neckline_slug="v-neck", fit="regular", sleeve_slug="set-in"),
+        }
+        rows = rank_donors("neckline", self.base_ir(), donors, max_donors=2, target_option_id="tshirt.neckline.v-neck")
+        self.assertEqual("SAME_FIT", rows[0].case_id)
+        self.assertGreater(rows[0].breakdown["field_hits"], rows[1].breakdown["field_hits"])
 
     def test_executor_records_donor_ranking_in_component_provenance(self) -> None:
         base = self.base_ir()
@@ -89,7 +92,7 @@ class DonorSimilarityTests(unittest.TestCase):
             "base_option_ids": {"neckline": "tshirt.neckline.crew"},
         }
         plan = build_composition_plan(recipe, base)
-        _, results = execute_batch_preview(base, recipe, plan, donor_index={"D1": self.donor_ir("D1", 102)})
+        _, results = execute_batch_preview(base, recipe, plan, donor_index={"D1": self.donor_ir("D1", neckline_slug="v-neck")})
         self.assertEqual("applied", results[0].status)
         self.assertEqual("D1", results[0].donor_case_id)
         self.assertIn("donor_candidates", results[0].provenance)

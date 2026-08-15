@@ -19,16 +19,10 @@
 
 2. **检索** — `rank_donors` 按 option / interface / topology
 
-3. **袖迁移预览**
-   - 等比对齐袖窿弧长（优先袖片上的 `armhole_front/back`）
-   - 有完整 `cut_line` → 只留外轮廓，避免三角尖 / 双线 / 脏线
-   - 不硬扭扁平假 `sleeve_cap` 弦线
-
-4. **放码** — `grading_profile`：体型尺寸 + fit/ease + 面料缩率
-
+3. **袖 / 部件** — 按 slug **整片拼贴**（换片），不做袖山 morph、不按袖窿弧长重算尺寸  
+4. **放码** — `grading_profile`：衣身宽/长、袖长/袖肥、领、面料缩率，只做比例缩放  
 5. **失败策略** — 组件级 `retained_current`（暂不整单硬拒绝）
-
-6. **VLM** — 本地优先、API fallback；**主路径 compose/export 不得因 VLM 卡住而不出纸样/DXF**（规则表兜底）。沙盒可选。
+6. **VLM** — 本地优先、API fallback；主路径 compose/export 不得因 VLM 卡住
 
 ## 不要轻易改
 

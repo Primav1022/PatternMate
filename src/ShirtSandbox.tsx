@@ -218,6 +218,7 @@ export function ShirtSandbox() {
           {elapsedMs != null && <span>{elapsedMs} ms</span>}
           {result && <span className={result.status === 'valid' || result.status === 'ok' || result.status === 'composed' ? 'ok' : 'bad'}>{result.status}</span>}
           {previewMode && <span className="sandbox-preview-mode">{previewMode === 'base' ? 'base 预览' : 'compose'}</span>}
+          <a href="#/relabel">袖片补标</a>
           <a href="#/sandbox">T恤 sandbox</a>
           <a href="#/sleeve-vlm">袖片 VLM</a>
           <a href="/">← 回主站</a>

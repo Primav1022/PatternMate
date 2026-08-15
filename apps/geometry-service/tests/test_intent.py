@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "apps" / "geometry-service"))
 
-from app import IR_INDEX, parse_design_intent, score_semantics, semantic_facets, used_print_asset_ids  # noqa: E402
+from app import IR_INDEX, parse_design_intent, ranked_references, score_semantics, semantic_facets, used_print_asset_ids  # noqa: E402
 
 
 class IntentAnalysisTests(unittest.TestCase):
@@ -59,6 +59,24 @@ class IntentAnalysisTests(unittest.TestCase):
         style_facet = next(item for item in semantic_facets(results) if item["key"] == "style_tags")
         self.assertTrue(style_facet["values"])
         self.assertTrue({item["value"] for item in style_facet["values"]}.issubset(annotated_styles))
+
+    def test_ranked_references_only_keep_selected_family(self) -> None:
+        items = ranked_references("衬衫", [], {"family": "shirt", "category": "shirt"})
+        self.assertTrue(items)
+        self.assertTrue({str((row["semantics"] or {}).get("category")) for row in items} <= {"shirt", "blouse"})
+
+    def test_ranked_references_only_keep_selected_polo(self) -> None:
+        items = ranked_references("Polo", [], {"family": "tshirt", "category": "polo"})
+        self.assertTrue(items)
+        self.assertEqual({str((row["semantics"] or {}).get("category")) for row in items}, {"polo"})
+
+    def test_assistant_reply_is_clipped_to_100_chars(self) -> None:
+        from app import _limit_assistant
+        self.assertEqual("已记下衬衫。主要在哪穿？", _limit_assistant("已记下衬衫。主要在哪穿？"))
+        long = "已记下" + ("休闲衬衫" * 20)
+        clipped = _limit_assistant(long)
+        self.assertLessEqual(len(clipped), 100)
+        self.assertTrue(clipped.startswith("已记下"))
 
 
 if __name__ == "__main__":

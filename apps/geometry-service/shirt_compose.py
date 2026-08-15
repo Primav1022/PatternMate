@@ -28,7 +28,7 @@ from composition_engine import (
     normalize_family,
     source_measurements,
 )
-from shirt_side_seam import morph_body_side_seams
+from shirt_side_seam import grade_body_structure, morph_body_side_seams
 from shirt_sleeve_fit import fit_sleeves_to_armholes
 from shirt_strategy import (
     BODY_SWAP_ROLES,
@@ -40,7 +40,6 @@ from shirt_strategy import (
     swap_plan,
 )
 from simple_compose import (
-    BODY_ROLES,
     LENGTH_FACTOR,
     _annotate,
     _keep_largest_clusters,
@@ -159,20 +158,10 @@ def _stretch_body_structure(
     *,
     width_sx: float,
     length_sy: float,
+    neck_s: float = 1.0,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """衣宽→横向比例；衣长→纵向比例。只动衣身相关片，袖/领/袖口不动。"""
-    meta = {
-        "mode": "body_structure_scale",
-        "width_sx": round(width_sx, 5),
-        "length_sy": round(length_sy, 5),
-    }
-    if abs(width_sx - 1.0) < 1e-6 and abs(length_sy - 1.0) < 1e-6:
-        meta["applied"] = False
-        return entities, meta
-    # Anchor top so length grows downward (CAD Y-up).
-    entities = _scale_pieces(entities, roles=BODY_ROLES | {"back_yoke"}, sx=width_sx, sy=length_sy, anchor="top")
-    meta["applied"] = True
-    return entities, meta
+    """胸围侧缝外放；衣长从胸围线向下；领圈单独缩放。袖窿不跟衣身 sx。"""
+    return grade_body_structure(entities, width_sx=width_sx, length_sy=length_sy, neck_s=neck_s)
 
 
 def compose_shirt(
@@ -259,29 +248,23 @@ def compose_shirt(
     entities = _keep_largest_clusters(entities)
     entities = _normalize_physical_components(entities)
 
-    # 4) 衣宽/衣长/袖长/袖肥/颈围：grading_profile 算出的比例落到对应片上
+    # 4) 衣宽/衣长/领围落到结构点；袖山按新袖窿弧长缩放
     profile = grading_profile(recipe)
     length_option = selections.get("garment_length")
     length_slug = str(length_option or "x.regular").split(".")[-1]
     length_factor = LENGTH_FACTOR.get(length_slug, 1.0)
     width_sx = float(profile.get("width") or 1.0)
     length_sy = float(profile.get("length") or 1.0) * length_factor
-    sleeve_sx = float(profile.get("sleeve_width") or 1.0)
     sleeve_sy = float(profile.get("sleeve_length") or 1.0)
     neck_s = float(profile.get("neck") or 1.0)
     before = deepcopy(entities)
-    entities, stretch_meta = _stretch_body_structure(entities, width_sx=width_sx, length_sy=length_sy)
-    sleeve_fit = {"applied": False, "reason": "sleeve_not_swapped"}
-    if (sources.get("sleeve") or {}).get("mode") == "piece_swap":
-        entities, sleeve_fit = fit_sleeves_to_armholes(entities)
+    entities, stretch_meta = _stretch_body_structure(
+        entities, width_sx=width_sx, length_sy=length_sy, neck_s=neck_s,
+    )
+    entities, sleeve_fit = fit_sleeves_to_armholes(entities)
     stretch_meta["sleeve_armhole_fit"] = sleeve_fit
-    if sleeve_fit.get("applied"):
-        if abs(sleeve_sy - 1.0) >= 1e-6:
-            entities = _scale_pieces(entities, roles=PURE_SLEEVE_ROLES, sx=1.0, sy=sleeve_sy, anchor="top")
-            stretch_meta["sleeve_sy"] = round(sleeve_sy, 5)
-    elif abs(sleeve_sx - 1.0) >= 1e-6 or abs(sleeve_sy - 1.0) >= 1e-6:
-        entities = _scale_pieces(entities, roles=PURE_SLEEVE_ROLES, sx=sleeve_sx, sy=sleeve_sy, anchor="top")
-        stretch_meta["sleeve_sx"] = round(sleeve_sx, 5)
+    if abs(sleeve_sy - 1.0) >= 1e-6:
+        entities = _scale_pieces(entities, roles=PURE_SLEEVE_ROLES, sx=1.0, sy=sleeve_sy, anchor="top")
         stretch_meta["sleeve_sy"] = round(sleeve_sy, 5)
     if abs(neck_s - 1.0) >= 1e-6:
         entities = _scale_pieces(entities, roles=COLLAR_ROLES, sx=neck_s, sy=neck_s, anchor="center")
@@ -289,11 +272,10 @@ def compose_shirt(
     stretch_meta["applied"] = bool(
         stretch_meta.get("applied")
         or sleeve_fit.get("applied")
-        or abs(sleeve_sx - 1.0) >= 1e-6
         or abs(sleeve_sy - 1.0) >= 1e-6
         or abs(neck_s - 1.0) >= 1e-6
     )
-    sources["sizing"] = {**stretch_meta, "fit": profile.get("fit")}
+    sources["sizing"] = {**stretch_meta, "fit": profile.get("fit"), "prototype": profile.get("prototype")}
     if stretch_meta.get("applied"):
         modified = tuple(
             str(entity.get("entity_id"))
@@ -302,14 +284,14 @@ def compose_shirt(
         )
         sources["garment_length"] = {
             "option_id": length_option,
-            "mode": "body_structure_scale",
+            "mode": "body_structure_grade",
             "factor": length_factor,
             **stretch_meta,
         }
         results.append(_result(
             "op:garment_length", "garment_length", "applied" if modified else "retained_current",
             option_id=length_option, modified=modified,
-            extra={"mode": "body_structure_scale", "length_factor": length_factor, **stretch_meta},
+            extra={"mode": "body_structure_grade", "length_factor": length_factor, **stretch_meta},
         ))
 
     laid_out = _layout_complete(entities, gap=52.0 if recipe.get("compact_layout") else 90.0)

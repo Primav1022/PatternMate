@@ -46,16 +46,8 @@ class RealSleeveCuffIntegrationTests(unittest.TestCase):
         by_group = {row["group"]: row for row in meta["component_results"]}
         self.assertEqual("applied", by_group["sleeve"]["status"])
         self.assertIn(by_group["cuff"]["status"], {"applied", "retained_current"})
-        self.assertIn(
-            by_group["sleeve"]["provenance"]["edge_transfer"]["mode"],
-            {"donor_piece_bundle_preview", "experiment_remix_bodyA_sleeveB"},
-        )
-        self.assertGreaterEqual(by_group["sleeve"]["provenance"]["edge_transfer"].get("preview_outline_count", 0), 1)
-        if by_group["cuff"]["status"] == "applied":
-            self.assertTrue(by_group["cuff"]["modified_entity_ids"])
-            self.assertIn("edge_transfer", by_group["cuff"]["provenance"])
-        else:
-            self.assertIn("topology_gate", by_group["cuff"]["provenance"])
+        self.assertEqual("simple_piece_swap", by_group["sleeve"]["provenance"].get("mode"))
+        self.assertTrue(by_group["sleeve"]["modified_entity_ids"] or by_group["sleeve"]["provenance"].get("inserted"))
 
 
 if __name__ == "__main__":

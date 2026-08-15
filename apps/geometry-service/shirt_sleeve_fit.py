@@ -185,6 +185,9 @@ def fit_sleeves_to_armholes(entities: list[dict[str, Any]]) -> tuple[list[dict[s
                 out.extend(piece_rows)
                 continue
             cw, ch = max(box[2] - box[0], 1.0), max(box[3] - box[1], 1.0)
+            if min(cw, ch) < 40.0 or max(cw, ch) / min(cw, ch) > 6.0:
+                out.extend(piece_rows)
+                continue
             sx = _clamp(target_w / cw)
             target_h = ch * sx
             if cap_h > 1:

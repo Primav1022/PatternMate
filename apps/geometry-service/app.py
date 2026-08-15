@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import asyncio
 import base64
 import os
 import re
@@ -54,8 +55,8 @@ if not PUBLIC_ROOT.exists():
 
 from composition_engine import build_index, compose_recipe, pattern_catalog, remix_readiness
 from data_registry import BLOCKED_DONORS, build_dxf_index, data_status
+from relabel_queue import QUEUE as RELABEL_QUEUE, apply_labels, piece_outlines, summarize, svg_payload
 from review_ledger import append_review_decision, read_review_history
-from clip_rank import clip_query_text, ranking_available, score_clip
 
 TSHIRT_V2 = ROOT / "data" / "ir" / "tshirt_v2" / "pattern_ir"
 SHIRT_V2 = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
@@ -188,6 +189,13 @@ class ReviewDecisionRequest(BaseModel):
     geometry_hash_before: str | None = None
     geometry_hash_after: str | None = None
     extra: dict[str, Any] = Field(default_factory=dict)
+
+
+class RelabelSaveRequest(BaseModel):
+    piece_roles: dict[str, str] = Field(default_factory=dict)
+    sleeve_style: str
+    notes: str = ""
+    reviewer: str = "expert"
 
 
 class SleeveVlmSandboxRequest(BaseModel):
@@ -410,7 +418,30 @@ def design_model_config() -> dict[str, Any] | None:
     return {"base_url": base_url, "name": model_name, "key": api_key, "timeout": timeout, "verify": verify}
 
 
-def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list[dict[str, str]] | None = None, language: str = "zh", image_data_urls: list[str] | None = None) -> tuple[dict[str, Any], str | None, bool]:
+def _catalog_dimension_guide() -> dict[str, Any]:
+    return {
+        "品类": ["T恤", "Polo", "衬衫"],
+        "场景": [USAGE_PROMPT_ZH.get(value, value) for value in ("casual", "workplace", "sports", "fashion") if value in ALLOWED_USAGE_VALUES],
+        "风格": [CHIP_LABELS_ZH.get(value, value) for value in COMMON_STYLE_TAGS if value in ALLOWED_STYLE_TAGS],
+        "合体度": ["宽松", "合体", "修身"],
+        "领型": ["V领", "圆领", "Polo领"],
+        "袖长": ["无袖", "短袖", "长袖"],
+        "活动量": ["低活动", "中等活动", "高活动"],
+        "廓形": "H / X / A 等",
+        "覆盖度": "覆盖多少身体",
+        "视觉重点": "领口 / 上身等",
+    }
+
+
+def _limit_assistant(text: str, limit: int = 100) -> str:
+    text = re.sub(r"\s+", " ", (text or "").strip())
+    if len(text) <= limit:
+        return text
+    clipped = text[:limit].rstrip("，,。.!！?？、；; ")
+    return clipped or text[:limit]
+
+
+def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list[dict[str, str]] | None = None, language: str = "zh", image_data_urls: list[str] | None = None, next_label_field: str | None = None) -> tuple[dict[str, Any], str | None, bool]:
     """Optionally enrich rule parsing through a server-side OpenAI-compatible model API."""
     config = design_model_config()
     if not config or not (text or "").strip():
@@ -418,8 +449,10 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
     base_url = config["base_url"]
     model_name = config["name"]
     api_key = config["key"]
+    is_english = language.lower().startswith("en")
     schema_prompt = {
-        "task": "Interpret the cumulative Chinese or English apparel conversation. Later corrections override earlier requirements. Return JSON only.",
+        "task": "Interpret the cumulative apparel conversation. Later corrections override earlier requirements. Return JSON only.",
+        "catalog_dimensions": _catalog_dimension_guide(),
         "allowed": {
             "family": ["tshirt", "shirt", None],
             "category": ["tshirt", "shirt", "polo", None],
@@ -433,19 +466,25 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
         "fields": ["family", "category", "sleeve", "target_length_cm", "fit", "neckline", "activity", "usage", "styles", "labels", "search_query", "assistant_message"],
         "baseline": baseline,
         "conversation": messages or [{"role": "user", "content": text}],
-        "assistant_reply_language": "English" if language.lower().startswith("en") else "Simplified Chinese",
+        "assistant_reply_language": "English" if is_english else "Simplified Chinese",
         "search_query_rule": "search_query is one Chinese sentence for CLIP retrieval, using category, fit, sleeve, neckline, style and scene words from the brief.",
-        "ask_rule": "assistant_message is one short spoken sentence. Recap only confirmed slots, then ask at most one missing slot. Do not invent garment structures outside allowed. Chip values must come from allowed.",
+        "ask_rule": "assistant_message is spoken to the user, max 100 characters. Recap confirmed catalog dimensions, then ask the next_label_field dimension so the user can tap a label chip. Do not list all dimensions. Do not invent values outside allowed.",
+        "next_label_field": next_label_field,
     }
     images = [value for value in (image_data_urls or []) if re.match(r"^data:image/(?:png|jpeg|webp);base64,", value) and len(value) <= 6_000_000]
     user_content: list[dict[str, Any]] = [{"type": "text", "text": json.dumps(schema_prompt, ensure_ascii=False)}]
     user_content.extend({"type": "image_url", "image_url": {"url": value}} for value in images)
     payload = json.dumps({
         "model": model_name,
-        "temperature": 0.1,
+        "temperature": 0.2,
         "response_format": {"type": "json_object"},
         "messages": [
-            {"role": "system", "content": "You are PatternMate, a multimodal apparel design assistant. Inspect attached garment inspiration images when present and return JSON only."},
+            {"role": "system", "content": (
+                "You are PatternMate, a multimodal apparel design assistant. Return JSON only. "
+                "Guide the user to think in our database dimensions: 品类, 场景, 风格, 合体度, 领型, 袖长, 活动量, 廓形, 覆盖度, 视觉重点. "
+                "assistant_message must be at most 100 characters, one short spoken reply. "
+                "After you ask one missing dimension, the product UI pushes label chips for the user to tap."
+            )},
             {"role": "user", "content": user_content},
         ],
     }, ensure_ascii=False).encode("utf-8")
@@ -489,23 +528,97 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
         enriched["labels"] = [str(value) for value in parsed["labels"] if value][:12]
     if isinstance(parsed.get("search_query"), str) and parsed["search_query"].strip():
         enriched["search_query"] = parsed["search_query"].strip()[:160]
-    assistant = str(parsed.get("assistant_message") or "").strip() or None
+    assistant = _limit_assistant(str(parsed.get("assistant_message") or "").strip()) or None
     return enriched, assistant, True
+
+
+def _ir_category(semantics: dict[str, Any]) -> str:
+    return str(semantics.get("category") or "").lower()
+
+
+def _ir_family(semantics: dict[str, Any]) -> str:
+    category = _ir_category(semantics)
+    if category in {"tshirt", "polo"}:
+        return "tshirt"
+    if category in {"shirt", "blouse"}:
+        return "shirt"
+    return category
+
+
+def _wanted_usage(intent: dict[str, Any]) -> set[str]:
+    value = intent.get("usage")
+    if isinstance(value, str) and value not in (None, "", "unknown"):
+        return {value}
+    if isinstance(value, list):
+        return {str(item) for item in value if item not in (None, "", "unknown")}
+    return set()
+
+
+def _matches_hard_intent(semantics: dict[str, Any], intent: dict[str, Any]) -> bool:
+    family = _ir_family(semantics)
+    category = _ir_category(semantics)
+    wanted_family = intent.get("family")
+    wanted_category = intent.get("category")
+    if wanted_family and family and family != wanted_family:
+        return False
+    if wanted_category == "polo":
+        return category == "polo"
+    if wanted_category == "tshirt":
+        return category == "tshirt"
+    if wanted_category in {"shirt", "blouse"}:
+        return category in {"shirt", "blouse"}
+    return True
+
+
+def _matches_selected_fields(semantics: dict[str, Any], intent: dict[str, Any], tags: list[str]) -> bool:
+    if not _matches_hard_intent(semantics, intent):
+        return False
+    fit = intent.get("fit")
+    ir_fit = semantics.get("fit")
+    if fit and ir_fit not in (None, "", "unknown"):
+        if ir_fit != fit and not (fit == "relaxed" and ir_fit == "oversized"):
+            return False
+    usage = _wanted_usage(intent)
+    ir_usage = {str(item) for item in (semantics.get("usage") or []) if item not in (None, "", "unknown")}
+    if usage and ir_usage and not (usage & ir_usage):
+        return False
+    activity = intent.get("activity")
+    ir_activity = semantics.get("activity")
+    if activity and ir_activity not in (None, "", "unknown") and ir_activity != activity:
+        return False
+    styles = {str(item) for item in (intent.get("styles") or []) if item} | {str(item) for item in tags if item in ALLOWED_STYLE_TAGS}
+    ir_styles = {str(item) for item in (semantics.get("style_tags") or []) if item not in (None, "", "unknown")}
+    if styles and ir_styles and not (styles & ir_styles):
+        return False
+    return True
 
 
 def score_semantics(semantics: dict[str, Any], query: str, tags: list[str], intent: dict[str, Any]) -> tuple[float, list[str]]:
     haystack = json.dumps(semantics, ensure_ascii=False).lower()
     terms = [term.strip().lower() for term in (query + " " + " ".join(tags)).split() if term.strip()]
     lexical = sum(1 for term in terms if term in haystack) / max(len(terms), 1)
-    semantic_category = str(semantics.get("category", "")).lower()
-    semantic_family = "tshirt" if semantic_category in {"tshirt", "polo"} else "shirt" if semantic_category in {"shirt", "blouse"} else semantic_category
-    category_score = 1.0 if intent.get("family") and semantic_family == intent["family"] else 0.0
+    semantic_category = _ir_category(semantics)
+    semantic_family = _ir_family(semantics)
+    wanted_category = intent.get("category")
+    if wanted_category == "polo":
+        category_score = 1.0 if semantic_category == "polo" else 0.0
+    elif wanted_category == "tshirt":
+        category_score = 1.0 if semantic_category == "tshirt" else 0.0
+    elif wanted_category in {"shirt", "blouse"}:
+        category_score = 1.0 if semantic_category in {"shirt", "blouse"} else 0.0
+    else:
+        category_score = 1.0 if intent.get("family") and semantic_family == intent["family"] else 0.0
     fit_score = 1.0 if intent.get("fit") and semantics.get("fit") == intent["fit"] else 0.0
+    if intent.get("fit") == "relaxed" and semantics.get("fit") == "oversized":
+        fit_score = 1.0
     styles = set(intent.get("styles") or []) | set(tags)
     semantic_styles = set(semantics.get("style_tags") or [])
     style_score = len(styles & semantic_styles) / max(len(styles), 1) if styles else 0.0
+    usage = _wanted_usage(intent)
+    ir_usage = {str(item) for item in (semantics.get("usage") or []) if item not in (None, "", "unknown")}
+    usage_score = 1.0 if usage and ir_usage and usage & ir_usage else 0.0
     activity_score = 1.0 if intent.get("activity") and semantics.get("activity") == intent["activity"] else 0.0
-    score = min(0.99, 0.55 * category_score + 0.16 * fit_score + 0.16 * style_score + 0.08 * activity_score + 0.05 * lexical)
+    score = min(0.99, 0.46 * category_score + 0.14 * fit_score + 0.14 * style_score + 0.12 * usage_score + 0.08 * activity_score + 0.06 * lexical)
     reasons = []
     if category_score:
         reasons.append("品类匹配")
@@ -513,6 +626,8 @@ def score_semantics(semantics: dict[str, Any], query: str, tags: list[str], inte
         reasons.append("版型松量匹配")
     if style_score:
         reasons.append("风格匹配")
+    if usage_score:
+        reasons.append("场景匹配")
     if activity_score:
         reasons.append("活动性匹配")
     return round(score, 4), reasons
@@ -544,24 +659,35 @@ def semantic_facets(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return facets
 
 
+def _clip_ranking_available() -> bool:
+    from clip_rank import ranking_available
+
+    return ranking_available(IR_INDEX)
+
+
 def ranked_references(text: str, tags: list[str], intent: dict[str, Any]) -> list[dict[str, Any]]:
+    from clip_rank import clip_query_text, score_clip
+
     query = clip_query_text(text, intent)
     clip_scores = score_clip(IR_INDEX, query)
+    selected = any(intent.get(key) not in (None, "", [], "unknown") for key in ("family", "category", "fit", "usage", "styles", "activity", "sleeve", "neckline"))
     results = []
     for ir in IR_INDEX.values():
         if ir.get("_donor_only"):
             continue
         semantics = ir.get("design_semantics", {})
+        if selected and not _matches_hard_intent(semantics, intent):
+            continue
         score, reasons = score_semantics(semantics, text, tags, intent)
         if clip_scores is not None:
             clip = float(clip_scores.get(str(ir.get("case_id")), 0.0))
-            semantic_category = str(semantics.get("category") or "").lower()
-            family = "tshirt" if semantic_category in {"tshirt", "polo"} else "shirt" if semantic_category in {"shirt", "blouse"} else semantic_category
-            if intent.get("family") and family and family != intent["family"]:
-                clip *= 0.72
-            score = round(min(0.99, 0.82 * clip + 0.18 * score), 4)
+            score = round(min(0.99, 0.55 * clip + 0.45 * score), 4)
             reasons = ["CLIP图文相似"] + reasons
         results.append({"case_id": ir.get("case_id"), "score": score, "match_reasons": reasons, "semantics": semantics})
+    if selected:
+        tight = [row for row in results if _matches_selected_fields(row["semantics"], intent, tags)]
+        if tight:
+            results = tight
     results.sort(key=lambda item: (-item["score"], str(item["case_id"])))
     return results
 
@@ -660,10 +786,12 @@ def conversation_response(request: DesignConversationRequest) -> dict[str, Any]:
             skipped.append(gap[0])
     conversation_history = [{"role": message.role, "content": message.content} for message in request.messages]
     skip_model = request.skip_model or not text or bool(last and _is_skip_text(last))
+    _, next_gap = clarification_cards(baseline, 0, skipped)
+    next_label_field = next_gap[0] if next_gap else None
     if skip_model:
         intent, model_assistant, model_used = baseline, None, False
     else:
-        intent, model_assistant, model_used = enrich_intent_with_model(text, baseline, conversation_history, request.language, request.image_data_urls)
+        intent, model_assistant, model_used = enrich_intent_with_model(text, baseline, conversation_history, request.language, request.image_data_urls, next_label_field)
     intent.update(confirmed)
     confirmed_tags: list[str] = []
     for key, value in confirmed.items():
@@ -677,7 +805,7 @@ def conversation_response(request: DesignConversationRequest) -> dict[str, Any]:
     is_english = request.language.lower().startswith("en")
     if is_english and model_assistant and re.search(r"[\u4e00-\u9fff]", model_assistant):
         model_assistant = None
-    assistant = model_assistant or _fallback_assistant(intent, cards, is_english, bool(user_messages))
+    assistant = _limit_assistant(model_assistant or _fallback_assistant(intent, cards, is_english, bool(user_messages)))
     summary_keys = {"family", "category", "fit", "neckline", "sleeve", "target_length_cm", "activity", "usage", "styles"}
     confirmed_out = dict(request.confirmed)
     confirmed_out["_skipped"] = skipped
@@ -693,7 +821,7 @@ def conversation_response(request: DesignConversationRequest) -> dict[str, Any]:
         "facets": semantic_facets(results),
         "items": results,
         "analysis_mode": "model" if model_used else "rules",
-        "ranking_mode": "clip" if ranking_available(IR_INDEX) else "tags",
+        "ranking_mode": "clip" if _clip_ranking_available() else "tags",
     }
 
 
@@ -784,6 +912,35 @@ def get_pattern_catalog() -> dict[str, Any]:
 _CATALOG_CACHE: dict[str, Any] | None = None
 
 
+def _cover_url(case_id: str, ir: dict[str, Any]) -> str:
+    image_version = "v2" if str(ir.get("_source_format")).endswith("pattern_ir_v2") else "v1"
+    image_dir = PUBLIC_ROOT / "reference-images" / image_version / case_id
+    cover = next((candidate for candidate in ("cover.png", "cover.jpg", "cover.jpeg", "cover.webp") if (image_dir / candidate).exists()), "cover.jpg")
+    return f"/reference-images/{image_version}/{case_id}/{cover}"
+
+
+def _ir_path(case_id: str) -> Path:
+    ir = IR_INDEX.get(case_id) or {}
+    fmt = str(ir.get("_source_format") or "")
+    if fmt == "shirt_pattern_ir_v2":
+        return SHIRT_V2 / f"{case_id}.pattern-ir.json"
+    if fmt == "tshirt_pattern_ir_v2":
+        return TSHIRT_V2 / f"{case_id}.pattern-ir.json"
+    return READY / f"{case_id}.rule-ready.json"
+
+
+def _reload_ir(case_id: str, path: Path) -> dict[str, Any]:
+    global _CATALOG_CACHE
+    old = IR_INDEX.get(case_id) or {}
+    ir = json.loads(path.read_text(encoding="utf-8"))
+    ir["_source_format"] = old.get("_source_format") or "tshirt_pattern_ir_v2"
+    ir["_dxf_available"] = old.get("_dxf_available")
+    ir["_dxf_path"] = old.get("_dxf_path")
+    IR_INDEX[case_id] = ir
+    _CATALOG_CACHE = None
+    return ir
+
+
 @app.get("/catalog")
 def catalog() -> dict[str, Any]:
     global _CATALOG_CACHE
@@ -803,9 +960,6 @@ def catalog() -> dict[str, Any]:
         status = data_status(case_id, has_dxf, remix_ready)
         supported = category in {"tshirt", "polo", "shirt", "blouse"} and status in {"composition_ready", "tryon_ready"}
         family = "shirt" if category in {"shirt", "blouse"} else "tshirt" if category in {"tshirt", "polo"} else None
-        image_version = "v2" if str(ir.get("_source_format")).endswith("pattern_ir_v2") else "v1"
-        image_dir = PUBLIC_ROOT / "reference-images" / image_version / case_id
-        cover = next((candidate for candidate in ("cover.png", "cover.jpg", "cover.jpeg", "cover.webp") if (image_dir / candidate).exists()), "cover.jpg")
         rows.append(
             {
                 "case_id": case_id,
@@ -818,13 +972,66 @@ def catalog() -> dict[str, Any]:
                 "donor_allowed": has_dxf and case_id not in BLOCKED_DONORS,
                 "remix_ready": remix_ready,
                 "readiness_reasons": readiness_reasons,
-                "cover_url": f"/reference-images/{image_version}/{case_id}/{cover}",
+                "cover_url": _cover_url(case_id, ir),
                 "semantics": semantics,
                 "base_option_ids": reference_base_option_ids(ir, family),
             }
         )
     _CATALOG_CACHE = {"items": rows, "suggestion_chips": SUGGESTION_CHIPS}
     return _CATALOG_CACHE
+
+
+@app.get("/relabel/queue")
+def relabel_queue() -> dict[str, Any]:
+    items = []
+    for item in RELABEL_QUEUE:
+        ir = IR_INDEX.get(item["case_id"])
+        if not ir:
+            continue
+        items.append(summarize(ir, item, _cover_url(item["case_id"], ir)))
+    return {"items": items}
+
+
+@app.get("/relabel/{case_id}")
+def relabel_case(case_id: str) -> dict[str, Any]:
+    item = next((row for row in RELABEL_QUEUE if row["case_id"] == case_id), None)
+    if not item:
+        raise HTTPException(status_code=404, detail="not in relabel queue")
+    ir = load_ir(case_id)
+    payload = svg_payload(piece_outlines(ir))
+    extra = ir.get("design_semantics_extra") or {}
+    labels = extra.get("part_labels") or {}
+    sleeve = labels.get("sleeve_style") if isinstance(labels, dict) else None
+    return {
+        **summarize(ir, item, _cover_url(case_id, ir)),
+        "viewBox": payload["viewBox"],
+        "pieces": payload["pieces"],
+        "notes": extra.get("relabel_notes") or "",
+        "sleeve_style": (sleeve or {}).get("slug") if isinstance(sleeve, dict) else None,
+    }
+
+
+@app.post("/relabel/{case_id}")
+def save_relabel(case_id: str, request: RelabelSaveRequest) -> dict[str, Any]:
+    if not any(row["case_id"] == case_id for row in RELABEL_QUEUE):
+        raise HTTPException(status_code=404, detail="not in relabel queue")
+    path = _ir_path(case_id)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"IR file missing: {path}")
+    ir = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        apply_labels(
+            ir,
+            piece_roles=request.piece_roles,
+            sleeve_style=request.sleeve_style,
+            notes=request.notes,
+            reviewer=request.reviewer,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    path.write_text(json.dumps(ir, ensure_ascii=False) + "\n", encoding="utf-8")
+    _reload_ir(case_id, path)
+    return relabel_case(case_id)
 
 
 @app.post("/design/conversation")
@@ -934,8 +1141,8 @@ def generate_preview(request: PreviewRequest) -> Any:
 
 
 @app.post("/compose")
-def compose(request: CompositionRecipe) -> Any:
-    entities, meta = run_composition(request)
+async def compose(request: CompositionRecipe) -> Any:
+    entities, meta = await asyncio.to_thread(run_composition, request)
     return {
         "status": meta["status"],
         "recipe_hash": meta["recipe_hash"],
@@ -1090,8 +1297,8 @@ def record_review_decision(request: ReviewDecisionRequest) -> dict[str, Any]:
 
 
 @app.post("/export")
-def export_production(request: ProductionRequest) -> Any:
-    entities, meta = run_composition(request.recipe)
+async def export_production(request: ProductionRequest) -> Any:
+    entities, meta = await asyncio.to_thread(run_composition, request.recipe)
     if not meta["validation"]["trial_ready"]:
         raise HTTPException(status_code=422, detail={"message": "当前组合未通过自动几何校验", "validation": meta["validation"]})
     with tempfile.TemporaryDirectory() as tmp:

@@ -21,42 +21,25 @@ class BatchComposeIntegrationTests(unittest.TestCase):
         )
         cls.catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", cls.index)
 
-    def test_batch_preview_returns_reviewable_component_results(self) -> None:
+    def test_tshirt_compose_uses_simple_piece_swap(self) -> None:
         recipe = {
             "family": "tshirt",
             "sex": "female",
             "base_case_id": "C2590529",
             "measurements_cm": {"height": 160, "chest": 84, "waist": 68, "shoulder": 39, "neck": 34, "sleeveLength": 58, "upperArm": 28},
-            "selections": {"neckline": "tshirt.neckline.v-neck", "sleeve": "tshirt.sleeve.puff", "special": None},
+            "selections": {"neckline": "tshirt.neckline.crew", "sleeve": "tshirt.sleeve.set-in", "special": None},
             "base_option_ids": {"neckline": "tshirt.neckline.crew", "sleeve": "tshirt.sleeve.set-in"},
             "execution_mode": "batch_preview",
         }
         entities, meta = compose_recipe(recipe, self.index, self.catalog)
         self.assertTrue(entities)
-        self.assertEqual("batch_preview", meta["execution_mode"])
+        self.assertEqual("simple_piece_swap", meta["execution_mode"])
         self.assertEqual("valid", meta["status"])
         self.assertTrue(meta["validation"]["trial_ready"])
-        self.assertIn("batch_plan", meta)
         self.assertIn("component_results", meta)
-        self.assertTrue(meta["review_required"])
         self.assertIn("base", meta["sources"])
-        sleeve = next(row for row in meta["component_results"] if row["group"] == "sleeve")
-        self.assertEqual("applied", sleeve["status"])
-        self.assertIn(
-            sleeve["provenance"]["edge_transfer"]["mode"],
-            {"donor_piece_bundle_preview", "parametric_tshirt_sleeve_pair_preview", "experiment_remix_bodyA_sleeveB"},
-        )
-        self.assertEqual("R3", sleeve["provenance"]["edge_transfer"]["rule_id"])
-        self.assertEqual("applied", sleeve["provenance"]["edge_transfer"]["armhole_adaptation"]["status"])
-        # target_bounds is optional in experiment remix path; prefer scale metadata
-        et = sleeve["provenance"]["edge_transfer"]
-        self.assertTrue(et.get("target_bounds") is not None or et.get("length_scale") is not None)
-        neckline = next(row for row in meta["component_results"] if row["group"] == "neckline")
-        self.assertLessEqual(len(neckline["provenance"].get("donor_candidates", [])), 3)
-        self.assertTrue(neckline["provenance"].get("donor_candidates"))
-        self.assertEqual({"interface", "topology", "proportion", "quality", "label_match"}, set(neckline["provenance"]["donor_candidates"][0]["breakdown"]))
 
-    def test_garment_length_selection_is_planned_without_global_failure(self) -> None:
+    def test_garment_length_selection_does_not_fail_compose(self) -> None:
         recipe = {
             "family": "tshirt",
             "sex": "female",

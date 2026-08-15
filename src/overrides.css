@@ -272,6 +272,29 @@
 .sleeve-vlm-grid img{display:block;width:100%;height:auto;background:#fff}
 .sleeve-vlm-grid figcaption{padding:8px 10px;font-size:12px;color:#5a463d;border-top:1px solid #eadfce}
 @media(max-width:960px){.sandbox-body{grid-template-columns:1fr}.sandbox-side{border-right:0;border-bottom:1px solid #e8ddd2}}
+.relabel-body{display:grid;grid-template-columns:220px minmax(0,1fr) 300px;min-height:calc(100vh - 64px)}
+.relabel-case{display:grid;grid-template-columns:1fr auto;gap:2px 8px;width:100%;text-align:left;border:0;border-bottom:1px solid #eadfce;background:#fff;padding:10px 12px;cursor:pointer;font:inherit}
+.relabel-case b{font-size:12px;font-family:ui-monospace,Menlo,monospace}
+.relabel-case span{grid-column:1;color:#8b756d;font-size:11px}
+.relabel-case em{font-style:normal;font-size:10px;color:#2f7d57}
+.relabel-case.active{background:#fff7ed;border-left:3px solid #f39a3d;padding-left:9px}
+.relabel-case.done{opacity:.72}
+.relabel-stage{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;background:#f8f2ea}
+.relabel-cover{margin:0;padding:12px 14px 0;display:grid;gap:6px;justify-items:center}
+.relabel-cover img{max-height:220px;max-width:100%;object-fit:contain;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(63,52,47,.12)}
+.relabel-cover figcaption{font-size:12px;color:#6b5a52;line-height:1.4;max-width:720px}
+.relabel-svg{width:100%;height:100%;min-height:360px;cursor:pointer;background:#fff}
+.relabel-edit p{margin:0;font-size:12px;color:#6b5a52;line-height:1.45}
+.relabel-edit fieldset{display:grid;gap:6px}
+.relabel-edit fieldset label{display:flex;gap:6px;align-items:center;flex-direction:row!important}
+.relabel-edit fieldset button,.relabel-legend button{border:1px solid #e4d7cb;border-radius:8px;background:#fff;padding:7px 10px;cursor:pointer;text-align:left}
+.relabel-edit fieldset button.on,.relabel-legend button.on{border-color:#f39a3d;background:#fff7ed}
+.relabel-legend{display:grid;gap:4px;margin-top:8px}
+.relabel-legend button{display:flex;gap:8px;align-items:center;font-size:12px}
+.relabel-legend i{width:10px;height:10px;border-radius:99px;flex:none}
+.relabel-edit textarea{width:100%;border:1px solid #e4d7cb;border-radius:8px;padding:8px;font:inherit}
+.relabel-edit .primary{border:0;border-radius:9px;background:#f39a3d;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer}
+@media(max-width:1100px){.relabel-body{grid-template-columns:1fr}}
 
 /* PatternMate clarity system — warm studio */
 :root{
