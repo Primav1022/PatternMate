@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { CompositionRecipe, TryonDescriptor } from './PatternPreview';
+import { tryonBase } from './apiBase';
 import { useLanguage } from './Language';
 
 type FitMetric = { requested?: number; fitted?: number; error?: number } | number | null;
@@ -115,7 +116,7 @@ export function Research3D({ measurements, sex, recipe, composition, mode, onRea
 
   useEffect(() => {
     const controller = new AbortController();
-    const base = import.meta.env.VITE_TRYON_BASE_URL || '/tryon';
+    const base = tryonBase();
     let currentJob = '';
     const run = async () => {
       try {

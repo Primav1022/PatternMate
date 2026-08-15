@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from './Language';
-import { aiBase, geometryBase } from './apiBase';
+import { aiBase, geometryBase, tryonBase } from './apiBase';
 import { Research3D } from './Research3D';
 import { garmentPath, necklinePath, specialDesignLines } from './garmentGeometry';
 
@@ -331,7 +331,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   useEffect(() => { setShowUngraded(false); setUngradedSvg(''); setSharedViewBox(''); ungradedCase.current = ''; }, [serializedRecipe]);
   useEffect(() => {
     const controller = new AbortController();
-    const base = import.meta.env.VITE_TRYON_BASE_URL || '/tryon';
+    const base = tryonBase();
     fetch(`${base}/research/health`, { signal: controller.signal })
       .then((response) => response.ok ? response.json() : null)
       .then((health) => setPanelPreviewAvailable(Boolean(health?.enabled && health?.cloth_solver_available)))
