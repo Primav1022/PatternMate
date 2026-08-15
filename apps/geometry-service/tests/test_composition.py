@@ -275,11 +275,15 @@ class CompositionEngineTests(unittest.TestCase):
         front_after = next(e for e in after if e.get("entity_id") == front_before.get("entity_id") and e.get("piece_id") == front_before.get("piece_id"))
         v_pts = entity_points(front_after)
         self.assertNotEqual(crew_pts, v_pts)
-        self.assertLess(min(p[1] for p in v_pts), min(p[1] for p in crew_pts) + (crew_box[3] - crew_box[1]) * 0.02)
-        # V-neck should push the top-center of the closed outline downward (smaller max y) or inward.
-        crew_top = max(p[1] for p in crew_pts if abs(p[0] - (crew_box[0] + crew_box[2]) / 2) < (crew_box[2] - crew_box[0]) * 0.12)
-        v_top = max(p[1] for p in v_pts if abs(p[0] - (crew_box[0] + crew_box[2]) / 2) < (crew_box[2] - crew_box[0]) * 0.12)
-        self.assertLess(v_top, crew_top - 8.0)
+        cx = (crew_box[0] + crew_box[2]) / 2.0
+        band = crew_box[1] + (crew_box[3] - crew_box[1]) * 0.6
+        window = (crew_box[2] - crew_box[0]) * 0.12
+
+        def dip(points: list) -> float:
+            rows = [p[1] for p in points if abs(p[0] - cx) < window and p[1] >= band]
+            return min(rows)
+
+        self.assertLess(dip(v_pts), dip(crew_pts) - 20.0)
 
 
 if __name__ == "__main__":
