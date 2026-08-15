@@ -7,7 +7,6 @@ import { CompositionRecipe, PatternPreview } from './PatternPreview';
 import { ComposeSandbox } from './ComposeSandbox';
 import { ShirtSandbox } from './ShirtSandbox';
 import { SleeveVlmSandbox } from './SleeveVlmSandbox';
-import { Research3D } from './Research3D';
 import { LanguageProvider, useLanguage } from './Language';
 import { asset } from './asset';
 import { geometryBase, textBase } from './apiBase';
@@ -259,8 +258,6 @@ function App() {
   const [measurements, setMeasurements] = useState<Measurements>(loadRememberedMeasurements);
   const [rememberMeasurements, setRememberMeasurements] = useState(() => Boolean(localStorage.getItem('smart-pattern-measurements')));
   const [measurementsSaved, setMeasurementsSaved] = useState(false);
-  const [avatarPreviewMeasurements, setAvatarPreviewMeasurements] = useState<Measurements | null>(null);
-  const [avatarPreviewReady, setAvatarPreviewReady] = useState(false);
   const [referenceConfirmed, setReferenceConfirmed] = useState(false);
   const [compositionReady, setCompositionReady] = useState(false);
   const [stylingConfirmed, setStylingConfirmed] = useState(false);
@@ -418,7 +415,6 @@ function App() {
 
   const updateMeasurement = (key: keyof Measurements, value: string) => {
     setMeasurements((old) => ({ ...old, [key]: value }));
-    setAvatarPreviewMeasurements(null); setAvatarPreviewReady(false);
     setMeasurementsSaved(false); setReferenceConfirmed(false); setStylingConfirmed(false);
   };
   const validateMeasurements = () => {
@@ -427,19 +423,11 @@ function App() {
     if (invalid) { setMeasureError('请完整填写身高、胸围、腰围、肩宽、领围、袖长和上臂围。'); return false; }
     setMeasureError(''); return true;
   };
-  const previewAvatar = () => {
-    if (!validateMeasurements()) return;
-    setAvatarPreviewReady(false);
-    setAvatarPreviewMeasurements({ ...measurements });
-  };
   const saveMeasurements = () => {
-    // MOCK UI: skip 3D-preview gate so we can enter 服装设计
     if (!validateMeasurements()) return;
     if (rememberMeasurements) localStorage.setItem('smart-pattern-measurements', JSON.stringify(measurements));
     else localStorage.removeItem('smart-pattern-measurements');
     setMeasureError('');
-    setAvatarPreviewMeasurements({ ...measurements });
-    setAvatarPreviewReady(true);
     setMeasurementsSaved(true);
     setStep('design');
   };
@@ -661,19 +649,19 @@ function App() {
   return <div className="app-shell" style={{ '--theme-primary': fixedTheme.primary, '--theme-soft': fixedTheme.soft, '--theme-border': fixedTheme.border } as React.CSSProperties}><header className="topbar"><button type="button" className="brand-lockup" onClick={() => setShowHome(true)} aria-label="PatternMate"><img className="brand-mark" src={asset('/brand/logo.png')} alt="" /><img className="brand-wordmark" src={asset('/brand/patternmate-wordmark.svg')} alt="PatternMate" /></button><div className="project-title-view"><span title={projectName}>{isUntitledProjectName(projectName) ? t('新建文件', 'New file') : projectName}</span><button aria-label={t('编辑项目名称', 'Edit project name')} title={t('编辑项目名称', 'Edit project name')} onClick={() => { setProjectNameDraft(projectName); setProjectNameEditing(true); }}>✎</button></div><nav className="steps">{steps.map((item, index) => <button key={item.id} disabled={!canAccess(item.id)} className={item.id === step ? 'step active' : 'step'} onClick={() => canAccess(item.id) && setStep(item.id)}><span aria-hidden="true">{index + 1}</span>{item.label}</button>)}</nav><label className="language-picker" aria-label={t('语言', 'Language')}><select aria-label={t('语言', 'Language')} value={language} onChange={(event) => setLanguage(event.target.value as 'zh' | 'en')}><option value="zh">中文</option><option value="en">English</option></select></label>{stylingConfirmed && <button className="topbar-export" disabled={exporting} onClick={exportAll}>{exporting ? t('生成中…', 'Generating…') : t('导出', 'Export')}</button>}</header>
     {globalNotice && <div className={`global-notice ${globalNotice.kind}`} role={globalNotice.kind === 'error' ? 'alert' : 'status'}>{globalNotice.text}</div>}
     <main className="workspace resizable-workspace" style={{ gridTemplateColumns: `${sidebarWidth}px minmax(0,1fr)` }}><aside className="sidebar"><div className="side-heading"><img className="side-heading-mark" src={asset(`/icon/Group ${{ measure: 278, design: 279, styling: 280, print: 282 }[step]}.svg`)} alt="" aria-hidden="true" />{current.label}</div>
-      {step === 'measure' && <MeasurePanel sex={sex} setSex={(value: Sex) => { setSex(value); setAvatarPreviewMeasurements(null); setAvatarPreviewReady(false); setMeasurementsSaved(false); setReferenceConfirmed(false); setStylingConfirmed(false); }} measurements={measurements} updateMeasurement={updateMeasurement} rememberMeasurements={rememberMeasurements} setRememberMeasurements={setRememberMeasurements} error={measureError} previewRequested={Boolean(avatarPreviewMeasurements)} previewReady={avatarPreviewReady} onPreview={previewAvatar} onNext={saveMeasurements} />}
+      {step === 'measure' && <MeasurePanel sex={sex} setSex={(value: Sex) => { setSex(value); setMeasurementsSaved(false); setReferenceConfirmed(false); setStylingConfirmed(false); }} measurements={measurements} updateMeasurement={updateMeasurement} rememberMeasurements={rememberMeasurements} setRememberMeasurements={setRememberMeasurements} error={measureError} onNext={saveMeasurements} />}
       {step === 'design' && <DesignPanel message={message} setMessage={setMessage} analyze={analyze} analyzing={analyzing} serviceReady={catalogStatus === 'ready'} intentMessages={intentMessages} assistantMessages={assistantMessages} generatedCard={generatedCard} analysisMode={analysisMode} />}
       {step === 'styling' && <StylingPanel family={family} baseItem={selectedReferenceInfo} referenceItems={referenceItems} intent={designIntent} unresolved={intentUnresolved} selections={selections} setSelection={setSelection} materialId={materialId} setMaterialId={setMaterialId} fabricColor={fabricColor} setFabricColor={setFabricColor} processId={processId} setProcessId={setProcessId} ready={stylingReady} hasDraftPatternChanges={hasDraftPatternChanges} onGenerate={submitPatternDraft} printSupport={selectedFabricPrintSupport} processSupport={selectedProcessSupport} onNext={() => { if (hasDraftPatternChanges) { setSubmittedSelections({ ...selections }); setSubmittedMaterialId(materialId); setSubmittedFabricColor(fabricColor); setSubmittedProcessId(processId); } const notes = [...(!compositionReady ? ['pattern_compose_unreviewed'] : []), ...(!finalDesignPreview?.url ? ['design_preview_missing'] : [])]; setPatternReview({ passed: notes.length === 0, notes }); const isPrint = processId.endsWith('.print'); const unsupported = isPrint ? selectedFabricPrintSupport === 'unsupported' : selectedProcessSupport === 'unsupported'; if (unsupported) { setPrintCompatibilityWarning(true); return; } setStylingConfirmed(true); if (isPrint) setStep('print'); else { const noPrintDesign = { ...designState, printSkipped: true, print: { ...designState.print, face_modes: { front: 'none', back: 'none' }, density_asset_ids: { front: null, back: null }, placements: [], assets: [] } }; void exportAll(noPrintDesign); } }} />}
       {step === 'print' && <PrintDesignPanel basePreview={finalDesignPreview} currentPreview={printPreviewUrl || finalDesignPreview?.url || ''} onPreviewChange={setPrintPreviewUrl} onAdopt={setAdoptedPrintConcept} designContext={{ recipe, composition: compositionSummary }} onExport={() => adoptedPrintConcept && exportAll({ ...designState, print_concept: { ...adoptedPrintConcept, adopted: true } })} />}
     </aside><section className="canvas-area">
-      {step === 'measure' && <div className="measurement-3d-layout"><MeasureCanvas saved={measurementsSaved} measurements={measurements} sex={sex} />{avatarPreviewMeasurements && <aside className="measurement-3d-panel"><h3>{t('3D 人体模型 · 尺寸确认', '3D Body · Measurement Check')}</h3><Research3D mode="avatar" measurements={avatarPreviewMeasurements} sex={sex} onReady={() => { setAvatarPreviewReady(true); setMeasureError(''); }} onUnavailable={(message) => { setAvatarPreviewReady(false); setMeasureError(message); }} /></aside>}</div>}
+      {step === 'measure' && <MeasureCanvas saved={measurementsSaved} measurements={measurements} sex={sex} />}
       {step === 'design' && <ReferenceGrid items={referenceItems} scores={referenceScores} order={referenceOrder} selected={selectedReference} onSelect={(item) => item.id === selectedReference ? setSelectedReference('') : chooseReference(item.id)} onConfirm={(item) => { chooseReference(item.id); setReferenceConfirmed(true); setStep('styling'); }} status={catalogStatus} />}
       {step === 'styling' && <PatternPreview recipe={recipe} baseCoverUrl={selectedReferenceInfo.coverUrl} generationRevision={designPreviewRevision} seedPreviewUrl={finalDesignPreview?.revision === designPreviewRevision ? finalDesignPreview.url : undefined} styleVersions={styleVersions} activeVersionId={styleVersions.find((row) => row.revision === designPreviewRevision && row.designUrl === finalDesignPreview?.url)?.id} onRestoreVersion={restoreStyleVersion} onGeneratedPreview={(url, input, revision) => setFinalDesignPreview({ url, input, revision })} onReplaceSelection={setSelection} onExport={exportAll} onValidationChange={(ready) => { setCompositionReady(ready); }} onCompositionChange={setCompositionSummary} />}
       {step === 'print' && <PrintDesignPreview src={printPreviewUrl || finalDesignPreview?.url || ''} />}
     </section></main>{facetEditor && <TagCorrectionModal facets={semanticFacets} activeKey={facetEditor} selected={facetSelections} setActiveKey={setFacetEditor} onChoose={chooseFacet} onClose={() => setFacetEditor(null)} />}{printCompatibilityWarning && <DigitalPrintWarning isPrint={processId.endsWith('.print')} onBack={() => setPrintCompatibilityWarning(false)} onSkip={() => { const noPrintDesign = { ...designState, printSkipped: true, print: { ...designState.print, face_modes: { front: 'none', back: 'none' }, density_asset_ids: { front: null, back: null }, placements: [], assets: [] } }; setPrintCompatibilityWarning(false); setPrintModes({ front: 'none', back: 'none' }); setStylingConfirmed(true); void exportAll(noPrintDesign); }} />}{projectNameEditing && <div className="reference-modal-backdrop" onMouseDown={() => setProjectNameEditing(false)}><div className="project-name-modal" onMouseDown={(event) => event.stopPropagation()}><h2>{t('编辑项目名称', 'Edit project name')}</h2><input autoFocus aria-label={t('完整项目名称', 'Full project name')} value={projectNameDraft} onChange={(event) => setProjectNameDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && projectNameDraft.trim()) { setProjectName(projectNameDraft.trim()); setProjectNameEditing(false); } if (event.key === 'Escape') setProjectNameEditing(false); }} /><div><button onClick={() => setProjectNameEditing(false)}>{t('取消', 'Cancel')}</button><button className="primary" disabled={!projectNameDraft.trim()} onClick={() => { setProjectName(projectNameDraft.trim()); setProjectNameEditing(false); }}>{t('保存名称', 'Save name')}</button></div></div></div>}</div>;
 }
 
-function MeasurePanel({ sex, setSex, measurements, updateMeasurement, rememberMeasurements, setRememberMeasurements, error, previewRequested, previewReady, onPreview, onNext }: any) {
+function MeasurePanel({ sex, setSex, measurements, updateMeasurement, rememberMeasurements, setRememberMeasurements, error, onNext }: any) {
   const { t } = useLanguage();
   const fields = [['height', '身高', 'cm'], ['weight', '体重（可选）', 'kg'], ['chest', '胸围', 'cm'], ['waist', '腰围', 'cm'], ['shoulder', '肩宽', 'cm'], ['neck', '领围', 'cm'], ['sleeveLength', '袖长', 'cm'], ['upperArm', '上臂围', 'cm']];
   return <div className="panel-content measure-panel">
@@ -683,7 +671,7 @@ function MeasurePanel({ sex, setSex, measurements, updateMeasurement, rememberMe
     <div className="measure-fields">{fields.map(([key, label, unit]) => <label className="field" key={key}><span>{languageField(label, t)}</span><div><input inputMode="decimal" value={measurements[key]} onChange={(event) => updateMeasurement(key, event.target.value)} placeholder="—" /><em>{unit}</em></div></label>)}</div>
     <label className="remember-measurements"><input type="checkbox" checked={rememberMeasurements} onChange={(event) => setRememberMeasurements(event.target.checked)} /><span>{t('记住本机尺寸', 'Remember on this device')}</span></label>
     {error && <p className="form-error">{error}</p>}
-    <div className="measurement-preview-actions"><button className={previewReady ? 'secondary full preview-complete' : 'secondary full'} onClick={onPreview}>{previewRequested ? t('重新生成 3D 人体', 'Regenerate 3D body') : t('生成 3D 人体', 'Generate 3D body')}</button>{previewRequested && !previewReady && <small>{t('正在生成人体模型…', 'Generating body model…')}</small>}<button className="primary full" onClick={onNext}>{t('确认并继续', 'Confirm and continue')}</button></div>
+    <div className="measurement-preview-actions"><button className="primary full" onClick={onNext}>{t('确认并继续', 'Confirm and continue')}</button></div>
   </div>;
 }
 
