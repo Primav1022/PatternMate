@@ -98,13 +98,21 @@ class DxfExportTests(unittest.TestCase):
         record_types = [record[0][1] for record in parsed_records]
         inserts = [record for record in parsed_records if record[0] == ("0", "INSERT")]
         blocks = [record for record in parsed_records if record[0] == ("0", "BLOCK")]
+        piece_names = [record for record in parsed_records if record[0] == ("0", "TEXT")]
 
         self.assertEqual(("999", "ANSI/AAMA"), pairs[0])
         self.assertEqual(["BLOCKS", "ENTITIES"], section_names)
         self.assertEqual(2, len(blocks))
         self.assertEqual(2, record_types.count("ENDBLK"))
         self.assertEqual(2, len(inserts))
+        self.assertEqual(2, len(piece_names))
         self.assertEqual({value(block, "2") for block in blocks}, {value(insert, "2") for insert in inserts})
+        self.assertEqual(
+            {"PIECE NAME: FRONT BODY 01", "PIECE NAME: SLEEVE 02"},
+            {value(record, "1") for record in piece_names},
+        )
+        self.assertEqual({"1"}, {value(record, "8") for record in piece_names})
+        self.assertEqual({"10.000000"}, {value(record, "40") for record in piece_names})
         self.assertEqual({"0"}, {value(insert, "10") for insert in inserts})
         self.assertEqual({"0"}, {value(insert, "20") for insert in inserts})
         self.assertNotIn("LWPOLYLINE", record_types)
@@ -120,6 +128,10 @@ class DxfExportTests(unittest.TestCase):
         self.assertEqual(5, report["entities_written"])
         self.assertEqual(2, report["closed_polylines"])
         self.assertEqual({"piece/front", "piece/sleeve"}, {item["piece_id"] for item in report["pieces"]})
+        self.assertEqual(
+            {"FRONT BODY 01", "SLEEVE 02"},
+            {item["piece_name"] for item in report["pieces"]},
+        )
 
     def test_closed_polyline_drops_duplicate_terminal_vertex(self) -> None:
         entities = [{

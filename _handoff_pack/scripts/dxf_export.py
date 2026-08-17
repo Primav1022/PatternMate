@@ -115,7 +115,26 @@ def _block_name(piece_role: str, index: int) -> str:
     return f"PM.{safe_role[:20]}.{index:02d}"
 
 
-def _block_rows(name: str, geometry_rows: list[str]) -> list[str]:
+def _piece_name(piece_role: str, index: int) -> str:
+    safe_role = re.sub(r"[^A-Z0-9]+", " ", piece_role.upper()).strip() or "PIECE"
+    return f"{safe_role[:24]} {index:02d}"
+
+
+def _piece_name_rows(piece_name: str, bounds: list[float]) -> list[str]:
+    min_x, min_y, max_x, max_y = bounds
+    return (
+        _pairs(0, "TEXT")
+        + _pairs(8, 1)
+        + _pairs(10, _format_number((min_x + max_x) / 2.0))
+        + _pairs(20, _format_number((min_y + max_y) / 2.0))
+        + _pairs(30, "0.0")
+        + _pairs(40, "10.000000")
+        + _pairs(50, "0.000000")
+        + _pairs(1, f"PIECE NAME: {piece_name}")
+    )
+
+
+def _block_rows(name: str, geometry_rows: list[str], piece_name_rows: list[str]) -> list[str]:
     return (
         _pairs(0, "BLOCK")
         + _pairs(8, 1)
@@ -124,6 +143,7 @@ def _block_rows(name: str, geometry_rows: list[str]) -> list[str]:
         + _pairs(10, "0.0")
         + _pairs(20, "0.0")
         + geometry_rows
+        + piece_name_rows
         + _pairs(0, "ENDBLK")
     )
 
@@ -179,9 +199,15 @@ def write_entities_dxf(
                 or "piece"
             ),
             "rows": [],
+            "bounds": [math.inf, math.inf, -math.inf, -math.inf],
             "entities_written": 0,
         })
         group["rows"].extend(_geometry_rows(entity, points, closed))
+        for x, y in points:
+            group["bounds"][0] = min(group["bounds"][0], x)
+            group["bounds"][1] = min(group["bounds"][1], y)
+            group["bounds"][2] = max(group["bounds"][2], x)
+            group["bounds"][3] = max(group["bounds"][3], y)
         group["entities_written"] += 1
         written += 1
 
@@ -194,11 +220,13 @@ def write_entities_dxf(
     pieces: list[dict] = []
     for index, (piece_id, group) in enumerate(valid_groups, 1):
         name = _block_name(group["piece_role"], index)
-        block_rows.extend(_block_rows(name, group["rows"]))
+        piece_name = _piece_name(group["piece_role"], index)
+        block_rows.extend(_block_rows(name, group["rows"], _piece_name_rows(piece_name, group["bounds"])))
         insert_rows.extend(_insert_rows(name))
         pieces.append({
             "piece_id": piece_id,
             "piece_role": group["piece_role"],
+            "piece_name": piece_name,
             "block_name": name,
             "entities_written": group["entities_written"],
         })
