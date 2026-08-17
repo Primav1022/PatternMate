@@ -130,7 +130,7 @@ def _piece_name_rows(piece_name: str, bounds: list[float]) -> list[str]:
         + _pairs(30, "0.0")
         + _pairs(40, "10.000000")
         + _pairs(50, "0.000000")
-        + _pairs(1, f"PIECE NAME: {piece_name}")
+        + _pairs(1, piece_name)
     )
 
 

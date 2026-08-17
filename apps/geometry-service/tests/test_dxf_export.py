@@ -108,9 +108,10 @@ class DxfExportTests(unittest.TestCase):
         self.assertEqual(2, len(piece_names))
         self.assertEqual({value(block, "2") for block in blocks}, {value(insert, "2") for insert in inserts})
         self.assertEqual(
-            {"PIECE NAME: FRONT BODY 01", "PIECE NAME: SLEEVE 02"},
+            {"FRONT BODY 01", "SLEEVE 02"},
             {value(record, "1") for record in piece_names},
         )
+        self.assertNotIn("PIECE NAME:", text)
         self.assertEqual({"1"}, {value(record, "8") for record in piece_names})
         self.assertEqual({"10.000000"}, {value(record, "40") for record in piece_names})
         self.assertEqual({"0"}, {value(insert, "10") for insert in inserts})
