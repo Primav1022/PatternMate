@@ -16,6 +16,7 @@ apps/geometry-service/.venv/
 .pytest_cache/
 .run/
 .backup/
+.tmp/
 .superpowers/
 images/
 apps/web/

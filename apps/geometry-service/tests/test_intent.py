@@ -63,12 +63,21 @@ class IntentAnalysisTests(unittest.TestCase):
     def test_ranked_references_only_keep_selected_family(self) -> None:
         items = ranked_references("衬衫", [], {"family": "shirt", "category": "shirt"})
         self.assertTrue(items)
-        self.assertTrue({str((row["semantics"] or {}).get("category")) for row in items} <= {"shirt", "blouse"})
+        catalog = {str(ir.get("case_id")) for ir in IR_INDEX.values() if not ir.get("_donor_only")}
+        self.assertEqual({str(row["case_id"]) for row in items}, catalog)
+        keep = {"shirt", "blouse"}
+        first_other = next((i for i, row in enumerate(items) if str((row["semantics"] or {}).get("category")) not in keep), len(items))
+        self.assertGreater(first_other, 0)
+        self.assertTrue(all(str((row["semantics"] or {}).get("category")) in keep for row in items[:first_other]))
 
     def test_ranked_references_only_keep_selected_polo(self) -> None:
         items = ranked_references("Polo", [], {"family": "tshirt", "category": "polo"})
         self.assertTrue(items)
-        self.assertEqual({str((row["semantics"] or {}).get("category")) for row in items}, {"polo"})
+        catalog = {str(ir.get("case_id")) for ir in IR_INDEX.values() if not ir.get("_donor_only")}
+        self.assertEqual({str(row["case_id"]) for row in items}, catalog)
+        first_other = next((i for i, row in enumerate(items) if str((row["semantics"] or {}).get("category")) != "polo"), len(items))
+        self.assertGreater(first_other, 0)
+        self.assertTrue(all(str((row["semantics"] or {}).get("category")) == "polo" for row in items[:first_other]))
 
     def test_assistant_reply_is_clipped_to_100_chars(self) -> None:
         from app import _limit_assistant

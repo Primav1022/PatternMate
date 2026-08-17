@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Any
 
-BODY_ROLES = {"front_body", "back_body", "front", "back", "front_placket", "front_left", "front_right", "back_yoke"}
+BODY_ROLES = {"front_body", "back_body", "front", "back", "front_placket", "front_left", "front_right", "front_yoke", "back_yoke"}
 PURE_SLEEVE_ROLES = {"sleeve", "sleeve_left", "sleeve_right"}
 CUFF_ROLES = {"cuff", "rib_cuff", "sleeve_placket", "sleeve_placket_extension"}
 COLLAR_ROLES = {"collar", "collar_stand", "collar_interlining", "neck_binding", "neck_rib"}

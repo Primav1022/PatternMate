@@ -106,7 +106,8 @@ class CompositionEngineTests(unittest.TestCase):
             if family == "tshirt":
                 self.assertTrue(meta["validation"]["trial_ready"], meta["validation"]["errors"])
             else:
-                self.assertIn("缺少衬衫领片", meta["validation"]["errors"])
+                self.assertTrue(meta["validation"]["trial_ready"], meta["validation"]["errors"])
+                self.assertIn("缺少衬衫领片", " ".join(meta["validation"]["warnings"]))
 
         small = self.recipe("tshirt", {**{group: None for group in self.defaults("tshirt")}, **base_options["tshirt"]})
         large = self.recipe("tshirt", {**{group: None for group in self.defaults("tshirt")}, **base_options["tshirt"]})
@@ -119,6 +120,165 @@ class CompositionEngineTests(unittest.TestCase):
         small_front = max(piece["width_mm"] for piece in small_meta["pieces"] if piece["role"].startswith("front"))
         large_front = max(piece["width_mm"] for piece in large_meta["pieces"] if piece["role"].startswith("front"))
         self.assertGreater(large_front, small_front)
+
+    def test_shirt_lapel_swap_passes_without_separate_collar(self) -> None:
+        shirt_root = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
+        if not (shirt_root / "C2530694.pattern-ir.json").exists():
+            self.skipTest("missing shirt v2 C2530694")
+        index = build_index(ROOT / "data" / "ir" / "v1_rule_ready", None, shirt_root)
+        catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", index)
+        recipe = self.recipe("shirt", {
+            "silhouette": "shirt.silhouette.fitted-x",
+            "collar": "shirt.collar.casual-wide-lapel",
+            "placket": "shirt.placket.half",
+            "cuff": "shirt.cuff.regular",
+            "sleeve": "shirt.sleeve.regular",
+        })
+        recipe["base_case_id"] = "C2530694"
+        recipe["base_option_ids"] = {
+            "collar": "shirt.collar.pointed",
+            "placket": "shirt.placket.full",
+            "silhouette": "shirt.silhouette.regular-fit",
+        }
+        _, meta = compose_recipe(recipe, index, catalog)
+        errors = " ".join(meta["validation"]["errors"])
+        self.assertNotIn("缺少衬衫领片", errors)
+        self.assertNotIn("缺少可重绘的前后片领圈", errors)
+        self.assertTrue(meta["validation"]["valid"], meta["validation"]["errors"])
+
+    def test_shirt_bell_sleeve_is_not_a_strip(self) -> None:
+        shirt_root = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
+        if not (shirt_root / "C2530694.pattern-ir.json").exists():
+            self.skipTest("missing shirt v2 C2530694")
+        index = build_index(ROOT / "data" / "ir" / "v1_rule_ready", None, shirt_root)
+        catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", index)
+        recipe = self.recipe("shirt", {
+            "silhouette": "shirt.silhouette.fitted-x",
+            "collar": "shirt.collar.bow-tie",
+            "placket": "shirt.placket.half",
+            "sleeve": "shirt.sleeve.bell",
+            "cuff": "shirt.cuff.regular",
+        })
+        recipe["base_case_id"] = "C2530694"
+        recipe["base_option_ids"] = {
+            "collar": "shirt.collar.pointed",
+            "placket": "shirt.placket.full",
+            "silhouette": "shirt.silhouette.regular-fit",
+            "sleeve": "shirt.sleeve.regular",
+        }
+        _, meta = compose_recipe(recipe, index, catalog)
+        self.assertEqual("valid", meta["status"])
+        self.assertTrue(meta["validation"]["trial_ready"], meta["validation"]["errors"])
+        sleeves = [piece for piece in meta["pieces"] if str(piece.get("role") or "").startswith("sleeve")]
+        for piece in sleeves:
+            w, h = float(piece.get("width_mm") or 0), float(piece.get("height_mm") or 0)
+            self.assertGreaterEqual(min(w, h), 80.0, piece)
+            self.assertLessEqual(max(w, h) / max(min(w, h), 1.0), 4.2, piece)
+
+    def test_shirt_puff_sleeve_keeps_sleeve_body(self) -> None:
+        shirt_root = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
+        if not (shirt_root / "C2530694.pattern-ir.json").exists():
+            self.skipTest("missing shirt v2 C2530694")
+        index = build_index(ROOT / "data" / "ir" / "v1_rule_ready", None, shirt_root)
+        catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", index)
+        recipe = self.recipe("shirt", {
+            "silhouette": "shirt.silhouette.fitted-x",
+            "collar": "shirt.collar.pointed",
+            "placket": "shirt.placket.half",
+            "sleeve": "shirt.sleeve.puff",
+            "cuff": "shirt.cuff.regular",
+        })
+        recipe["base_case_id"] = "C2530694"
+        recipe["base_option_ids"] = {
+            "collar": "shirt.collar.open-v-pointed",
+            "placket": "shirt.placket.half",
+            "silhouette": "shirt.silhouette.regular-fit",
+            "cuff": "shirt.cuff.regular",
+        }
+        _, meta = compose_recipe(recipe, index, catalog)
+        sleeves = [piece for piece in meta["pieces"] if str(piece.get("role") or "").startswith("sleeve")]
+        self.assertTrue(sleeves, meta.get("sources", {}).get("sleeve"))
+        for piece in sleeves:
+            w, h = float(piece.get("width_mm") or 0), float(piece.get("height_mm") or 0)
+            self.assertGreaterEqual(min(w, h), 200.0, piece)
+            self.assertLessEqual(max(w, h) / max(min(w, h), 1.0), 2.2, piece)
+        self.assertNotEqual("C2431105", (meta.get("sources") or {}).get("sleeve", {}).get("case_id"))
+        cuffs = [piece for piece in meta["pieces"] if str(piece.get("role") or "") in {"cuff", "rib_cuff"}]
+        self.assertTrue(cuffs, meta.get("sources", {}).get("sleeve"))
+        sleeve_src = str((meta.get("sources") or {}).get("sleeve", {}).get("case_id") or "")
+        self.assertTrue(
+            sleeve_src and any(sleeve_src in str(piece.get("source_case_id") or piece.get("piece_id") or "") for piece in cuffs),
+            cuffs,
+        )
+
+    def test_shirt_industrial_grade_follows_body_measurements(self) -> None:
+        shirt_root = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
+        if not (shirt_root / "C2530175.pattern-ir.json").exists():
+            self.skipTest("missing shirt v2 C2530175")
+        index = build_index(ROOT / "data" / "ir" / "v1_rule_ready", None, shirt_root)
+        catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", index)
+
+        def run(chest: float, shoulder: float, upper_arm: float, neck: float) -> dict:
+            recipe = self.recipe("shirt", {
+                "silhouette": "shirt.silhouette.regular-fit",
+                "collar": "shirt.collar.pointed",
+                "placket": "shirt.placket.full",
+                "sleeve": "shirt.sleeve.regular",
+                "cuff": "shirt.cuff.regular",
+            })
+            recipe["base_case_id"] = "C2530175"
+            recipe["base_option_ids"] = {
+                "silhouette": "shirt.silhouette.regular-fit",
+                "collar": "shirt.collar.pointed",
+                "placket": "shirt.placket.full",
+                "sleeve": "shirt.sleeve.regular",
+                "cuff": "shirt.cuff.regular",
+            }
+            recipe["measurements_cm"] = {
+                "height": 160, "chest": chest, "waist": 68, "shoulder": shoulder,
+                "neck": neck, "sleeveLength": 58, "upperArm": upper_arm,
+            }
+            _, meta = compose_recipe(recipe, index, catalog)
+            return meta
+
+        small = run(78, 36, 24, 32)
+        large = run(104, 46, 34, 38)
+        self.assertGreater(float(large["sizing_profile"]["shoulder"]), float(small["sizing_profile"]["shoulder"]))
+        self.assertGreater(float(large["sizing_profile"]["armhole"]), float(small["sizing_profile"]["armhole"]))
+        self.assertGreater(float(large["sizing_profile"]["cuff"]), float(small["sizing_profile"]["cuff"]))
+        small_front = max(p["width_mm"] for p in small["pieces"] if str(p.get("role") or "").startswith("front"))
+        large_front = max(p["width_mm"] for p in large["pieces"] if str(p.get("role") or "").startswith("front"))
+        self.assertGreater(large_front, small_front)
+        small_sleeve = max((p["width_mm"] for p in small["pieces"] if "sleeve" in str(p.get("role") or "")), default=0)
+        large_sleeve = max((p["width_mm"] for p in large["pieces"] if "sleeve" in str(p.get("role") or "")), default=0)
+        if small_sleeve and large_sleeve:
+            self.assertGreater(large_sleeve, small_sleeve * 0.98)
+
+    def test_shirt_without_sleeve_selection_keeps_sleeveless_base(self) -> None:
+        shirt_root = ROOT / "data" / "ir" / "shirt_v2" / "pattern_ir"
+        if not (shirt_root / "C2530694.pattern-ir.json").exists():
+            self.skipTest("missing shirt v2 C2530694")
+        index = build_index(ROOT / "data" / "ir" / "v1_rule_ready", None, shirt_root)
+        catalog = pattern_catalog(ROOT / "packages" / "catalogs" / "src" / "pattern-options.v1.json", index)
+        recipe = self.recipe("shirt", {
+            "silhouette": "shirt.silhouette.fitted-x",
+            "collar": "shirt.collar.pointed",
+            "placket": "shirt.placket.full",
+        })
+        recipe["base_case_id"] = "C2530694"
+        recipe["base_option_ids"] = {
+            "collar": "shirt.collar.pointed",
+            "placket": "shirt.placket.full",
+            "silhouette": "shirt.silhouette.regular-fit",
+        }
+        _, meta = compose_recipe(recipe, index, catalog)
+        roles = {str(piece.get("role") or "") for piece in meta["pieces"]}
+        self.assertFalse(any(role.startswith("sleeve") for role in roles))
+        self.assertIn("original", {row["id"] for row in meta.get("versions") or []})
+        recipe["compose_version"] = "original"
+        _, original = compose_recipe(recipe, index, catalog)
+        self.assertEqual(original.get("version_id"), "original")
+        self.assertFalse(any(str(piece.get("role") or "").startswith("sleeve") for piece in original["pieces"]))
 
     def test_tryon_descriptor_triangulates_concave_panel(self) -> None:
         points = [[0, 0], [80, 0], [80, 60], [40, 35], [0, 60]]
@@ -265,13 +425,19 @@ class CompositionEngineTests(unittest.TestCase):
         from simple_compose import _annotate, _keep_largest_clusters
         from composition_engine import entity_points, bounds_of_entities, reshape_body_neckline
 
-        ents = _keep_largest_clusters(_annotate(ir))
+        ents = _annotate(ir)
+        if not any((e.get("source") or {}).get("origin") == "compose_ir" for e in ents):
+            ents = _keep_largest_clusters(ents)
         sleeve_before = {
             str(e.get("entity_id")): e.get("geometry")
             for e in ents
             if e.get("_piece_role") == "sleeve"
         }
-        front_before = next(e for e in ents if e.get("piece_id") == "C2390279:piece:front_body:01" and len(entity_points(e)) > 80)
+        front_before = next(
+            e for e in ents
+            if e.get("_piece_role") == "front_body"
+            and (e.get("line_role") == "cut" or len(entity_points(e)) > 80)
+        )
         crew_pts = entity_points(front_before)
         crew_box = bounds_of_entities([front_before])
         after, meta = reshape_body_neckline(ents, {**ir, "atomic_entities": ents}, "v-neck")

@@ -25,3 +25,24 @@ export function aiBase(): string {
 export function tryonBase(): string {
   return live.tryon || import.meta.env.VITE_TRYON_BASE_URL || '/tryon';
 }
+
+export async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs = 45000, retries = 1): Promise<Response> {
+  let last: unknown;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+    const parent = init.signal;
+    const onParentAbort = () => controller.abort();
+    parent?.addEventListener('abort', onParentAbort);
+    try {
+      return await fetch(url, { ...init, signal: controller.signal });
+    } catch (error) {
+      last = error;
+      if (parent?.aborted || attempt === retries) throw error;
+    } finally {
+      window.clearTimeout(timer);
+      parent?.removeEventListener('abort', onParentAbort);
+    }
+  }
+  throw last;
+}

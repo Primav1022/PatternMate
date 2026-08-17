@@ -58,6 +58,21 @@ class V2RegistryTests(unittest.TestCase):
         self.assertEqual("auto_validated", option["mapping_status"])
         self.assertIsNotNone(option["donor_case_id"])
 
+    def test_person_type_leads_the_next_question(self) -> None:
+        os.environ["DESIGN_MODEL_ENABLED"] = "false"
+        cases = (
+            ("我是一个老人，我希望穿着舒适", "general_shape"),
+            ("我要开会穿", "usage"),
+            ("我想要比较漂亮的", "styles"),
+            ("我常去健身", "activity"),
+        )
+        for text, field in cases:
+            response = geometry_app.conversation_response(geometry_app.DesignConversationRequest(
+                messages=[geometry_app.ConversationMessage(role="user", content=text)],
+                language="zh",
+            ))
+            self.assertEqual(field, response["ui_cards"][0]["field"], text)
+
     def test_conversation_returns_controlled_clarification(self) -> None:
         os.environ["DESIGN_MODEL_ENABLED"] = "false"
         request = geometry_app.DesignConversationRequest(
@@ -117,6 +132,46 @@ class V2RegistryTests(unittest.TestCase):
         for group in response["suggestion_chips"]:
             for option in group["options"]:
                 self.assertIn(option["value"], allowed[group["field"]])
+
+    def test_style_answer_does_not_repeat_style_chips(self) -> None:
+        os.environ["DESIGN_MODEL_ENABLED"] = "false"
+        first = geometry_app.conversation_response(geometry_app.DesignConversationRequest(
+            messages=[geometry_app.ConversationMessage(role="user", content="我是一个学生我需要可爱一点")],
+            language="zh",
+        ))
+        self.assertEqual("styles", first["ui_cards"][0]["field"])
+        style_labels = {option["label_zh"] for option in first["ui_cards"][0]["options"]}
+        self.assertTrue({"休闲", "街头"} & style_labels)
+        second = geometry_app.conversation_response(geometry_app.DesignConversationRequest(
+            messages=[
+                geometry_app.ConversationMessage(role="user", content="我是一个学生我需要可爱一点"),
+                geometry_app.ConversationMessage(role="assistant", content=first["assistant_message"]),
+                geometry_app.ConversationMessage(role="user", content="街头"),
+            ],
+            language="zh",
+            current_intent=first["intent"],
+            confirmed=first["confirmed"],
+            intent_version=first["intent_version"],
+        ))
+        self.assertIn("streetwear", second["confirmed"].get("styles") or [])
+        self.assertNotEqual("styles", second["ui_cards"][0]["field"])
+        third = geometry_app.conversation_response(geometry_app.DesignConversationRequest(
+            messages=[
+                geometry_app.ConversationMessage(role="user", content="我是一个学生我需要可爱一点"),
+                geometry_app.ConversationMessage(role="assistant", content=first["assistant_message"]),
+                geometry_app.ConversationMessage(role="user", content="街头"),
+                geometry_app.ConversationMessage(role="assistant", content=second["assistant_message"]),
+                geometry_app.ConversationMessage(role="user", content="先跳过"),
+            ],
+            language="zh",
+            current_intent=second["intent"],
+            confirmed=second["confirmed"],
+            intent_version=second["intent_version"],
+        ))
+        self.assertEqual("usage", third["ui_cards"][0]["field"])
+        usage_labels = [option["label_zh"] for option in third["ui_cards"][0]["options"] if option["value"] != "_skip"]
+        self.assertIn("日常休闲", usage_labels)
+        self.assertNotIn("简约", usage_labels)
 
     def test_model_fail_still_returns_ranked_items(self) -> None:
         os.environ["DESIGN_MODEL_ENABLED"] = "false"

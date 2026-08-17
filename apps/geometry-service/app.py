@@ -9,9 +9,12 @@ import io
 import ssl
 import subprocess
 import tempfile
+import threading
 import zipfile
 import sys
 import urllib.request
+from collections import OrderedDict
+from urllib.parse import quote
 from html import escape
 from datetime import datetime, timezone
 from pathlib import Path
@@ -52,6 +55,7 @@ if HANDOFF_SCRIPTS.exists():
 PUBLIC_ROOT = ROOT / "public"
 if not PUBLIC_ROOT.exists():
     PUBLIC_ROOT = ROOT / "apps" / "web" / "public"
+WWW_ROOT = Path(os.getenv("PATTERNMATE_WWW_ROOT", "/var/www/chi27"))
 
 from composition_engine import build_index, compose_recipe, pattern_catalog, remix_readiness
 from data_registry import BLOCKED_DONORS, build_dxf_index, data_status
@@ -102,6 +106,7 @@ CHIP_LABELS_ZH = {
     "business": "商务", "outdoor": "户外", "workwear": "工装", "oriental": "东方", "punk": "朋克", "y2k": "Y2K",
     "workplace": "职场", "fashion": "时尚", "sports": "运动",
     "low": "低活动", "medium": "中等活动", "high": "高活动",
+    "slim": "偏瘦", "average": "匀称", "full": "丰满",
 }
 ALLOWED_SLEEVE_VALUES = ("sleeveless", "short", "long")
 ALLOWED_NECKLINE_VALUES = ("v-neck", "crew", "polo")
@@ -141,6 +146,7 @@ CHIP_ALLOWED = {
     "category": {"tshirt", "shirt", "polo"},
     "activity": {"low", "medium", "high"},
     "usage": set(ALLOWED_USAGE_VALUES),
+    "general_shape": {"slim", "average", "full"},
 }
 
 
@@ -172,6 +178,7 @@ class CompositionRecipe(BaseModel):
     base_option_ids: dict[str, str | None] = Field(default_factory=dict)
     intent_constraints: dict[str, Any] = Field(default_factory=dict)
     execution_mode: str = "simple_piece_swap"  # tshirt frozen; shirt remapped server-side to shirt_strategy
+    compose_version: str | None = None
 
 
 class ProductionRequest(BaseModel):
@@ -332,6 +339,50 @@ def run_composition(recipe: CompositionRecipe) -> tuple[list[dict[str, Any]], di
         raise HTTPException(status_code=500, detail=f"组合几何生成失败: {exc}") from exc
 
 
+_COMPOSE_CACHE: OrderedDict[str, tuple[list[dict[str, Any]], dict[str, Any]]] = OrderedDict()
+_COMPOSE_INFLIGHT: dict[str, threading.Event] = {}
+_COMPOSE_GATE = threading.Lock()
+_COMPOSE_INFLIGHT_COUNT = 0
+_COMPOSE_CACHE_SIZE = 32
+
+
+def run_composition_cached(recipe: CompositionRecipe) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    global _COMPOSE_INFLIGHT_COUNT
+    key = recipe.model_dump_json()
+    with _COMPOSE_GATE:
+        cached = _COMPOSE_CACHE.get(key)
+        if cached is not None:
+            _COMPOSE_CACHE.move_to_end(key)
+            return cached
+        waiter = _COMPOSE_INFLIGHT.get(key)
+        owner = waiter is None
+        if owner:
+            waiter = threading.Event()
+            _COMPOSE_INFLIGHT[key] = waiter
+    if not owner:
+        waiter.wait(timeout=90)
+        with _COMPOSE_GATE:
+            cached = _COMPOSE_CACHE.get(key)
+        if cached is not None:
+            return cached
+        return run_composition(recipe)
+    with _COMPOSE_GATE:
+        _COMPOSE_INFLIGHT_COUNT += 1
+    try:
+        result = run_composition(recipe)
+        with _COMPOSE_GATE:
+            _COMPOSE_CACHE[key] = result
+            _COMPOSE_CACHE.move_to_end(key)
+            while len(_COMPOSE_CACHE) > _COMPOSE_CACHE_SIZE:
+                _COMPOSE_CACHE.popitem(last=False)
+        return result
+    finally:
+        with _COMPOSE_GATE:
+            _COMPOSE_INFLIGHT_COUNT = max(0, _COMPOSE_INFLIGHT_COUNT - 1)
+            _COMPOSE_INFLIGHT.pop(key, None)
+            waiter.set()
+
+
 def parse_design_intent(text: str, requested_category: str | None = None) -> dict[str, Any]:
     normalized = text.strip().lower()
     def latest(options: dict[str, tuple[str, ...]], default: str | None = None) -> str | None:
@@ -382,6 +433,7 @@ def parse_design_intent(text: str, requested_category: str | None = None) -> dic
         "medium": ("中等活动", "适度活动", "medium activity"),
         "low": ("低活动", "活动量小", "low activity"),
     }, "high" if travel_scene else None)
+    general_shape = latest({"slim": ("偏瘦",), "average": ("匀称",), "full": ("丰满",)})
     labels = []
     category_labels = {"tshirt": "T恤", "shirt": "衬衫", "polo": "Polo"}
     sleeve_labels = {"sleeveless": "无袖", "short": "短袖", "long": "长袖"}
@@ -400,7 +452,9 @@ def parse_design_intent(text: str, requested_category: str | None = None) -> dic
         labels.append(USAGE_PROMPT_ZH.get(usage, usage))
     if activity:
         labels.append({"high": "高活动性", "medium": "中等活动性", "low": "低活动性"}[activity])
-    return {"family": "tshirt" if category in {"tshirt", "polo"} else category, "category": category, "sleeve": sleeve, "target_length_cm": float(length_match.group(1)) if length_match else None, "fit": fit, "neckline": neckline, "activity": activity, "usage": usage, "styles": styles, "labels": labels, "source_text": text}
+    if general_shape:
+        labels.append({"slim": "偏瘦", "average": "匀称", "full": "丰满"}[general_shape])
+    return {"family": "tshirt" if category in {"tshirt", "polo"} else category, "category": category, "sleeve": sleeve, "target_length_cm": float(length_match.group(1)) if length_match else None, "fit": fit, "neckline": neckline, "activity": activity, "usage": usage, "styles": styles, "general_shape": general_shape, "labels": labels, "source_text": text}
 
 
 def design_model_config() -> dict[str, Any] | None:
@@ -427,10 +481,38 @@ def _catalog_dimension_guide() -> dict[str, Any]:
         "领型": ["V领", "圆领", "Polo领"],
         "袖长": ["无袖", "短袖", "长袖"],
         "活动量": ["低活动", "中等活动", "高活动"],
+        "身材": ["偏瘦", "匀称", "丰满"],
         "廓形": "H / X / A 等",
         "覆盖度": "覆盖多少身体",
         "视觉重点": "领口 / 上身等",
     }
+
+
+DESIGN_ASSISTANT_SYSTEM_PROMPT = """你是 PatternMate 设计助手。只返回 JSON。
+
+用户在描述「什么样的人、什么场合、什么感觉」时，先根据他说的身份和需求追问，再落到我们的数据库维度。不要只对老人这样问，谁来都要对应着挖一句。
+
+数据库维度互不相同，每轮只问 next_label_field，不要连着把风格、款式、场景问成同一件事：
+- family 品类：T恤 / Polo / 衬衫
+- styles 风格：甜美、街头、简约、通勤、优雅等观感
+- usage 场景：日常休闲、通勤职场、运动场景、时尚场合
+- fit 合体度、neckline 领型、sleeve 袖长、activity 活动量、general_shape 身材
+
+对应追问（每轮只问一件，不超过100字，问完后界面会推出该维度的选项）：
+- 老人、长辈、年纪大：先问身材，不要急着锁 T恤还是衬衫
+- 学生、年轻人：先问风格（甜美/街头/简约等），不要问成「穿什么款式」
+- 上班、通勤、职场：问穿着场景（日常/职场/运动/时尚），不要再问风格标签
+- 运动、跑步、健身：问活动量
+- 想要漂亮、时尚、气质：问更偏向哪种风格
+- 只说舒适、舒服：问身材
+- 旅游、度假：问穿着场景
+- 提到胖、瘦、身材：问清楚偏瘦/匀称/丰满
+- 用户已经点名 T恤/Polo/衬衫：不要再问品类
+
+不要只凭身份或形容词就填写 family、category、styles；没说清就留 null，用问题去挖。
+assistant_message 用用户的语言，一句短问，先复述他刚说的，再只问 next_label_field。
+问法必须和维度一致：styles=更想要哪种风格，usage=主要在什么场合穿，family=T恤、Polo还是衬衫。
+"""
 
 
 def _limit_assistant(text: str, limit: int = 100) -> str:
@@ -462,14 +544,25 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
             "activity": ["low", "medium", "high", None],
             "usage": list(ALLOWED_USAGE_VALUES) + [None],
             "styles": ALLOWED_STYLE_TAGS,
+            "general_shape": ["slim", "average", "full", None],
         },
-        "fields": ["family", "category", "sleeve", "target_length_cm", "fit", "neckline", "activity", "usage", "styles", "labels", "search_query", "assistant_message"],
+        "fields": ["family", "category", "sleeve", "target_length_cm", "fit", "neckline", "activity", "usage", "styles", "general_shape", "labels", "search_query", "assistant_message"],
         "baseline": baseline,
         "conversation": messages or [{"role": "user", "content": text}],
         "assistant_reply_language": "English" if is_english else "Simplified Chinese",
         "search_query_rule": "search_query is one Chinese sentence for CLIP retrieval, using category, fit, sleeve, neckline, style and scene words from the brief.",
-        "ask_rule": "assistant_message is spoken to the user, max 100 characters. Recap confirmed catalog dimensions, then ask the next_label_field dimension so the user can tap a label chip. Do not list all dimensions. Do not invent values outside allowed.",
+        "ask_rule": "Follow the system prompt. assistant_message max 100 characters. Recap what they said, ask only next_label_field. styles=which look/style, usage=which wearing occasion, family=T-shirt/Polo/shirt. Do not ask style three times. Do not invent values outside allowed.",
         "next_label_field": next_label_field,
+        "next_label_ask": {
+            "family": "T恤、Polo 还是衬衫？",
+            "styles": "更想要哪种风格？",
+            "usage": "主要在什么场合穿？",
+            "fit": "松量想要怎样？",
+            "neckline": "领型呢？",
+            "sleeve": "袖长呢？",
+            "activity": "活动量大概怎样？",
+            "general_shape": "身材偏瘦、匀称还是丰满？",
+        }.get(next_label_field or "", ""),
     }
     images = [value for value in (image_data_urls or []) if re.match(r"^data:image/(?:png|jpeg|webp);base64,", value) and len(value) <= 6_000_000]
     user_content: list[dict[str, Any]] = [{"type": "text", "text": json.dumps(schema_prompt, ensure_ascii=False)}]
@@ -479,12 +572,7 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
         "temperature": 0.2,
         "response_format": {"type": "json_object"},
         "messages": [
-            {"role": "system", "content": (
-                "You are PatternMate, a multimodal apparel design assistant. Return JSON only. "
-                "Guide the user to think in our database dimensions: 品类, 场景, 风格, 合体度, 领型, 袖长, 活动量, 廓形, 覆盖度, 视觉重点. "
-                "assistant_message must be at most 100 characters, one short spoken reply. "
-                "After you ask one missing dimension, the product UI pushes label chips for the user to tap."
-            )},
+            {"role": "system", "content": DESIGN_ASSISTANT_SYSTEM_PROMPT},
             {"role": "user", "content": user_content},
         ],
     }, ensure_ascii=False).encode("utf-8")
@@ -512,6 +600,7 @@ def enrich_intent_with_model(text: str, baseline: dict[str, Any], messages: list
         "neckline": {"v-neck", "crew", "polo", None},
         "activity": {"low", "medium", "high", None},
         "usage": set(ALLOWED_USAGE_VALUES) | {None},
+        "general_shape": {"slim", "average", "full", None},
     }
     for key, values in allowed_values.items():
         if parsed.get(key) in values:
@@ -670,30 +759,62 @@ def ranked_references(text: str, tags: list[str], intent: dict[str, Any]) -> lis
 
     query = clip_query_text(text, intent)
     clip_scores = score_clip(IR_INDEX, query)
-    selected = any(intent.get(key) not in (None, "", [], "unknown") for key in ("family", "category", "fit", "usage", "styles", "activity", "sleeve", "neckline"))
     results = []
     for ir in IR_INDEX.values():
         if ir.get("_donor_only"):
             continue
         semantics = ir.get("design_semantics", {})
-        if selected and not _matches_hard_intent(semantics, intent):
-            continue
         score, reasons = score_semantics(semantics, text, tags, intent)
         if clip_scores is not None:
             clip = float(clip_scores.get(str(ir.get("case_id")), 0.0))
             score = round(min(0.99, 0.55 * clip + 0.45 * score), 4)
             reasons = ["CLIP图文相似"] + reasons
         results.append({"case_id": ir.get("case_id"), "score": score, "match_reasons": reasons, "semantics": semantics})
-    if selected:
-        tight = [row for row in results if _matches_selected_fields(row["semantics"], intent, tags)]
-        if tight:
-            results = tight
     results.sort(key=lambda item: (-item["score"], str(item["case_id"])))
     return results
 
 
 def _is_skip_text(text: str) -> bool:
     return text.strip().lower() in {item.lower() for item in SKIP_TEXTS}
+
+
+_NAMED_CATEGORY = re.compile(r"t恤|t-shirt|\btee\b|衬衫|polo|上衣", re.I)
+_PROBE_LEADS = (
+    (re.compile(r"老人|长辈|年纪|年龄大"), "general_shape"),
+    (re.compile(r"学生|年轻|少年|少女"), "styles"),
+    (re.compile(r"上班|通勤|职场|开会|办公"), "usage"),
+    (re.compile(r"运动|跑步|健身|打球"), "activity"),
+    (re.compile(r"漂亮|时尚|好看|气质|优雅"), "styles"),
+    (re.compile(r"旅游|旅行|度假"), "usage"),
+    (re.compile(r"胖|丰满|偏瘦|匀称|身材"), "general_shape"),
+    (re.compile(r"舒适|舒服"), "general_shape"),
+    (re.compile(r"我是|我希望|我想要|帮我"), "styles"),
+)
+
+
+def _named_category(text: str) -> bool:
+    return bool(_NAMED_CATEGORY.search(text or ""))
+
+
+def _probe_lead_field(text: str) -> str | None:
+    if not (text or "").strip() or _named_category(text):
+        return None
+    for pattern, field in _PROBE_LEADS:
+        if pattern.search(text):
+            return field
+    return None
+
+
+def _soften_vague_intent(intent: dict[str, Any], text: str, confirmed: dict[str, Any]) -> dict[str, Any]:
+    if not _probe_lead_field(text):
+        return intent
+    out = dict(intent)
+    if "family" not in confirmed and "category" not in confirmed:
+        out["family"] = None
+        out["category"] = None
+    if "styles" not in confirmed:
+        out["styles"] = []
+    return out
 
 
 def _slot_done(intent: dict[str, Any], field: str, skipped: set[str]) -> bool:
@@ -731,21 +852,26 @@ def _usage_options() -> list[dict[str, str]]:
     return [{"value": value, "label_zh": USAGE_PROMPT_ZH.get(value, CHIP_LABELS_ZH.get(value, value)), "label_en": value} for value in ordered[:4]]
 
 
-def clarification_cards(intent: dict[str, Any], version: int, skipped: list[str] | None = None) -> tuple[list[dict[str, Any]], list[str]]:
+def clarification_cards(intent: dict[str, Any], version: int, skipped: list[str] | None = None, lead_field: str | None = None) -> tuple[list[dict[str, Any]], list[str]]:
     skipped_set = {str(item) for item in (skipped or [])}
-    slots = (
-        ("family", "你更想做哪一类？", "Which garment family?", [
-            {"value": "tshirt", "label_zh": "T恤", "label_en": "T-shirt"},
-            {"value": "polo", "label_zh": "Polo", "label_en": "Polo"},
-            {"value": "shirt", "label_zh": "衬衫", "label_en": "Shirt"},
-        ], True),
-        ("usage", "主要在哪穿？", "Where will you wear it?", _usage_options(), False),
-        ("styles", "更偏向哪种风格？", "Which style feels closer?", _style_options(), False),
-        ("fit", "松量想要怎样？", "Which fit do you prefer?", [_chip_option(value) for value in ("relaxed", "regular", "fitted")], False),
-        ("neckline", "领型呢？", "Which neckline?", [_chip_option(value) for value in ALLOWED_NECKLINE_VALUES], False),
-        ("sleeve", "袖长呢？", "Which sleeve length?", [_chip_option(value) for value in ALLOWED_SLEEVE_VALUES], False),
-        ("activity", "活动量大概怎样？", "How much movement?", [_chip_option(value) for value in ("low", "medium", "high")], False),
-    )
+    family = ("family", "你更想做哪一类？", "Which garment family?", [
+        {"value": "tshirt", "label_zh": "T恤", "label_en": "T-shirt"},
+        {"value": "polo", "label_zh": "Polo", "label_en": "Polo"},
+        {"value": "shirt", "label_zh": "衬衫", "label_en": "Shirt"},
+    ], True)
+    by_field = {
+        "family": family,
+        "general_shape": ("general_shape", "方便说一下身材吗？偏瘦、匀称还是丰满一些？", "What is your build — slim, average, or fuller?", [_chip_option(value) for value in ("slim", "average", "full")], False),
+        "styles": ("styles", "更想要哪种风格？", "Which style look do you want?", _style_options(), False),
+        "usage": ("usage", "主要在什么场合穿？", "Where will you wear it?", _usage_options(), False),
+        "fit": ("fit", "松量想要怎样？", "Which fit do you prefer?", [_chip_option(value) for value in ("relaxed", "regular", "fitted")], False),
+        "neckline": ("neckline", "领型呢？", "Which neckline?", [_chip_option(value) for value in ALLOWED_NECKLINE_VALUES], False),
+        "sleeve": ("sleeve", "袖长呢？", "Which sleeve length?", [_chip_option(value) for value in ALLOWED_SLEEVE_VALUES], False),
+        "activity": ("activity", "活动量大概怎样？", "How much movement?", [_chip_option(value) for value in ("low", "medium", "high")], False),
+    }
+    default = ("family", "usage", "styles", "fit", "neckline", "sleeve", "activity", "general_shape")
+    order = (lead_field, *(name for name in default if name != lead_field)) if lead_field in by_field else default
+    slots = tuple(by_field[name] for name in order)
     for field, title_zh, title_en, options, required in slots:
         if _slot_done(intent, field, skipped_set) or not options:
             continue
@@ -772,27 +898,75 @@ def _fallback_assistant(intent: dict[str, Any], cards: list[dict[str, Any]], is_
     return "Click a reference on the right to confirm." if is_english else "右侧已按当前需求排好，点一张图确认参考款。"
 
 
+def _options_for_field(field: str) -> list[dict[str, str]]:
+    cards, _ = clarification_cards({}, 0, None, field)
+    if not cards or cards[0].get("field") != field:
+        return []
+    return [option for option in cards[0].get("options") or [] if option.get("value") != "_skip"]
+
+
+def _match_field_reply(text: str, field: str) -> str | None:
+    raw = (text or "").strip()
+    if not raw or _is_skip_text(raw):
+        return None
+    lowered = raw.lower()
+    for option in _options_for_field(field):
+        aliases = {
+            str(option.get("value") or "").lower(),
+            str(option.get("label_zh") or "").strip(),
+            str(option.get("label_en") or "").strip().lower(),
+        }
+        if raw in aliases or lowered in aliases:
+            return str(option["value"])
+    return None
+
+
+def _lock_open_field(last: str, intent: dict[str, Any], confirmed: dict[str, Any], skipped: list[str], lead_field: str | None) -> None:
+    _, asking = clarification_cards(intent, 0, skipped, lead_field)
+    if not last or not asking:
+        return
+    field = asking[0]
+    if _is_skip_text(last):
+        if field not in skipped:
+            skipped.append(field)
+        return
+    matched = _match_field_reply(last, field)
+    if not matched:
+        return
+    if field == "styles":
+        confirmed[field] = [matched]
+    else:
+        confirmed[field] = matched
+
+
 def conversation_response(request: DesignConversationRequest) -> dict[str, Any]:
     user_messages = [message.content.strip() for message in request.messages if message.role == "user" and message.content.strip()]
-    text = "；".join(item for item in user_messages if not _is_skip_text(item))
-    baseline = parse_design_intent(text) if text else dict(request.current_intent)
-    confirmed = {key: value for key, value in request.confirmed.items() if not str(key).startswith("_") and value not in (None, "", [])}
-    baseline.update(confirmed)
-    skipped = [str(item) for item in (request.confirmed.get("_skipped") or []) if item]
     last = user_messages[-1] if user_messages else ""
-    if last and _is_skip_text(last):
-        _, gap = clarification_cards(baseline, 0, skipped)
-        if gap and gap[0] not in skipped:
-            skipped.append(gap[0])
+    prior_messages = [item for item in user_messages[:-1] if not _is_skip_text(item)]
+    text = "；".join(item for item in user_messages if not _is_skip_text(item))
+    confirmed = {key: value for key, value in request.confirmed.items() if not str(key).startswith("_") and value not in (None, "", [])}
+    skipped = [str(item) for item in (request.confirmed.get("_skipped") or []) if item]
+    prior_intent = dict(request.current_intent or {})
+    if not prior_intent and prior_messages:
+        prior_intent = parse_design_intent("；".join(prior_messages))
+    prior_intent.update(confirmed)
+    lead_field = _probe_lead_field(last) or _probe_lead_field(text)
+    _lock_open_field(last, prior_intent, confirmed, skipped, lead_field)
+    baseline = parse_design_intent(text) if text else dict(request.current_intent)
+    baseline.update(confirmed)
+    baseline = _soften_vague_intent(baseline, last, confirmed)
     conversation_history = [{"role": message.role, "content": message.content} for message in request.messages]
-    skip_model = request.skip_model or not text or bool(last and _is_skip_text(last))
-    _, next_gap = clarification_cards(baseline, 0, skipped)
+    skip_model = request.skip_model or not text
+    _, next_gap = clarification_cards(baseline, 0, skipped, lead_field)
     next_label_field = next_gap[0] if next_gap else None
     if skip_model:
         intent, model_assistant, model_used = baseline, None, False
     else:
         intent, model_assistant, model_used = enrich_intent_with_model(text, baseline, conversation_history, request.language, request.image_data_urls, next_label_field)
     intent.update(confirmed)
+    intent = _soften_vague_intent(intent, last, confirmed)
+    if next_label_field and next_label_field not in confirmed:
+        intent[next_label_field] = [] if next_label_field == "styles" else None
     confirmed_tags: list[str] = []
     for key, value in confirmed.items():
         if isinstance(value, str):
@@ -801,13 +975,14 @@ def conversation_response(request: DesignConversationRequest) -> dict[str, Any]:
             confirmed_tags.extend(str(item) for item in value)
     results = ranked_references(text, confirmed_tags, intent)
     version = request.intent_version + 1
-    cards, unresolved = clarification_cards(intent, version, skipped)
+    cards, unresolved = clarification_cards(intent, version, skipped, lead_field)
     is_english = request.language.lower().startswith("en")
     if is_english and model_assistant and re.search(r"[\u4e00-\u9fff]", model_assistant):
         model_assistant = None
     assistant = _limit_assistant(model_assistant or _fallback_assistant(intent, cards, is_english, bool(user_messages)))
-    summary_keys = {"family", "category", "fit", "neckline", "sleeve", "target_length_cm", "activity", "usage", "styles"}
+    summary_keys = {"family", "category", "fit", "neckline", "sleeve", "target_length_cm", "activity", "usage", "styles", "general_shape"}
     confirmed_out = dict(request.confirmed)
+    confirmed_out.update(confirmed)
     confirmed_out["_skipped"] = skipped
     return {
         "intent_version": version,
@@ -854,7 +1029,7 @@ def svg_for_ir(ir: dict[str, Any], view: str = "all") -> str:
         "sleeve_placket": "#d29a45", "sleeve_placket_extension": "#d29a45",
         "reference": "#b0a8a0",
     }
-    seam_roles = {"side_seam", "shoulder_seam", "armhole_seam", "sleeve_underarm_seam", "yoke_seam", "collar_attach_line", "cuff_attach_line", "rib_cuff_attach", "rib_hem_attach"}
+    seam_roles = {"side_seam", "shoulder_seam", "armhole_seam", "sleeve_underarm_seam", "yoke_seam", "collar_attach_line", "cuff_attach_line", "rib_cuff_attach", "rib_hem_attach", "sew", "net_boundary", "seam_allowance"}
     fold_roles = {"pleat_line", "collar_roll_line", "center_front", "center_back", "placket_line", "sleeve_placket_line"}
     for entity in entities:
         raw = entity.get("geometry", {}).get("points", [])
@@ -870,7 +1045,7 @@ def svg_for_ir(ir: dict[str, Any], view: str = "all") -> str:
         display_flag = "1" if display_only else "0"
         color = role_colors.get(role, "#777286")
         dash = ";stroke-dasharray:7 5" if line_kind == "fold" else ";stroke-dasharray:3 3" if line_kind == "seam" else ""
-        weight = stroke_width * (2.2 if line_kind == "notch" else 0.75 if display_only else 1.0)
+        weight = stroke_width * (2.2 if line_kind == "notch" else 0.7 if line_role == "internal" else 0.75 if display_only else 1.0)
         lines.append(
             f'<polyline data-piece-role="{escape(role)}" data-line-kind="{line_kind}" data-line-role="{escape(line_role)}" '
             f'data-display-only="{display_flag}" '
@@ -901,7 +1076,20 @@ def health() -> dict[str, Any]:
     shirt_count = sum(1 for ir in IR_INDEX.values() if ir.get("_source_format") == "shirt_pattern_ir_v2")
     public_ir_count = sum(1 for ir in IR_INDEX.values() if not ir.get("_donor_only"))
     donor_only_count = len(IR_INDEX) - public_ir_count
-    return {"ok": True, "service_build": "prototype-parametric-v2", "ir_root": str(READY), "ir_count": public_ir_count, "component_donor_count": donor_only_count, "tshirt_v2_count": tshirt_count, "shirt_v2_count": shirt_count, "dxf_count": len(DXF_INDEX), "pattern_options": len(PATTERN_CATALOG["options"])}
+    return {
+        "ok": True,
+        "service_build": "prototype-parametric-v2",
+        "ir_root": str(READY),
+        "ir_count": public_ir_count,
+        "component_donor_count": donor_only_count,
+        "tshirt_v2_count": tshirt_count,
+        "shirt_v2_count": shirt_count,
+        "dxf_count": len(DXF_INDEX),
+        "pattern_options": len(PATTERN_CATALOG["options"]),
+        "disk_free_mb": (os.statvfs(ROOT).f_bavail * os.statvfs(ROOT).f_frsize) // (1024 * 1024),
+        "compose_inflight": _COMPOSE_INFLIGHT_COUNT,
+        "compose_cache": len(_COMPOSE_CACHE),
+    }
 
 
 @app.get("/pattern-catalog")
@@ -912,11 +1100,31 @@ def get_pattern_catalog() -> dict[str, Any]:
 _CATALOG_CACHE: dict[str, Any] | None = None
 
 
+def _cover_roots() -> list[Path]:
+    roots: list[Path] = []
+    for path in (WWW_ROOT, PUBLIC_ROOT, ROOT / "apps" / "web" / "public"):
+        if path.exists() and path not in roots:
+            roots.append(path)
+    return roots
+
+
 def _cover_url(case_id: str, ir: dict[str, Any]) -> str:
-    image_version = "v2" if str(ir.get("_source_format")).endswith("pattern_ir_v2") else "v1"
-    image_dir = PUBLIC_ROOT / "reference-images" / image_version / case_id
-    cover = next((candidate for candidate in ("cover.png", "cover.jpg", "cover.jpeg", "cover.webp") if (image_dir / candidate).exists()), "cover.jpg")
-    return f"/reference-images/{image_version}/{case_id}/{cover}"
+    versions = ("v2", "v1") if str(ir.get("_source_format")).endswith("pattern_ir_v2") else ("v1", "v2")
+    names = ("cover.png", "cover.jpg", "cover.jpeg", "cover.webp")
+    for version in versions:
+        for root in _cover_roots():
+            image_dir = root / "reference-images" / version / case_id
+            cover = next((name for name in names if (image_dir / name).exists()), None)
+            if cover:
+                return f"/reference-images/{version}/{case_id}/{cover}"
+    return f"/reference-images/v2/{case_id}/cover.png"
+
+
+def _assert_disk(path: Path, min_mb: int = 256) -> None:
+    usage = os.statvfs(path)
+    free_mb = (usage.f_bavail * usage.f_frsize) // (1024 * 1024)
+    if free_mb < min_mb:
+        raise HTTPException(status_code=507, detail=f"磁盘空间不足（剩余 {free_mb} MB），请清理后重试")
 
 
 def _ir_path(case_id: str) -> Path:
@@ -1034,9 +1242,184 @@ def save_relabel(case_id: str, request: RelabelSaveRequest) -> dict[str, Any]:
     return relabel_case(case_id)
 
 
+PRINT_DESIGNER_SYSTEM_PROMPT = """你是 PatternMate 的印花创作师。只返回 JSON。
+引导用户设计上衣印花，先锁定类型，再问图案细节，再问位置或密度，最后才允许出图。
+
+内置三类 type：
+- small 小印花：局部小图案，如胸口小标、袖标
+- chest 胸前印花：胸前主视觉
+- allover 全身印花：满幅连续纹样，必须问排列密集程度 density=sparse|medium|dense
+
+规则：
+- 每轮只问下一件，先短复述用户刚说的，再提问。assistant_message 不超过 80 字。
+- 没锁定 type 时，只引导选择小印花 / 胸前印花 / 全身印花。
+- 已有 type 但没有 motif 时，问图案内容、风格、颜色，可让用户上传参考图。
+- motif 要累计用户提过的题材、颜色、风格，不要只留最后一句。
+- style_prompt 必须是一句完整生图描述，综合全部对话里的类型、题材、颜色、风格、位置或密度，每次更新。
+- small/chest 有 motif 后问 placement：left|center|right，并说明会在前片标出放置框。
+- allover 有 motif 后问 density。
+- ready_to_generate=true 仅当 type、motif 已有，且（small/chest 有 placement，或 allover 有 density）。
+- 用户说生成、出图、看看效果时，若信息够就 ready_to_generate=true。
+- 用用户的语言回答。不要编造用户没提的图案。
+"""
+
+
+class PrintConversationRequest(BaseModel):
+    messages: list[ConversationMessage] = Field(default_factory=list)
+    language: str = "zh"
+    brief: dict[str, Any] = Field(default_factory=dict)
+    image_data_urls: list[str] = Field(default_factory=list, max_length=2)
+
+
+def _merge_print_brief(brief: dict[str, Any], text: str, parsed: dict[str, Any] | None = None) -> dict[str, Any]:
+    next_brief = {
+        "type": brief.get("type"),
+        "motif": brief.get("motif") or "",
+        "style_prompt": brief.get("style_prompt") or "",
+        "placement": brief.get("placement"),
+        "density": brief.get("density"),
+        "ready_to_generate": False,
+    }
+    if re.search(r"全身|满印|满幅|all[- ]?over", text, re.I):
+        next_brief["type"] = "allover"
+    elif re.search(r"胸前|胸口|胸印|chest", text, re.I):
+        next_brief["type"] = "chest"
+    elif re.search(r"小印花|小图案|袖标|logo", text, re.I):
+        next_brief["type"] = "small"
+    if parsed:
+        if parsed.get("type") in {"small", "chest", "allover"}:
+            next_brief["type"] = parsed["type"]
+        if isinstance(parsed.get("motif"), str) and parsed["motif"].strip():
+            incoming = parsed["motif"].strip()
+            current = next_brief["motif"]
+            next_brief["motif"] = incoming[:240] if not current else (current if incoming in current else f"{current}，{incoming}"[:240])
+        if isinstance(parsed.get("style_prompt"), str) and parsed["style_prompt"].strip():
+            next_brief["style_prompt"] = parsed["style_prompt"].strip()[:400]
+    if len(text) >= 4 and not re.search(r"小印花|胸前印花|全身印花|生成|出图|偏左|偏右|居中|疏一些|密一些|适中", text):
+        current = next_brief["motif"]
+        if text not in current:
+            next_brief["motif"] = (f"{current}，{text}" if current else text)[:240]
+    if next_brief.get("motif"):
+        if parsed and parsed.get("placement") in {"left", "center", "right"}:
+            next_brief["placement"] = parsed["placement"]
+        if parsed and parsed.get("density") in {"sparse", "medium", "dense"}:
+            next_brief["density"] = parsed["density"]
+        if re.search(r"偏左|左边", text) or re.fullmatch(r"left", text, re.I):
+            next_brief["placement"] = "left"
+        elif re.search(r"偏右|右边", text) or re.fullmatch(r"right", text, re.I):
+            next_brief["placement"] = "right"
+        elif re.search(r"居中|中间", text) or re.fullmatch(r"center", text, re.I):
+            next_brief["placement"] = "center"
+        if re.search(r"很密|密集|密一些", text) or re.fullmatch(r"dense", text, re.I):
+            next_brief["density"] = "dense"
+        elif re.search(r"疏|稀疏", text) or re.fullmatch(r"sparse", text, re.I):
+            next_brief["density"] = "sparse"
+        elif re.search(r"适中", text) or re.fullmatch(r"medium", text, re.I):
+            next_brief["density"] = "medium"
+    ready = bool(next_brief["type"] and next_brief["motif"] and (
+        (next_brief["type"] == "allover" and next_brief["density"]) or
+        (next_brief["type"] in {"small", "chest"} and next_brief["placement"])
+    ))
+    if ready and ((parsed or {}).get("ready_to_generate") or re.search(r"生成|出图|看看效果", text)):
+        next_brief["ready_to_generate"] = True
+    return next_brief
+
+
+def _print_options(brief: dict[str, Any], language: str) -> list[dict[str, str]]:
+    zh = not language.lower().startswith("en")
+    if not brief.get("type"):
+        return [
+            {"value": "small", "label_zh": "小印花", "label_en": "Small motif"},
+            {"value": "chest", "label_zh": "胸前印花", "label_en": "Chest print"},
+            {"value": "allover", "label_zh": "全身印花", "label_en": "All-over print"},
+        ]
+    if not brief.get("motif"):
+        return []
+    if brief["type"] == "allover" and not brief.get("density"):
+        return [
+            {"value": "sparse", "label_zh": "疏一些", "label_en": "Sparse"},
+            {"value": "medium", "label_zh": "适中", "label_en": "Medium"},
+            {"value": "dense", "label_zh": "密一些", "label_en": "Dense"},
+        ]
+    if brief["type"] in {"small", "chest"} and not brief.get("placement"):
+        return [
+            {"value": "left", "label_zh": "偏左", "label_en": "Left"},
+            {"value": "center", "label_zh": "居中", "label_en": "Center"},
+            {"value": "right", "label_zh": "偏右", "label_en": "Right"},
+        ]
+    if brief.get("type") and brief.get("motif") and ((brief["type"] == "allover" and brief.get("density")) or brief.get("placement")):
+        return [{"value": "generate", "label_zh": "生成印花图", "label_en": "Generate prints"}]
+    return []
+
+
+def print_conversation_response(request: PrintConversationRequest) -> dict[str, Any]:
+    messages = [{"role": message.role, "content": message.content} for message in request.messages if message.content.strip()]
+    last = next((item["content"] for item in reversed(messages) if item["role"] == "user"), "")
+    brief = _merge_print_brief(request.brief or {}, last)
+    parsed: dict[str, Any] | None = None
+    assistant = ""
+    config = design_model_config()
+    if config and last:
+        payload = json.dumps({
+            "model": config["name"],
+            "temperature": 0.4,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": PRINT_DESIGNER_SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps({
+                    "language": "English" if request.language.lower().startswith("en") else "Simplified Chinese",
+                    "current_brief": brief,
+                    "conversation": messages[-12:],
+                    "return": ["assistant_message", "type", "motif", "style_prompt", "placement", "density", "ready_to_generate"],
+                }, ensure_ascii=False)},
+            ],
+        }, ensure_ascii=False).encode("utf-8")
+        try:
+            http = urllib.request.Request(
+                f"{config['base_url']}/chat/completions",
+                data=payload,
+                headers={"Authorization": f"Bearer {config['key']}", "Content-Type": "application/json"},
+                method="POST",
+            )
+            context = None if config["verify"] else ssl._create_unverified_context()
+            with urllib.request.urlopen(http, timeout=config["timeout"], context=context) as response:
+                body = json.loads(response.read().decode("utf-8"))
+            content = re.sub(r"^```(?:json)?\s*|\s*```$", "", body["choices"][0]["message"]["content"].strip())
+            parsed = json.loads(content)
+            assistant = str(parsed.get("assistant_message") or "")
+            brief = _merge_print_brief(brief, last, parsed)
+        except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+            parsed = None
+    if not assistant:
+        if not brief.get("type"):
+            assistant = "先选一种印花方式：小印花、胸前印花，还是全身印花？"
+        elif not brief.get("motif"):
+            assistant = "想印什么图案？可以说风格、颜色，也可以上传参考图。"
+        elif brief.get("type") == "allover" and not brief.get("density"):
+            assistant = "全身印花的排列要疏一些、适中，还是密一些？"
+        elif brief.get("type") in {"small", "chest"} and not brief.get("placement"):
+            assistant = "图案放在前片偏左、居中，还是偏右？我会在纸样上标出放置区。"
+        else:
+            assistant = "前片放置区已标好。可以先出4张印花图，选一张再生成穿着效果。"
+        if request.language.lower().startswith("en"):
+            assistant = {
+                "先选一种印花方式：小印花、胸前印花，还是全身印花？": "Choose a print type: small motif, chest print, or all-over.",
+                "想印什么图案？可以说风格、颜色，也可以上传参考图。": "What motif do you want? Describe style and color, or upload a reference.",
+                "全身印花的排列要疏一些、适中，还是密一些？": "Should the all-over repeat be sparse, medium, or dense?",
+                "图案放在前片偏左、居中，还是偏右？我会在纸样上标出放置区。": "Place it left, center, or right on the front piece? I will mark the zone.",
+                "前片放置区已标好。可以先出4张印花图，选一张再生成穿着效果。": "The front-piece zone is marked. Generate 4 print artworks, then pick one for the garment look.",
+            }.get(assistant, assistant)
+    return {"assistant_message": _limit_assistant(assistant, 80), "brief": brief, "options": _print_options(brief, request.language)}
+
+
 @app.post("/design/conversation")
 def design_conversation(request: DesignConversationRequest) -> dict[str, Any]:
     return conversation_response(request)
+
+
+@app.post("/print/conversation")
+def print_conversation(request: PrintConversationRequest) -> dict[str, Any]:
+    return print_conversation_response(request)
 
 
 @app.post("/design/conversation/correction")
@@ -1142,11 +1525,21 @@ def generate_preview(request: PreviewRequest) -> Any:
 
 @app.post("/compose")
 async def compose(request: CompositionRecipe) -> Any:
-    entities, meta = await asyncio.to_thread(run_composition, request)
+    entities, meta = await asyncio.to_thread(run_composition_cached, request)
+    version_svgs = [
+        {
+            "id": row["id"],
+            "label": row["label"],
+            "svg": svg_for_ir({"atomic_entities": (meta.get("_version_entities") or {}).get(row["id"]) or entities}),
+        }
+        for row in (meta.get("versions") or [])
+    ]
     return {
         "status": meta["status"],
         "recipe_hash": meta["recipe_hash"],
         "svg": svg_for_ir({"atomic_entities": entities}),
+        "version_id": meta.get("version_id") or (version_svgs[-1]["id"] if version_svgs else "current"),
+        "versions": version_svgs,
         "pieces": meta["pieces"],
         "paper_info": meta["paper_info"],
         "sources": meta["sources"],
@@ -1276,6 +1669,129 @@ def used_print_asset_ids(print_config: dict[str, Any]) -> set[str]:
     return used
 
 
+_GROUP_ZH = {
+    "neckline": "领口", "sleeve": "袖型", "garment_length": "衣长", "special": "特殊设计",
+    "silhouette": "廓形", "collar": "领型", "placket": "前门襟", "cuff": "袖口",
+}
+_SEX_ZH = {"female": "女装国标", "male_general": "男装通用"}
+_FAMILY_ZH = {"tshirt": "T恤", "shirt": "衬衫"}
+_MEAS_ZH = {
+    "height": "身高 cm", "chest": "胸围 cm", "waist": "腰围 cm", "shoulder": "肩宽 cm",
+    "neck": "领围 cm", "sleeveLength": "袖长 cm", "upperArm": "上臂围 cm", "weight": "体重 kg",
+}
+_ROLE_ZH = {
+    "front_body": "前片", "back_body": "后片", "sleeve": "袖片", "neck_binding": "领条",
+    "collar": "领面", "collar_stand": "领座", "cuff": "袖口", "sleeve_placket": "袖开衩",
+    "front_placket": "门襟", "back_yoke": "后育克", "front_left": "左前片", "front_right": "右前片",
+}
+
+
+def _option_label(option_id: str | None) -> str:
+    if not option_id:
+        return "—"
+    for option in PATTERN_CATALOG.get("options") or []:
+        if option.get("id") == option_id:
+            return str(option.get("label_zh") or option_id)
+    return str(option_id)
+
+
+def _decode_data_url(value: object) -> tuple[bytes, str] | None:
+    if not isinstance(value, str) or not value.startswith("data:"):
+        return None
+    header, _, encoded = value.partition(",")
+    if not encoded:
+        return None
+    extension = "jpg" if "jpeg" in header or "jpg" in header else "webp" if "webp" in header else "png"
+    try:
+        return base64.b64decode(encoded), extension
+    except (ValueError, TypeError):
+        return None
+
+
+def _write_data_url(root: Path, stem: str, value: object) -> Path | None:
+    decoded = _decode_data_url(value)
+    if not decoded:
+        return None
+    payload, extension = decoded
+    path = root / f"{stem}.{extension}"
+    path.write_bytes(payload)
+    return path
+
+
+def _safe_filename(name: str) -> str:
+    cleaned = re.sub(r"[^\w\u4e00-\u9fff.\-]+", "_", name, flags=re.UNICODE).strip("._")
+    return (cleaned or "experiment")[:80]
+
+
+def _ascii_filename(name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("._")
+    return (cleaned or "experiment")[:80]
+
+
+def write_tech_sheet(project_name: str, recipe: CompositionRecipe, meta: dict[str, Any], design: dict[str, Any]) -> str:
+    experiment = design.get("experiment") if isinstance(design.get("experiment"), dict) else {}
+    measurements = recipe.measurements_cm or experiment.get("measurements") or {}
+    selections = recipe.selections or {}
+    profile = meta.get("sizing_profile") or {}
+    pieces = meta.get("pieces") or []
+    sources = meta.get("sources") or {}
+    rows: list[str] = []
+
+    def row(label: str, value: object) -> None:
+        rows.append(f"<tr><th>{escape(str(label))}</th><td>{escape(str(value if value not in (None, '') else '—'))}</td></tr>")
+
+    row("实验记录", project_name)
+    row("导出时间", datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M"))
+    row("品类", _FAMILY_ZH.get(recipe.family, recipe.family))
+    row("号型体系", _SEX_ZH.get(recipe.sex, recipe.sex))
+    row("基础模板", recipe.base_case_id)
+    row("纸样哈希", meta.get("recipe_hash") or "")
+    for key, label in _MEAS_ZH.items():
+        if key in measurements:
+            row(label, measurements.get(key))
+    row("放松量 cm", recipe.ease_cm)
+    row("合体度", recipe.fit)
+    for group, option_id in selections.items():
+        row(_GROUP_ZH.get(group, group), _option_label(option_id))
+    row("面料", experiment.get("fabric") or recipe.material_id or "—")
+    row("颜色", experiment.get("color") or recipe.fabric_color)
+    row("工艺", experiment.get("process") or "—")
+    for axis in ("width", "length", "shoulder", "armhole", "neck", "sleeve_length", "sleeve_width", "cuff"):
+        if axis in profile:
+            try:
+                row(f"放码·{axis}", f"{float(profile[axis]):.4f}")
+            except (TypeError, ValueError):
+                row(f"放码·{axis}", profile[axis])
+    for piece in pieces:
+        role = str(piece.get("role") or "")
+        label = _ROLE_ZH.get(role, role)
+        size = f"{piece.get('width_mm', '—')} × {piece.get('height_mm', '—')} mm"
+        row(f"裁片 {label}", size)
+    if isinstance(sources, dict):
+        for group, source in sources.items():
+            if isinstance(source, dict) and source.get("case_id"):
+                row(f"供体 {_GROUP_ZH.get(group, group)}", source.get("case_id"))
+            elif group == "base":
+                row("供体 基础", source)
+    intent = experiment.get("intent") or []
+    if isinstance(intent, list) and intent:
+        row("设计意图", " / ".join(str(item) for item in intent[-6:]))
+    warnings = (meta.get("validation") or {}).get("warnings") or []
+    if warnings:
+        row("校验备注", "；".join(str(item) for item in warnings[:8]))
+    return (
+        "<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>"
+        f"<title>{escape(project_name)} 工艺单</title>"
+        "<style>body{font:14px/1.6 -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;"
+        "color:#333;max-width:820px;margin:32px auto;padding:0 20px}h1{font-size:22px;margin:0 0 8px}"
+        "p{color:#666}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px 10px;"
+        "text-align:left;vertical-align:top}th{width:28%;background:#f7f4ef;font-weight:600}"
+        "@media print{body{margin:0}}</style></head><body>"
+        f"<h1>{escape(project_name)}</h1><p>PatternMate 实验记录 / 生产工艺单</p>"
+        f"<table>{''.join(rows)}</table></body></html>"
+    )
+
+
 @app.post("/review-decisions")
 def record_review_decision(request: ReviewDecisionRequest) -> dict[str, Any]:
     try:
@@ -1298,8 +1814,10 @@ def record_review_decision(request: ReviewDecisionRequest) -> dict[str, Any]:
 
 @app.post("/export")
 async def export_production(request: ProductionRequest) -> Any:
-    entities, meta = await asyncio.to_thread(run_composition, request.recipe)
-    if not meta["validation"]["trial_ready"]:
+    _assert_disk(Path(tempfile.gettempdir()))
+    _assert_disk(ROOT)
+    entities, meta = await asyncio.to_thread(run_composition_cached, request.recipe)
+    if request.recipe.family != "shirt" and not meta["validation"]["trial_ready"]:
         raise HTTPException(status_code=422, detail={"message": "当前组合未通过自动几何校验", "validation": meta["validation"]})
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -1308,6 +1826,54 @@ async def export_production(request: ProductionRequest) -> Any:
         validation = root / "geometry_validation.json"
         review_ledger = root / "review-ledger.json"
         design_manifest = json.loads(json.dumps(request.design, ensure_ascii=False))
+        extra_files: list[Path] = []
+        preview_file = _write_data_url(root, "最终效果图", design_manifest.pop("preview_data_url", None))
+        cover_file = _write_data_url(root, "模板", design_manifest.pop("template_cover_data_url", None))
+        generated_dir = root / "生成图"
+        generated_names: list[str] = []
+        for index, item in enumerate(design_manifest.pop("generated_previews", []) or [], 1):
+            if not isinstance(item, dict):
+                continue
+            generated_dir.mkdir(exist_ok=True)
+            stem = _safe_filename(str(item.get("name") or f"V{index}"))
+            written = _write_data_url(generated_dir, stem, item.get("data_url"))
+            if written:
+                extra_files.append(written)
+                generated_names.append(f"生成图/{written.name}")
+        if preview_file:
+            extra_files.append(preview_file)
+            design_manifest["preview_file"] = preview_file.name
+        if cover_file:
+            extra_files.append(cover_file)
+            design_manifest["template_cover_file"] = cover_file.name
+        if generated_names:
+            design_manifest["generated_files"] = generated_names
+        tech_sheet = root / "工艺单.html"
+        tech_sheet.write_text(write_tech_sheet(request.project_name, request.recipe, meta, design_manifest), encoding="utf-8")
+        extra_files.append(tech_sheet)
+        record = root / "experiment_record.json"
+        record.write_text(
+            json.dumps(
+                {
+                    "name": request.project_name,
+                    "recipe": request.recipe.model_dump(),
+                    "experiment": design_manifest.get("experiment") or {},
+                    "recipe_hash": meta.get("recipe_hash"),
+                    "pieces": meta.get("pieces"),
+                    "sizing_profile": meta.get("sizing_profile"),
+                    "sources": meta.get("sources"),
+                    "preview_file": design_manifest.get("preview_file"),
+                    "template_cover_file": design_manifest.get("template_cover_file"),
+                    "generated_files": generated_names,
+                    "tech_sheet": tech_sheet.name,
+                    "dxf": dxf.name,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        extra_files.append(record)
         print_assets: list[Path] = []
         print_config = design_manifest.get("print") if isinstance(design_manifest, dict) else None
         if isinstance(print_config, dict):
@@ -1370,9 +1936,16 @@ async def export_production(request: ProductionRequest) -> Any:
             bundle.write(validation, validation.name)
             if review_ledger.exists():
                 bundle.write(review_ledger, review_ledger.name)
+            for extra in extra_files:
+                bundle.write(extra, extra.relative_to(root).as_posix())
             for print_asset in print_assets:
                 bundle.write(print_asset, print_asset.name)
         archive.seek(0)
         from fastapi.responses import StreamingResponse
-        filename = f"smart-pattern-{request.recipe.base_case_id}-{meta['recipe_hash']}-trial.zip"
-        return StreamingResponse(archive, media_type="application/zip", headers={"content-disposition": f"attachment; filename={filename}"})
+        ascii_name = f"{_ascii_filename(request.project_name)}-{request.recipe.base_case_id}-production.zip"
+        utf_name = quote(f"{request.project_name}-生产文件包.zip")
+        return StreamingResponse(
+            archive,
+            media_type="application/zip",
+            headers={"content-disposition": f"attachment; filename={ascii_name}; filename*=UTF-8''{utf_name}"},
+        )

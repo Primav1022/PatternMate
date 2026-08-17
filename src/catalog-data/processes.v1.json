@@ -3,6 +3,7 @@
   "processes":[
     {"id":"process.print","slug":"print","label_zh":"印花工艺","thumbnail":"/ui-assets/v1/process-options/print/thumbnail.png"},
     {"id":"process.brushed-distressed","slug":"brushed-distressed","label_zh":"磨毛做旧工艺","thumbnail":"/ui-assets/v1/process-options/brushed-distressed/thumbnail.png"},
-    {"id":"process.tie-dye","slug":"tie-dye","label_zh":"扎染工艺","thumbnail":"/ui-assets/v1/process-options/tie-dye/thumbnail.png"}
+    {"id":"process.tie-dye","slug":"tie-dye","label_zh":"扎染工艺","thumbnail":"/ui-assets/v1/process-options/tie-dye/thumbnail.png"},
+    {"id":"process.none","slug":"none","label_zh":"无工艺","thumbnail":"/ui-assets/v1/process-options/none/thumbnail.jpg"}
   ]
 }

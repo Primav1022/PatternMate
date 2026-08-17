@@ -1,11 +1,11 @@
 """T-shirt compose: piece swap (拼贴) then structure-point grading (放码).
 
-Pipeline id: ``tshirt.simple_piece_swap.v1``
+Pipeline id: ``tshirt.simple_piece_swap.v2``
 
 袖型: puff/set-in/bell/regular 只换袖片；raglan/batwing 换衣身+袖；flutter 换衣身去袖。
-领口: V领/一字肩/圆领只改前后片领圈线；Polo/高领/堆堆领换前后片。
+领口: 双前片时 V领=斜直线、一字肩=水平直线+侧缝延长，其余领口不动；单前片仍重绘领圈。Polo/高领/堆堆领换前后片。
 衣长/衣宽/领围: 结构点放码（侧缝外放、胸围线以下加长、只动领圈）。
-袖山在衣身改完后按袖窿弧长缩放。
+袖山按针织工业逻辑：矮袖山、前后弧对袖窿，袖长只加在袖肥线以下。
 """
 from __future__ import annotations
 
@@ -50,8 +50,11 @@ LENGTH_FACTOR = {"short": 0.92, "regular": 1.0, "long": 1.10}
 SLEEVE_CAP_ROLES = {"sleeve_cap", "sleeve_cap_front", "sleeve_cap_back", "sleeve_head"}
 SLEEVE_INTERFACE_ROLES = SLEEVE_CAP_ROLES | {"armhole_front", "armhole_back", "armhole_seam"}
 SLEEVE_LINE_KEEP = SLEEVE_CAP_ROLES | {
+    "cut",
     "cut_line",
     "pattern_boundary",
+    "sew",
+    "internal",
     "grainline",
     "sleeve_hem",
     "sleeve_underarm",
@@ -347,7 +350,12 @@ def _morph_sleeve_caps_to_armholes(
 
 
 def _annotate(ir: dict[str, Any]) -> list[dict[str, Any]]:
+    from compose_ir import entities_from_compose, load_compose
     from composition_engine import _annotated_entities, prefer_piece_cut_outlines
+
+    compose = ir.get("_compose_ir") or load_compose(str(ir.get("case_id") or ""))
+    if compose:
+        return entities_from_compose(compose)
 
     # IR = semantic labels on DXF-derived polylines. Bind piece_instances;
     # drop unmatched fused DXF lines (no piece_id) from compose.
@@ -493,6 +501,31 @@ def _looks_like_body(rows: list[dict[str, Any]], body_wh: tuple[float, float] | 
     )
 
 
+def _usable_sleeve_panel(rows: list[dict[str, Any]], body_wh: tuple[float, float] | None = None) -> bool:
+    """Reject nest strips / plackets / puff-cuffs mislabeled as sleeves."""
+    w, h = _piece_wh(rows)
+    if min(w, h) < 80.0:
+        return False
+    if max(w, h) / min(w, h) > 4.2:
+        return False
+    if body_wh and min(body_wh) > 1:
+        bw, bh = body_wh
+        if w > bw * 1.25 or h > max(bh, 400.0) * 1.45:
+            return False
+        # Gathered hem band (e.g. C2431105) is short-wide, not a sleeve body.
+        if max(w, h) / min(w, h) > 2.4 and min(w, h) < bh * 0.42:
+            return False
+    return True
+
+
+def _has_usable_sleeves(entities: list[dict[str, Any]], host_ref: list[dict[str, Any]] | None = None) -> bool:
+    body_wh = _mean_body_wh(host_ref or entities) or _mean_body_wh(entities)
+    for rows in _group_by_piece([entity for entity in entities if _role(entity) in PURE_SLEEVE_ROLES]).values():
+        if _usable_sleeve_panel(_largest_cluster(rows), body_wh):
+            return True
+    return False
+
+
 def _sleeve_panel_score(rows: list[dict[str, Any]], body_wh: tuple[float, float] | None) -> float:
     """Prefer a real sleeve panel over nest leftovers / unknown slabs / flat hems."""
     labeled = [
@@ -553,7 +586,7 @@ def _pick_sleeve_panels(
     scored = [(score, rows) for score, rows in scored if score > 0]
     scored.sort(key=lambda item: item[0], reverse=True)
     if not scored:
-        fallback = [rows for rows in pieces if not _looks_like_body(rows, body_wh)]
+        fallback = [rows for rows in pieces if _usable_sleeve_panel(rows, body_wh)]
         return fallback[:1] if fallback else []
     best_score, best = scored[0]
     kept = [best]
@@ -594,7 +627,11 @@ def _select_sleeve_pieces(
     }
     donor_pieces = {pid: _largest_cluster(rows) for pid, rows in _group_by_piece(donor_rows).items()}
     host_order = sorted(host_pieces.items(), key=lambda item: _centroid_x(item[1]))
-    donor_order = sorted(donor_pieces.items(), key=lambda item: _centroid_x(item[1]))
+    body_wh = _mean_body_wh(host_ref) or _mean_body_wh(_annotate(donor_ir))
+    donor_order = sorted(
+        ((pid, rows) for pid, rows in donor_pieces.items() if _usable_sleeve_panel(rows, body_wh)),
+        key=lambda item: _centroid_x(item[1]),
+    )
     if not donor_order:
         return [], {}
     if not host_order:
@@ -854,7 +891,7 @@ def _clean_sleeve_rows(piece_rows: list[dict[str, Any]], *, preview: bool = True
         cleaned = [
             entity
             for entity in cleaned
-            if _line_role(entity) in {"cut_line", "grainline", "notch"}
+            if _line_role(entity) in {"cut", "cut_line", "sew", "internal", "grainline", "notch"}
         ]
     # One grainline is enough for preview; duplicates look like double axes.
     grain = [entity for entity in cleaned if _line_role(entity) == "grainline"]
@@ -980,6 +1017,9 @@ def _scale_roles_to_host(
         if role in PURE_SLEEVE_ROLES:
             tw, th = _host_sleeve_wh(host_ref, host_body)
             for piece_rows in _group_by_piece(rows).values():
+                dw, dh = _piece_wh(piece_rows)
+                if dw > 1 and dh / dw > th / max(tw, 1.0):
+                    th = dh * (tw / dw)
                 out.extend(_scale_uniform_to_target(piece_rows, tw, th, anchor="top"))
             continue
         if role in COLLAR_ROLES:
@@ -1140,15 +1180,16 @@ def _fit_relative_to_host(
     host_ref: list[dict[str, Any]] | None = None,
     *,
     fit_sleeves: bool = False,
+    knit: bool = False,
+    sleeve_slug: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Keep native IR/DXF size; grade structure points from the host base.
 
     Chest lets out side seams; length grows below the chest line; neck is
-    independent. Host sleeves stay native unless a donor sleeve was swapped
-    (armhole bbox-fit on nest scraps collapses T-shirt sleeves into strips).
+    independent. T-shirt sleeves use knit cap-to-armhole; shirts keep bbox fit.
     """
     from shirt_side_seam import grade_body_structure
-    from shirt_sleeve_fit import fit_sleeves_to_armholes
+    from shirt_sleeve_fit import fit_knit_sleeves, fit_sleeves_to_armholes
 
     length_factor = LENGTH_FACTOR.get(str(length_slug or "regular"), 1.0)
     body_sx = float(profile.get("width") or 1.0)
@@ -1163,7 +1204,8 @@ def _fit_relative_to_host(
         "sleeve_sy": round(sleeve_sy, 5),
         "neck_s": round(neck_s, 5),
         "length_factor": length_factor,
-        "fit_sleeves": bool(fit_sleeves),
+        "fit_sleeves": bool(fit_sleeves or knit),
+        "knit": bool(knit),
         "host_width_mm": round(anchor[0], 2) if anchor else None,
         "host_height_mm": round(anchor[1], 2) if anchor else None,
     }
@@ -1173,6 +1215,12 @@ def _fit_relative_to_host(
     meta["grade"] = grade_meta
     if abs(neck_s - 1.0) >= 1e-6:
         entities = _scale_pieces(entities, roles=COLLAR_ROLES, sx=neck_s, sy=neck_s, anchor="center")
+    if knit:
+        entities, sleeve_fit = fit_knit_sleeves(entities, sleeve_sy=sleeve_sy, slug=sleeve_slug)
+        meta["sleeve_armhole_fit"] = sleeve_fit
+        if not sleeve_fit.get("applied") and abs(sleeve_sy - 1.0) >= 1e-6:
+            entities = _scale_pieces(entities, roles=PURE_SLEEVE_ROLES, sx=1.0, sy=sleeve_sy, anchor="top")
+        return entities, meta
     if fit_sleeves:
         entities, sleeve_fit = fit_sleeves_to_armholes(entities)
         meta["sleeve_armhole_fit"] = sleeve_fit
@@ -1199,10 +1247,12 @@ def compose_simple(
     base_option_ids = recipe.get("base_option_ids") or {}
     donor_index = {case_id: ir for case_id, ir in index.items() if case_id != base_case_id}
     entities = _annotate(base_ir)
-    entities = _keep_largest_clusters(entities)
+    if not any((entity.get("source") or {}).get("origin") == "compose_ir" for entity in entities):
+        entities = _keep_largest_clusters(entities)
     host_ref = list(entities)  # fixed size reference so swaps don't drift
     results: list[ComponentResult] = []
     sources: dict[str, Any] = {"base": base_case_id}
+    versions: list[dict[str, Any]] = [{"id": "original", "label": "原纸样", "entities": deepcopy(entities)}]
 
     # 1) Neckline / collar
     for group in ("neckline", "collar"):
@@ -1326,6 +1376,9 @@ def compose_simple(
             },
         ))
 
+    if sources.get("neckline") or sources.get("collar"):
+        versions.append({"id": "neckline", "label": "领口", "entities": deepcopy(entities)})
+
     # 2) Sleeve / cuff — strategy depends on sleeve slug (连接方式)
     for group in ("sleeve", "cuff"):
         option_id = selections.get(group)
@@ -1419,12 +1472,17 @@ def compose_simple(
             },
         ))
 
+    if sources.get("sleeve"):
+        versions.append({"id": "sleeve", "label": "换袖", "entities": deepcopy(entities)})
+    if sources.get("cuff"):
+        versions.append({"id": "cuff", "label": "换袖口", "entities": deepcopy(entities)})
+
     # Filter scrap first so measurement fit isn't skewed by construction clutter.
     entities = filter_preview_entities(entities)
-    entities = _keep_largest_clusters(entities)
+    if not any((entity.get("source") or {}).get("origin") == "compose_ir" for entity in entities):
+        entities = _keep_largest_clusters(entities)
+        entities = _normalize_physical_components(entities)
     entities = _clamp_insane_roles(entities)
-    # Keep one physical panel per body role before absolute sizing.
-    entities = _normalize_physical_components(entities)
 
     # 3) Relative grading from native host DXF/IR size (front/back share one sx/sy).
     profile = grading_profile(recipe)
@@ -1442,6 +1500,8 @@ def compose_simple(
         length_slug,
         host_ref=host_ref,
         fit_sleeves=sleeve_swapped,
+        knit=family == "tshirt",
+        sleeve_slug=_option_slug(selections.get("sleeve") or base_option_ids.get("sleeve")),
     )
     sources["sizing"] = {**body_fit, "fit": profile.get("fit"), "prototype": profile.get("prototype")}
 
@@ -1463,7 +1523,16 @@ def compose_simple(
             extra={"mode": "relative_host_dxf", "length_factor": length_factor, **body_fit},
         ))
 
-    laid_out = _layout_complete(entities, gap=52.0 if recipe.get("compact_layout") else 90.0)
+    if (body_fit.get("grade") or {}).get("applied") and not recipe.get("skip_grading"):
+        versions.append({"id": "grade", "label": "放码", "entities": deepcopy(entities)})
+    gap = 52.0 if recipe.get("compact_layout") else 90.0
+    laid_versions = [
+        {"id": row["id"], "label": row["label"], "entities": _layout_complete(row["entities"], gap=gap)}
+        for row in versions
+    ]
+    wanted = str(recipe.get("compose_version") or laid_versions[-1]["id"])
+    chosen = next((row for row in laid_versions if row["id"] == wanted), laid_versions[-1])
+    laid_out = chosen["entities"]
     interface_meta: dict[str, Any] = {}
     neck_src = sources.get("neckline") or sources.get("collar")
     if isinstance(neck_src, dict):
@@ -1495,7 +1564,7 @@ def compose_simple(
     meta = {
         "recipe_hash": recipe_hash,
         "family": family,
-        "pipeline": "tshirt.simple_piece_swap.v1",
+        "pipeline": "tshirt.simple_piece_swap.v2",
         "execution_mode": "simple_piece_swap",
         "sizing_profile": profile,
         "source_measurements": source_measurements(base_ir),
@@ -1506,6 +1575,9 @@ def compose_simple(
         "validation": validation,
         "replacement_candidates": {},
         "status": "valid" if validation.get("valid") else "invalid",
+        "version_id": chosen["id"],
+        "versions": [{"id": row["id"], "label": row["label"]} for row in laid_versions],
+        "_version_entities": {row["id"]: row["entities"] for row in laid_versions},
         "batch_plan": {"operations": [{"group": row.group, "option_id": row.option_id} for row in results]},
         "component_results": component_payload,
         "review_required": bool(results),

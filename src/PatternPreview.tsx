@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from './Language';
-import { aiBase, geometryBase } from './apiBase';
+import { aiBase, fetchWithTimeout, geometryBase } from './apiBase';
+import { coverFallbacks } from './asset';
 import { garmentPath, necklinePath, specialDesignLines } from './garmentGeometry';
 
 export type CompositionRecipe = {
@@ -20,6 +21,8 @@ export type CompositionRecipe = {
   base_option_ids?: Record<string, string | null>;
   intent_constraints?: Record<string, any>;
   execution_mode?: 'simple_piece_swap' | 'shirt_strategy' | 'batch_preview';
+  compose_version?: string | null;
+  face_photo_data_url?: string;
 };
 
 type Piece = { piece_id: string; role: string; source_case_id?: string; entity_count: number; width_mm?: number; height_mm?: number };
@@ -52,6 +55,8 @@ type ComposeResult = {
   sizing_profile: Record<string, string | number>;
   paper_info: { unit: string; width_mm: number; height_mm: number; recommended_sheet: string };
   tryon_descriptor: TryonDescriptor;
+  version_id?: string;
+  versions?: { id: string; label: string; svg: string }[];
 };
 
 const layerLabels: Record<string, string> = {
@@ -116,7 +121,7 @@ function GarmentFlat({ recipe, descriptor, view }: { recipe: CompositionRecipe; 
   const outline = garmentPath(recipe.family, sleeve, longSleeve);
   const neck = necklinePath(neckline, view);
   const details = view === 'front' ? specialDesignLines(special) : [];
-  const color = recipe.fabric_color || '#f3eee7';
+  const color = recipe.fabric_color?.startsWith('#') ? recipe.fabric_color : '#f3eee7';
   return <figure className="garment-flat"><svg viewBox="0 0 600 760" role="img" aria-label={`${view} garment flat`}>
     <defs><linearGradient id={`flat-${view}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor={color} /><stop offset="1" stopColor={color} stopOpacity=".78" /></linearGradient></defs>
     <path d={outline} fill={`url(#flat-${view})`} stroke="#655b59" strokeWidth="3" strokeLinejoin="round" />
@@ -128,7 +133,17 @@ function GarmentFlat({ recipe, descriptor, view }: { recipe: CompositionRecipe; 
   </svg></figure>;
 }
 
-function DesignOverview({ recipe, patternContext, ready, generationRevision = 0, seedPreviewUrl, onGenerated }: { recipe: CompositionRecipe; patternContext: Record<string, any>; ready: boolean; generationRevision?: number; seedPreviewUrl?: string; onGenerated?: (url: string, input: Record<string, any>, revision: number) => void }) {
+const mosaicColors = ['#ee93a0', '#a9ad39', '#8abedf', '#e8ae16', '#ef7b12', '#f29aac', '#c5c879', '#87bcdc'];
+
+function MosaicWait({ label, progress }: { label: string; progress?: number }) {
+  return <div className="design-ai-loading" role="status">
+    <div className="design-ai-mosaic" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} style={{ background: mosaicColors[index % mosaicColors.length], ['--i' as string]: index }} />)}</div>
+    <strong>{label}</strong>
+    {progress != null && <progress max="100" value={progress} />}
+  </div>;
+}
+
+function DesignOverview({ recipe, patternContext, ready, generationRevision = 0, resetToken = 0, seedPreviewUrl, inspectUrl, inspectTick = 0, placeholderUrl, allowGenerate = true, needChoicesHint = '', onNeedChoices, onGenerated, onBusy }: { recipe: CompositionRecipe; patternContext: Record<string, any>; ready: boolean; generationRevision?: number; resetToken?: number; seedPreviewUrl?: string; inspectUrl?: string; inspectTick?: number; placeholderUrl?: string; allowGenerate?: boolean; needChoicesHint?: string; onNeedChoices?: () => void; onGenerated?: (url: string, input: Record<string, any>, revision: number) => void; onBusy?: (busy: boolean) => void }) {
   const { t } = useLanguage();
   const [job, setJob] = useState<any>(null);
   const [imageUrl, setImageUrl] = useState(seedPreviewUrl || '');
@@ -142,7 +157,9 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
   const imageUrlRef = useRef(seedPreviewUrl || '');
   const lastInputRef = useRef<Record<string, any>>({});
   const [imageReady, setImageReady] = useState(Boolean(seedPreviewUrl));
-  const mosaic = ['#ee93a0', '#a9ad39', '#8abedf', '#e8ae16', '#ef7b12', '#f29aac', '#c5c879', '#87bcdc'];
+  const [sampleIndex, setSampleIndex] = useState(0);
+  const sampleUrls = useMemo(() => coverFallbacks(placeholderUrl || ''), [placeholderUrl]);
+  useEffect(() => { setSampleIndex(0); }, [placeholderUrl]);
   const buildInput = (prompt?: string) => ({
     case_id: recipe.base_case_id,
     family: recipe.family,
@@ -150,13 +167,15 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
     intent: recipe.intent_constraints || {},
     measurements_cm: recipe.measurements_cm,
     selections: recipe.selections,
-    fabric_color: recipe.fabric_color || '#ffffff',
+    fabric_color: recipe.fabric_color?.startsWith('#') ? recipe.fabric_color : '',
+    keep_original_color: recipe.fabric_color === 'original',
     material_id: recipe.material_id,
     material_label: recipe.material_label || '',
     material_description: recipe.material_description || '',
     process_id: recipe.process_id || '',
     process_label: recipe.process_label || '',
     pattern_context: patternContext,
+    ...(recipe.face_photo_data_url ? { face_photo_data_url: recipe.face_photo_data_url } : {}),
     ...(prompt?.trim() ? { prompt: prompt.trim() } : {}),
   });
   const loadPrompt = async () => {
@@ -178,33 +197,59 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
     setPromptOpen(next);
     if (next && !promptDraft.trim()) await loadPrompt();
   };
-  const generate = async (withPrompt = false) => {
-    if (!ready) return;
+  const generate = async (withPrompt = false, silent = false) => {
+    if (!silent && !ready) return;
+    if (!recipe.base_case_id) return;
     const revisionAtStart = generationRevision;
     const currentRequest = ++requestRevision.current;
     const input = buildInput(withPrompt ? promptDraft : undefined);
     lastInputRef.current = input;
-    setError(''); setJob({ status: 'queued', progress: 0 }); setPromptOpen(false); setImageReady(false);
+    onBusy?.(true);
+    if (!silent) { setError(''); setJob({ status: 'queued', progress: 0 }); setPromptOpen(false); setImageReady(false); }
     try {
       const base = aiBase();
       const response = await fetch(`${base}/design-preview/jobs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
       if (!response.ok) throw new Error(t('2D设计生成服务暂时不可用。', 'The 2D design service is temporarily unavailable.'));
       const created = await response.json(); let current = created;
+      const showLatest = (job: any) => {
+        const path = job.result_urls?.at(-1);
+        if (!path) return;
+        const nextUrl = `${base}${path}`;
+        if (nextUrl === imageUrlRef.current) return;
+        if (imageUrlRef.current) setHistory((old) => [...old.slice(-7), imageUrlRef.current]);
+        imageUrlRef.current = nextUrl;
+        setImageReady(false);
+        setImageUrl(nextUrl);
+        onGenerated?.(nextUrl, input, revisionAtStart);
+      };
+      showLatest(current);
+      let misses = 0;
       while (!['succeeded', 'failed', 'cancelled'].includes(current.status)) {
-        await new Promise((resolve) => window.setTimeout(resolve, 1800));
-        const status = await fetch(`${base}/design-preview/jobs/${created.job_id}`);
-        if (!status.ok) throw new Error(t('无法读取生成进度。', 'Unable to read generation progress.'));
-        current = await status.json(); if (currentRequest !== requestRevision.current) return; setJob(current);
+        await new Promise((resolve) => window.setTimeout(resolve, 800));
+        try {
+          const status = await fetch(`${base}/design-preview/jobs/${created.job_id}`);
+          if (!status.ok) {
+            misses += 1;
+            if (misses >= 8 && !imageUrlRef.current) throw new Error(t('无法读取生成进度。', 'Unable to read generation progress.'));
+            continue;
+          }
+          misses = 0;
+          current = await status.json();
+          if (currentRequest !== requestRevision.current) return;
+          if (!silent) setJob(current);
+          showLatest(current);
+        } catch (reason) {
+          if (reason instanceof Error && reason.message.includes('无法读取生成进度')) throw reason;
+          misses += 1;
+          if (misses >= 8 && !imageUrlRef.current) throw new Error(t('无法读取生成进度。', 'Unable to read generation progress.'));
+        }
       }
       if (current.status !== 'succeeded' || !current.result_urls?.[0]) throw new Error(t('2D设计生成失败，请重试。', '2D design generation failed. Please retry.'));
-      const finalUrl = `${base}${current.result_urls[0]}`;
-      if (imageUrlRef.current) setHistory((old) => [...old.slice(-7), imageUrlRef.current]);
-      imageUrlRef.current = finalUrl;
-      setImageReady(false);
-      setImageUrl(finalUrl);
+      showLatest(current);
       if (current.prompt) setPromptDraft(String(current.prompt));
-      setJob(null); onGenerated?.(finalUrl, input, revisionAtStart);
-    } catch (reason) { if (currentRequest === requestRevision.current) { setJob(null); setError(reason instanceof Error ? reason.message : t('生成失败，请重试。', 'Generation failed. Please retry.')); } }
+      if (!silent) setJob(null);
+    } catch (reason) { if (currentRequest === requestRevision.current && !silent) { setJob(null); setError(reason instanceof Error ? reason.message : t('生成失败，请重试。', 'Generation failed. Please retry.')); } }
+    finally { if (currentRequest === requestRevision.current) onBusy?.(false); }
   };
   const selectPrevious = () => {
     if (!history.length) return;
@@ -217,6 +262,7 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
   };
   useEffect(() => {
     requestRevision.current += 1;
+    onBusy?.(false);
     setHistory([]);
     setJob(null);
     setError('');
@@ -232,33 +278,48 @@ function DesignOverview({ recipe, patternContext, ready, generationRevision = 0,
       setImageUrl('');
       autoGenerated.current = false;
     }
-  }, [generationRevision]);
+  }, [generationRevision, resetToken]);
   useEffect(() => {
-    if (!ready || !recipe.base_case_id || autoGenerated.current) return;
-    autoGenerated.current = true; void generate(false);
-  }, [recipe.base_case_id, ready, generationRevision]);
-  const waiting = Boolean(job) || Boolean(imageUrl && !imageReady) || (!imageUrl && !error);
-  return <div className="design-ai-preview">
+    if (!inspectTick || !inspectUrl) return;
+    requestRevision.current += 1;
+    onBusy?.(false);
+    imageUrlRef.current = inspectUrl;
+    setImageReady(false);
+    setImageUrl(inspectUrl);
+    setJob(null);
+    setError('');
+    autoGenerated.current = true;
+  }, [inspectTick]);
+  useEffect(() => {
+    if (!recipe.base_case_id || autoGenerated.current) return;
+    autoGenerated.current = true; void generate(false, true);
+  }, [recipe.base_case_id, generationRevision, resetToken]);
+  const requestGenerate = (withPrompt = false) => {
+    if (!allowGenerate) { onNeedChoices?.(); return; }
+    void generate(withPrompt);
+  };
+  const showSample = !imageUrl && !job && Boolean(placeholderUrl);
+  const waiting = !imageUrl && !error && !showSample;
+  return <>
     {imageUrl && <img src={imageUrl} alt={t('2D设计预览', '2D design preview')} className={imageReady ? 'ready' : ''} onLoad={() => setImageReady(true)} />}
-    {waiting && <div className="design-ai-loading" role="status">
-      <div className="design-ai-mosaic" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} style={{ background: mosaic[index % mosaic.length], ['--i' as string]: index }} />)}</div>
-      <strong>{job ? t('正在生成2D设计预览', 'Generating the 2D design preview') : imageUrl ? t('正在载入预览图', 'Loading the preview') : t('正在准备当前版型与设计参数。', 'Preparing the current pattern and design parameters.')}</strong>
-      {job && <progress max="100" value={job.progress || 0} />}
-    </div>}
+    {showSample && sampleUrls[sampleIndex] && <img src={sampleUrls[sampleIndex]} alt={t('样衣参考', 'Sample garment')} className="ready sample-placeholder" onError={() => setSampleIndex((value) => value + 1)} />}
+    {showSample && <p className="design-ai-sample-note">{allowGenerate ? t('确认版型后将生成2D预览', 'A 2D preview will generate after the pattern is ready.') : (needChoicesHint || t('请先选择面料、颜色和工艺，再生成2D预览。', 'Choose fabric, color, and process before generating the 2D preview.'))}</p>}
+    {waiting && <MosaicWait label={job?.queue_position ? t(`排队中，前面还有 ${job.queue_position} 个任务`, `Queued, ${job.queue_position} ahead`) : job?.stage === 'draft' ? t('正在用本地模型出草图', 'Generating a local draft') : job ? t('正在生成效果图', 'Generating the look') : t('正在准备当前版型与设计参数。', 'Preparing the current pattern and design parameters.')} progress={job ? job.progress || 0 : undefined} />}
+    {job && imageUrl && <div className="design-ai-enhancing">{job.stage === 'enhancing' ? t('草图已出，正在出高清图', 'Draft ready, generating HD') : t('正在生成效果图', 'Generating the look')}{job.progress ? ` · ${job.progress}%` : ''}</div>}
     {error && <p>{error}</p>}
     <div className="design-ai-actions">
       <button className="secondary" disabled={!history.length || Boolean(job)} onClick={selectPrevious}>{t('选上一个', 'Previous')}</button>
-      <button className="secondary" disabled={!ready || Boolean(job)} onClick={() => { void generate(false); }}>{t('重新生成', 'Regenerate')}</button>
+      <button className="secondary" disabled={Boolean(job) || (allowGenerate && !ready)} onClick={() => requestGenerate(false)}>{t('重新生成', 'Regenerate')}</button>
       <button className={`secondary ${promptOpen ? 'active' : ''}`} disabled={Boolean(job)} onClick={() => { void togglePrompt(); }}>{t('提示词', 'Prompt')}</button>
     </div>
     {promptOpen && <div className="design-ai-prompt">
       <textarea value={promptDraft} onChange={(event) => setPromptDraft(event.target.value)} rows={8} placeholder={promptLoading ? t('正在加载提示词…', 'Loading prompt…') : t('生成提示词', 'Generation prompt')} />
       <div className="design-ai-prompt-actions">
         <button className="secondary" disabled={promptLoading} onClick={() => { void loadPrompt(); }}>{t('重置默认', 'Reset default')}</button>
-        <button className="primary" disabled={!ready || !promptDraft.trim()} onClick={() => { void generate(true); }}>{t('用此提示词生成', 'Generate with prompt')}</button>
+        <button className="primary" disabled={!promptDraft.trim() || (allowGenerate && !ready)} onClick={() => requestGenerate(true)}>{t('用此提示词生成', 'Generate with prompt')}</button>
       </div>
     </div>}
-  </div>;
+  </>;
 }
 
 function errorMessage(error: unknown): string {
@@ -287,13 +348,18 @@ function withViewBox(svg: string, viewBox: string): string {
   return viewBox ? svg.replace(/viewBox="[^"]+"/, `viewBox="${viewBox}"`) : svg;
 }
 
-export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, seedPreviewUrl, styleVersions = [], activeVersionId = '', onRestoreVersion, onGeneratedPreview, onReplaceSelection, onUndo, canUndo = false, onExport, onValidationChange, onCompositionChange }: {
+export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, resetToken = 0, seedPreviewUrl, styleVersions = [], activeVersionId = '', allowGenerate = true, needChoicesHint = '', onNeedChoices, onReset, onRestoreVersion, onGeneratedPreview, onReplaceSelection, onUndo, canUndo = false, onExport, onValidationChange, onCompositionChange }: {
   recipe: CompositionRecipe;
   baseCoverUrl?: string;
   generationRevision?: number;
+  resetToken?: number;
   seedPreviewUrl?: string;
-  styleVersions?: Array<{ id: string; label: string; designUrl: string; pieceCount?: number; recipeHash?: string }>;
+  styleVersions?: Array<{ id: string; label: string; designUrl: string; pieceCount?: number; recipeHash?: string; tip?: string }>;
   activeVersionId?: string;
+  allowGenerate?: boolean;
+  needChoicesHint?: string;
+  onNeedChoices?: () => void;
+  onReset?: () => void;
   onRestoreVersion?: (version: any) => void;
   onGeneratedPreview?: (url: string, input: Record<string, any>, revision: number) => void;
   onReplaceSelection: (group: string, optionId: string) => void;
@@ -301,7 +367,7 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   canUndo?: boolean;
   onExport: () => void;
   onValidationChange?: (ready: boolean) => void;
-  onCompositionChange?: (summary: { recipe_hash: string; pieces: Piece[]; sizing_profile: Record<string, string | number> }) => void;
+  onCompositionChange?: (summary: { recipe_hash: string; pieces: Piece[]; sizing_profile: Record<string, string | number>; compose_version?: string; svg?: string }) => void;
 }) {
   const { t } = useLanguage();
   const [result, setResult] = useState<ComposeResult | null>(null);
@@ -313,10 +379,16 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   const [layers] = useState<Record<string, boolean>>({ front: true, back: true, sleeve: true, neck: true, placket: true, cuff: true, other: true });
   const [informationLayers] = useState<Record<string, boolean>>({ seam: true, fold: true, notch: true, grainline: true });
   const [viewMode, setViewMode] = useState<'design' | 'dxf'>('design');
+  const [designPulse, setDesignPulse] = useState(false);
+  const [inspect, setInspect] = useState({ url: '', tick: 0 });
+  const [previewBusy, setPreviewBusy] = useState(false);
+  const viewModeRef = useRef<'design' | 'dxf'>('design');
+  viewModeRef.current = viewMode;
   const [attemptedReplacement, setAttemptedReplacement] = useState('');
   const [showUngraded, setShowUngraded] = useState(false);
   const [ungradedSvg, setUngradedSvg] = useState('');
   const [sharedViewBox, setSharedViewBox] = useState('');
+  const [versionId, setVersionId] = useState('');
   const [busyLabel, setBusyLabel] = useState('');
   const [composedRecipeKey, setComposedRecipeKey] = useState('');
   const revision = useRef(0);
@@ -329,6 +401,14 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
   useEffect(() => { validationCallback.current = onValidationChange; }, [onValidationChange]);
   useEffect(() => { compositionCallback.current = onCompositionChange; }, [onCompositionChange]);
   useEffect(() => { setShowUngraded(false); setUngradedSvg(''); setSharedViewBox(''); ungradedCase.current = ''; }, [serializedRecipe]);
+  useEffect(() => {
+    if (!resetToken) return;
+    setViewMode('design');
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+    setShowUngraded(false);
+    setInspect({ url: '', tick: 0 });
+  }, [resetToken]);
 
   useEffect(() => {
     const requestRevision = ++revision.current;
@@ -342,21 +422,23 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
       setError('');
       try {
         const base = geometryBase();
-        const response = await fetch(`${base}/compose`, {
+        const response = await fetchWithTimeout(`${base}/compose`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: serializedRecipe,
           signal: controller.signal,
-        });
+        }, 45000, 1);
         const data = await response.json().catch(() => null);
         if (!response.ok) throw new Error(typeof data?.detail === 'string' ? data.detail : '纸样组合失败');
         if (requestRevision !== revision.current) return;
         setResult(data);
-        if (data.status === 'valid') {
+        if (data.svg) {
           setLastValid(data);
           setComposedRecipeKey(serializedRecipe);
           setAttemptedReplacement('');
-          compositionCallback.current?.({ recipe_hash: data.recipe_hash, pieces: data.pieces, sizing_profile: data.sizing_profile });
+          const nextVersion = data.version_id || (data.versions || []).at(-1)?.id || '';
+          setVersionId(nextVersion);
+          compositionCallback.current?.({ recipe_hash: data.recipe_hash, pieces: data.pieces, sizing_profile: data.sizing_profile, compose_version: nextVersion, svg: data.svg });
         }
       } catch (requestError) {
         if (!controller.signal.aborted && requestRevision === revision.current) setError(errorMessage(requestError));
@@ -367,22 +449,32 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [serializedRecipe]);
 
-  const visibleResult = result?.status === 'valid' ? result : lastValid || result;
-  const currentReady = Boolean(!loading && result?.status === 'valid' && composedRecipeKey === serializedRecipe);
+  const visibleResult = result?.svg ? result : lastValid || result;
+  const versions = visibleResult?.versions || [];
+  const versionIndex = Math.max(0, versions.findIndex((row) => row.id === versionId));
+  const selectedVersion = versions[versionIndex] || versions[versions.length - 1];
+  const currentReady = Boolean(!loading && result?.svg && composedRecipeKey === serializedRecipe);
   useEffect(() => {
     validationCallback.current?.(currentReady);
   }, [currentReady]);
+  useEffect(() => {
+    if (!visibleResult?.recipe_hash || !versionId) return;
+    compositionCallback.current?.({
+      recipe_hash: visibleResult.recipe_hash,
+      pieces: visibleResult.pieces,
+      sizing_profile: visibleResult.sizing_profile,
+      compose_version: versionId,
+    });
+  }, [versionId, visibleResult?.recipe_hash]);
   const hiddenRoles = Object.entries(layers).flatMap(([group, visible]) => visible ? [] : (roleGroups[group] || []));
   const hiddenInformation = Object.entries(informationLayers).flatMap(([kind, visible]) => visible ? [] : [kind]);
-  const rawSvg = (showUngraded && ungradedSvg) || visibleResult?.svg || '';
+  const rawSvg = selectedVersion?.svg || (showUngraded && ungradedSvg) || visibleResult?.svg || '';
   const svg = sharedViewBox ? withViewBox(rawSvg, sharedViewBox) : rawSvg;
   const designPatternContext = { recipe_hash: visibleResult?.recipe_hash || '', pieces: (visibleResult?.pieces || []).map((piece) => ({ role: piece.role, width_mm: piece.width_mm, height_mm: piece.height_mm })), sizing_profile: visibleResult?.sizing_profile || {} };
-  const designReady = Boolean(!loading && result?.status === 'valid' && composedRecipeKey === serializedRecipe);
+  const designReady = Boolean(!loading && result?.svg && composedRecipeKey === serializedRecipe);
   const grade = visibleResult?.sizing_profile;
-  const gradeHint = viewMode === 'dxf' && grade
-    ? showUngraded
-      ? t(' · 原始尺寸', ' · source size')
-      : t(` · 放码 宽×${Number(grade.width).toFixed(2)} 长×${Number(grade.length).toFixed(2)} 袖×${Number(grade.sleeve_length).toFixed(2)}`, ` · graded W×${Number(grade.width).toFixed(2)} L×${Number(grade.length).toFixed(2)} sleeve×${Number(grade.sleeve_length).toFixed(2)}`)
+  const gradeHint = viewMode === 'dxf' && grade && (!selectedVersion || selectedVersion.id === 'grade')
+    ? t(` · 放码 宽×${Number(grade.width).toFixed(2)} 长×${Number(grade.length).toFixed(2)} 袖×${Number(grade.sleeve_length).toFixed(2)}`, ` · graded W×${Number(grade.width).toFixed(2)} L×${Number(grade.length).toFixed(2)} sleeve×${Number(grade.sleeve_length).toFixed(2)}`)
     : '';
   const hasComponentAdjustments = Object.entries(recipe.selections).some(([group, optionId]) => Boolean(optionId) && optionId !== recipe.base_option_ids?.[group]);
   const replacement = result?.status === 'invalid'
@@ -413,11 +505,11 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
     setBusyLabel(t('正在加载放码前纸样', 'Loading ungraded pattern'));
     try {
       const base = geometryBase();
-      const response = await fetch(`${base}/compose`, {
+      const response = await fetchWithTimeout(`${base}/compose`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ ...JSON.parse(serializedRecipe), skip_grading: true }),
-      });
+      }, 45000, 1);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data?.svg) throw new Error(typeof data?.detail === 'string' ? data.detail : '无法加载放码前 DXF');
       ungradedCase.current = serializedRecipe;
@@ -431,37 +523,58 @@ export function PatternPreview({ recipe, baseCoverUrl, generationRevision = 0, s
     }
   };
 
-  return <div className="pattern-workbench" style={{ '--fabric-color': recipe.fabric_color || '#ffffff' } as React.CSSProperties}>
+  return <div className="pattern-workbench" style={{ '--fabric-color': recipe.fabric_color?.startsWith('#') ? recipe.fabric_color : '#ffffff' } as React.CSSProperties}>
     <div className={`pattern-stage ${viewMode === 'design' ? 'design-mode' : ''}`}>
-      <div className="pattern-title">{viewMode === 'design' ? t('设计预览', 'Design preview') : showUngraded ? t('纸样预览（放码前）', 'Pattern preview (before grading)') : t('纸样预览', 'Pattern preview')} · {recipe.family === 'tshirt' ? t('T恤', 'T-shirt') : t('衬衫', 'Shirt')}{recipe.base_case_id ? ` · ${recipe.base_case_id}` : ''}{gradeHint}</div>
-      <div className="pattern-view-switch"><button className={viewMode === 'dxf' ? 'active' : ''} onClick={() => setViewMode('dxf')}>{t('专业DXF', 'Professional DXF')}</button><button className={viewMode === 'design' ? 'active' : ''} onClick={() => setViewMode('design')}>{t('2D设计预览', '2D Preview')}</button></div>
-      <div className="design-preview-stage" style={{ display: viewMode === 'design' ? undefined : 'none' }}>
-        <DesignOverview recipe={recipe} patternContext={designPatternContext} ready={designReady} generationRevision={generationRevision} seedPreviewUrl={seedPreviewUrl} onGenerated={onGeneratedPreview} />
-        {styleVersions.length > 0 && <div className="design-version-rail" aria-label={t('搭配版本', 'Style versions')}>
-          {styleVersions.map((version) => (
-            <button key={version.id} type="button" className={version.id === activeVersionId ? 'active' : ''} title={version.label} onClick={() => onRestoreVersion?.(version)}>
-              <img src={version.designUrl} alt="" />
-              <em>{version.label}</em>
-            </button>
-          ))}
-        </div>}
+      <div className="pattern-title">{viewMode === 'design' ? t('设计预览', 'Design preview') : selectedVersion ? t(`纸样预览（${selectedVersion.label}）`, `Pattern preview (${selectedVersion.label})`) : showUngraded ? t('纸样预览（放码前）', 'Pattern preview (before grading)') : t('纸样预览', 'Pattern preview')} · {recipe.family === 'tshirt' ? t('T恤', 'T-shirt') : t('衬衫', 'Shirt')}{recipe.base_case_id ? ` · ${recipe.base_case_id}` : ''}{gradeHint}</div>
+      <div className="canvas-top-tools">
+        <button type="button" className="canvas-refresh" onClick={() => onReset?.()}>{t('刷新', 'Reset')}</button>
+        <div className="pattern-view-switch"><button className={viewMode === 'dxf' ? 'active' : ''} onClick={() => setViewMode('dxf')}>{t('专业DXF', 'Professional DXF')}</button><button className={`${viewMode === 'design' ? 'active' : ''}${designPulse ? ' ready-bounce' : ''}`} onClick={() => { setViewMode('design'); setDesignPulse(false); }}>{t('2D设计预览', '2D Preview')}</button></div>
       </div>
+      <div className="design-preview-stage" style={{ display: viewMode === 'design' ? undefined : 'none' }}>
+        <DesignOverview recipe={recipe} patternContext={designPatternContext} ready={designReady} generationRevision={generationRevision} resetToken={resetToken} seedPreviewUrl={seedPreviewUrl} inspectUrl={inspect.url} inspectTick={inspect.tick} placeholderUrl={baseCoverUrl} allowGenerate={allowGenerate} needChoicesHint={needChoicesHint} onNeedChoices={onNeedChoices} onBusy={setPreviewBusy} onGenerated={(url, input, revision) => { onGeneratedPreview?.(url, input, revision); if (viewModeRef.current !== 'design') setDesignPulse(true); }} />
+      </div>
+      {viewMode === 'design' && (styleVersions.length > 0 || seedPreviewUrl || previewBusy) && <div className="design-version-rail" aria-label={t('搭配版本', 'Style versions')} aria-busy={previewBusy || undefined}>
+        {(styleVersions.length ? styleVersions : seedPreviewUrl ? [{ id: 'live', label: 'V1', designUrl: seedPreviewUrl as string, tip: t('当前预览', 'Current preview') }] : []).map((version) => (
+          <button key={version.id} type="button" className={(inspect.url ? version.designUrl === inspect.url : version.id === activeVersionId || version.id === 'live') ? 'active' : ''} data-tip={version.tip || version.label} title={version.tip || version.label} onClick={() => { setInspect({ url: version.designUrl, tick: Date.now() }); if (version.id !== 'live') onRestoreVersion?.(version); }}>
+            <img src={version.designUrl} alt="" />
+            <em>{version.label}</em>
+          </button>
+        ))}
+        {previewBusy && <button type="button" className="generating" disabled aria-busy="true" data-tip={t('正在生成试穿图', 'Generating try-on')}>
+          <span className="design-version-wait" aria-hidden="true">{Array.from({ length: 16 }, (_, index) => <i key={index} style={{ background: mosaicColors[index % mosaicColors.length], ['--i' as string]: index }} />)}</span>
+          <em>{t('生成中', '…')}</em>
+        </button>}
+      </div>}
+      {viewMode === 'dxf' && versions.length > 1 && <div className="design-version-rail" aria-label={t('纸样版本', 'Pattern versions')}>
+        {versions.map((row, index) => {
+          const previous = versions[index - 1];
+          const tip = previous
+            ? t(`相对「${previous.label}」改了：${row.label}`, `Changed from ${previous.label}: ${row.label}`)
+            : t('原始底款纸样', 'Original base pattern');
+          return (
+            <button key={row.id} type="button" className={row.id === (selectedVersion?.id || versionId) ? 'active' : ''} data-tip={tip} title={tip} onClick={() => setVersionId(row.id)}>
+              <div className="dxf-thumb" aria-hidden="true" dangerouslySetInnerHTML={{ __html: row.svg || '' }} />
+              <em>{row.label}</em>
+            </button>
+          );
+        })}
+      </div>}
       {viewMode !== 'design' && <div className="pattern-scroll pannable" style={{ '--grid-size': `${32 * zoom}px` } as React.CSSProperties} onPointerDown={startPan} onPointerMove={movePan} onPointerUp={() => { panDrag.current = null; }} onPointerCancel={() => { panDrag.current = null; }} onWheel={wheelZoom}>
         {svg
-          ? <div className="dxf-svg complete-dxf" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} dangerouslySetInnerHTML={{ __html: svg }} />
+          ? <div key={`${visibleResult?.recipe_hash || ''}-${selectedVersion?.id || versionId}`} className="dxf-svg complete-dxf" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} dangerouslySetInnerHTML={{ __html: svg }} />
           : <div className="dxf-empty">{t('正在准备完整纸样…', 'Preparing complete pattern…')}</div>}
       </div>}
       {hiddenRoles.length > 0 && <style>{hiddenRoles.map((role) => `.complete-dxf [data-piece-role="${role}"]{display:none}`).join('')}</style>}
       {hiddenInformation.length > 0 && <style>{hiddenInformation.map((kind) => `.complete-dxf [data-line-kind="${kind}"]{display:none}`).join('')}</style>}
-      { (loading || busyLabel) && <div className="compose-status" role="status" aria-live="polite"><span className="compose-spinner" /><strong>{busyLabel || t('正在生成版片', 'Generating pattern')}</strong></div>}
+      {viewMode === 'dxf' && (loading || busyLabel) && <div className="compose-status" aria-live="polite"><MosaicWait label={busyLabel || t('正在生成版片', 'Generating pattern')} /></div>}
       {error && <div className="compose-error"><strong>{t('无法生成当前组合', 'Unable to generate this combination')}</strong><span>{error}</span><button onClick={() => setError('')}>{t('保留上一个有效结果', 'Keep previous valid result')}</button></div>}
-      {result?.status === 'invalid' && hasComponentAdjustments && <div className="compose-error">
+      {result?.status === 'invalid' && hasComponentAdjustments && recipe.family !== 'shirt' && <div className="compose-error">
         <strong>{t('当前组合未通过校验', 'Combination failed validation')}</strong>
         <span>{result.validation.errors.join('；')}</span>
         {!replacement && <span>{t('没有通过服务端预校验的自动替代项，请保留上一个结果并手动调整版片。', 'No server-validated replacement is available. Keep the previous result and adjust manually.')}</span>}
         <div><button onClick={() => setResult(lastValid)}>{t('保留上一个', 'Keep previous')}</button>{replacement && <button className="primary" onClick={() => { setAttemptedReplacement(`${replacement[0]}:${replacement[1][0].option_id}`); onReplaceSelection(replacement[0], replacement[1][0].option_id); }}>{t('使用已验证的', 'Use validated')} “{replacement[1][0].label}”</button>}</div>
       </div>}
-      {viewMode === 'dxf' && <div className="pattern-tools"><button onClick={() => setZoom((value) => Math.max(.35, value - .15))}>－</button><span>{Math.round(zoom * 100)}%</span><button onClick={() => setZoom((value) => Math.min(3.5, value + .15))}>＋</button><button disabled={!canUndo} onClick={() => onUndo?.()}>{t('撤回', 'Undo')}</button><button className="icon" data-tip={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} aria-label={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="7" height="9" rx="1" /><rect x="11" y="2" width="7" height="5" rx="1" /><rect x="11" y="9" width="7" height="9" rx="1" /><rect x="2" y="13" width="7" height="5" rx="1" /></svg></button><button className={`icon ${showUngraded ? 'active' : ''}`} data-tip={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} aria-label={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} onClick={() => { void toggleUngraded(); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h8.5v13H4z" /><path d="M7.5 3.5V16.5H16V6.5H11.5V3.5z" /></svg></button><button className="icon pattern-download" disabled={!currentReady} data-tip={t('下载当前试样 DXF', 'Download current trial DXF')} aria-label={t('下载当前试样 DXF', 'Download current trial DXF')} onClick={onExport}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v9" /><path d="M6.5 9.5 10 13l3.5-3.5" /><path d="M4 16.5h12" /></svg></button></div>}
+      {viewMode === 'dxf' && <div className="pattern-tools"><button onClick={() => setZoom((value) => Math.max(.35, value - .15))}>－</button><span>{Math.round(zoom * 100)}%</span><button onClick={() => setZoom((value) => Math.min(3.5, value + .15))}>＋</button><button disabled={!canUndo} onClick={() => onUndo?.()}>{t('撤回', 'Undo')}</button><button className="icon" data-tip={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} aria-label={t('自动排版：重置缩放并居中纸样', 'Fit layout: reset zoom and center the pattern')} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="7" height="9" rx="1" /><rect x="11" y="2" width="7" height="5" rx="1" /><rect x="11" y="9" width="7" height="9" rx="1" /><rect x="2" y="13" width="7" height="5" rx="1" /></svg></button>{versions.length <= 1 && <button className={`icon ${showUngraded ? 'active' : ''}`} data-tip={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} aria-label={showUngraded ? t('切回放码后：按当前人体尺寸缩放后的纸样', 'Back to graded DXF sized to the current body') : t('查看放码前：尚未按人体尺寸缩放的原始纸样', 'Original DXF before body grading')} onClick={() => { void toggleUngraded(); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h8.5v13H4z" /><path d="M7.5 3.5V16.5H16V6.5H11.5V3.5z" /></svg></button>}<button className="icon pattern-download" disabled={!currentReady} data-tip={t('下载当前试样 DXF', 'Download current trial DXF')} aria-label={t('下载当前试样 DXF', 'Download current trial DXF')} onClick={onExport}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v9" /><path d="M6.5 9.5 10 13l3.5-3.5" /><path d="M4 16.5h12" /></svg></button></div>}
     </div>
   </div>;
 }

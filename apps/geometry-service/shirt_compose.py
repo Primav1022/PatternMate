@@ -29,23 +29,26 @@ from composition_engine import (
     source_measurements,
 )
 from shirt_side_seam import grade_body_structure, morph_body_side_seams
-from shirt_sleeve_fit import fit_sleeves_to_armholes
+from shirt_sleeve_fit import GATHER_SLUGS, fit_cuffs_to_sleeves, fit_sleeves_to_armholes
 from shirt_strategy import (
     BODY_SWAP_ROLES,
     COLLAR_ROLES,
     CUFF_SWAP_ROLES,
     PURE_SLEEVE_ROLES,
     SLEEVE_SWAP_ROLES,
+    option_slug,
     public_plan,
     swap_plan,
 )
 from simple_compose import (
     LENGTH_FACTOR,
     _annotate,
+    _has_usable_sleeves,
     _keep_largest_clusters,
     _pick_donor,
     _replace_roles,
     _result,
+    _role,
     _scale_pieces,
 )
 from tryon_descriptor import build_tryon_descriptor
@@ -68,7 +71,11 @@ def _swap_group(
 ) -> list[dict[str, Any]]:
     plan = swap_plan(group, option_id)
     donor_ir, candidates = _pick_donor(group, base_ir, donor_index, option_id)
-    if not donor_ir:
+    attempts = [donor_index.get(str(row["case_id"])) for row in candidates]
+    attempts = [row for row in attempts if row]
+    if donor_ir and donor_ir not in attempts:
+        attempts.insert(0, donor_ir)
+    if not attempts:
         results.append(_result(
             f"op:{group}", group, "retained_current", option_id=option_id,
             issue=ValidationIssue(code="donor_unavailable", severity="warning", message=f"no donor for {group}", operation_id=f"op:{group}"),
@@ -76,25 +83,37 @@ def _swap_group(
         ))
         return entities
     before_ids = {str(entity.get("entity_id")) for entity in entities}
-    entities, count, piece_match = _replace_roles(entities, donor_ir, roles, host_ref=host_ref)
-    if count <= 0:
+    chosen = None
+    count = 0
+    piece_match: dict[str, Any] = {}
+    trial = entities
+    for donor in attempts:
+        trial, count, piece_match = _replace_roles(entities, donor, roles, host_ref=host_ref)
+        if count <= 0:
+            continue
+        if group == "sleeve" and not _has_usable_sleeves(trial):
+            continue
+        chosen = donor
+        break
+    if not chosen:
         results.append(_result(
-            f"op:{group}", group, "retained_current", option_id=option_id, donor_case_id=str(donor_ir.get("case_id")),
-            issue=ValidationIssue(code="donor_pieces_missing", severity="warning", message=f"donor has no {group} pieces", operation_id=f"op:{group}"),
+            f"op:{group}", group, "retained_current", option_id=option_id,
+            issue=ValidationIssue(code="donor_pieces_missing", severity="warning", message=f"donor has no usable {group} pieces", operation_id=f"op:{group}"),
             extra={"donor_candidates": candidates, "mode": "simple_piece_swap", "strategy": public_plan(plan)},
         ))
         return entities
+    entities = trial
     modified = tuple(str(entity.get("entity_id")) for entity in entities if str(entity.get("entity_id")) not in before_ids)
     sources[group] = {
-        "case_id": donor_ir.get("case_id"),
+        "case_id": chosen.get("case_id"),
         "option_id": option_id,
         "mode": "piece_swap",
         "strategy": public_plan(plan),
-        "donor_score": candidates[0]["score"] if candidates else None,
+        "donor_score": next((row["score"] for row in candidates if row["case_id"] == chosen.get("case_id")), None),
         "piece_match": piece_match,
     }
     results.append(_result(
-        f"op:{group}", group, "applied", option_id=option_id, donor_case_id=str(donor_ir.get("case_id")),
+        f"op:{group}", group, "applied", option_id=option_id, donor_case_id=str(chosen.get("case_id")),
         modified=modified,
         extra={
             "donor_candidates": candidates,
@@ -159,9 +178,17 @@ def _stretch_body_structure(
     width_sx: float,
     length_sy: float,
     neck_s: float = 1.0,
+    shoulder_s: float = 1.0,
+    armhole_s: float = 1.0,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """胸围侧缝外放；衣长从胸围线向下；领圈单独缩放。袖窿不跟衣身 sx。"""
-    return grade_body_structure(entities, width_sx=width_sx, length_sy=length_sy, neck_s=neck_s)
+    return grade_body_structure(
+        entities,
+        width_sx=width_sx,
+        length_sy=length_sy,
+        neck_s=neck_s,
+        shoulder_s=shoulder_s,
+        armhole_s=armhole_s,
+    )
 
 
 def compose_shirt(
@@ -184,11 +211,14 @@ def compose_shirt(
     donor_index = {case_id: ir for case_id, ir in index.items() if case_id != base_case_id}
 
     entities = _annotate(base_ir)
-    entities = _keep_largest_clusters(entities)
+    compose = any((entity.get("source") or {}).get("origin") == "compose_ir" for entity in entities)
+    if not compose:
+        entities = _keep_largest_clusters(entities)
     host_ref = list(entities)
     results: list = []
     sources: dict[str, Any] = {"base": base_case_id}
     strategies: dict[str, Any] = {}
+    versions: list[dict[str, Any]] = [{"id": "original", "label": "原纸样", "entities": deepcopy(entities)}]
 
     # 1) 领口+门襟 → 一次整换前后片（两者都在衣身上）
     collar_opt = selections.get("collar")
@@ -210,6 +240,8 @@ def compose_shirt(
         )
         if collar_changed and placket_changed and "collar" in sources:
             sources["placket"] = {**sources["collar"], "option_id": placket_opt, "bundled_with": "collar"}
+        host_ref = list(entities)
+        versions.append({"id": "body", "label": "换衣身", "entities": deepcopy(entities)})
 
     # 1b) 廓形 → 前后片侧缝弧度（换完衣身后再改线）
     silhouette_opt = selections.get("silhouette")
@@ -219,20 +251,37 @@ def compose_shirt(
             entities=entities, base_ir=base_ir, donor_index=donor_index, option_id=silhouette_opt,
             results=results, sources=sources,
         )
+        host_ref = list(entities)
+        if sources.get("silhouette"):
+            versions.append({"id": "silhouette", "label": "廓形", "entities": deepcopy(entities)})
 
-    # 2) Sleeve → 只换袖片；host 没有袖片时按当前选项直接补一只
-    sleeve_opt = selections.get("sleeve") or base_option_ids.get("sleeve") or "shirt.sleeve.regular"
+    # 2) Sleeve → 只换袖片；用户选了袖型才补缺袖，没选则保持原纸样
+    sleeve_opt = selections.get("sleeve")
     host_has_sleeve = any(
         str(entity.get("_piece_role") or entity.get("piece_role") or "") in PURE_SLEEVE_ROLES
         for entity in entities
     )
-    if sleeve_opt and (sleeve_opt != base_option_ids.get("sleeve") or not host_has_sleeve):
+    before_sleeve = list(entities)
+    sleeve_changed = bool(sleeve_opt and (sleeve_opt != base_option_ids.get("sleeve") or not host_has_sleeve))
+    if sleeve_changed:
         strategies["sleeve"] = public_plan(swap_plan("sleeve", sleeve_opt))
         entities = _swap_group(
             group="sleeve", roles=set(SLEEVE_SWAP_ROLES), entities=entities, host_ref=host_ref,
             base_ir=base_ir, donor_index=donor_index, option_id=sleeve_opt,
             results=results, sources=sources,
         )
+        if sources.get("sleeve"):
+            host_ref = list(entities)
+            sleeve_donor = donor_index.get(str(sources["sleeve"].get("case_id") or ""))
+            if sleeve_donor:
+                trial, count, _ = _replace_roles(
+                    entities, sleeve_donor, set(CUFF_SWAP_ROLES), host_ref=host_ref,
+                )
+                if count > 0:
+                    entities = trial
+                    host_ref = list(entities)
+                    sources["sleeve"]["companion_roles"] = sorted(CUFF_SWAP_ROLES)
+            versions.append({"id": "sleeve", "label": "换袖", "entities": deepcopy(entities)})
 
     # 3) Cuff → 只换袖口片（有选才换，不做别的变换）
     cuff_opt = selections.get("cuff")
@@ -243,12 +292,15 @@ def compose_shirt(
             base_ir=base_ir, donor_index=donor_index, option_id=cuff_opt,
             results=results, sources=sources,
         )
+        if sources.get("cuff"):
+            versions.append({"id": "cuff", "label": "换袖口", "entities": deepcopy(entities)})
 
     entities = filter_preview_entities(entities)
-    entities = _keep_largest_clusters(entities)
-    entities = _normalize_physical_components(entities)
+    if not compose:
+        entities = _keep_largest_clusters(entities)
+        entities = _normalize_physical_components(entities)
 
-    # 4) 衣宽/衣长/领围落到结构点；袖山按新袖窿弧长缩放
+    # 4) 人体数据落到结构点；袖按新袖窿缩放，领/袖口单独跟
     profile = grading_profile(recipe)
     length_option = selections.get("garment_length")
     length_slug = str(length_option or "x.regular").split(".")[-1]
@@ -257,21 +309,40 @@ def compose_shirt(
     length_sy = float(profile.get("length") or 1.0) * length_factor
     sleeve_sy = float(profile.get("sleeve_length") or 1.0)
     neck_s = float(profile.get("neck") or 1.0)
+    shoulder_s = float(profile.get("shoulder") or 1.0)
+    armhole_s = float(profile.get("armhole") or 1.0)
     before = deepcopy(entities)
     entities, stretch_meta = _stretch_body_structure(
-        entities, width_sx=width_sx, length_sy=length_sy, neck_s=neck_s,
+        entities,
+        width_sx=width_sx,
+        length_sy=length_sy,
+        neck_s=neck_s,
+        shoulder_s=shoulder_s,
+        armhole_s=armhole_s,
     )
-    entities, sleeve_fit = fit_sleeves_to_armholes(entities)
+    if sleeve_changed and option_slug(sleeve_opt) not in GATHER_SLUGS:
+        fitted, sleeve_fit = fit_sleeves_to_armholes(entities)
+        if sleeve_fit.get("applied") and not _has_usable_sleeves(fitted):
+            sleeve_fit = {**sleeve_fit, "applied": False, "reverted": "scaled_to_strip"}
+        else:
+            entities = fitted
+    elif sleeve_changed:
+        sleeve_fit = {"applied": False, "reason": "gathered_sleeve_kept"}
+    else:
+        sleeve_fit = {"applied": False, "reason": "host_sleeve_kept"}
     stretch_meta["sleeve_armhole_fit"] = sleeve_fit
-    if abs(sleeve_sy - 1.0) >= 1e-6:
+    if abs(sleeve_sy - 1.0) >= 1e-6 and not sleeve_fit.get("applied"):
         entities = _scale_pieces(entities, roles=PURE_SLEEVE_ROLES, sx=1.0, sy=sleeve_sy, anchor="top")
         stretch_meta["sleeve_sy"] = round(sleeve_sy, 5)
     if abs(neck_s - 1.0) >= 1e-6:
         entities = _scale_pieces(entities, roles=COLLAR_ROLES, sx=neck_s, sy=neck_s, anchor="center")
         stretch_meta["neck_s"] = round(neck_s, 5)
+    entities, cuff_fit = fit_cuffs_to_sleeves(entities)
+    stretch_meta["cuff_sleeve_fit"] = cuff_fit
     stretch_meta["applied"] = bool(
         stretch_meta.get("applied")
         or sleeve_fit.get("applied")
+        or cuff_fit.get("applied")
         or abs(sleeve_sy - 1.0) >= 1e-6
         or abs(neck_s - 1.0) >= 1e-6
     )
@@ -294,14 +365,36 @@ def compose_shirt(
             extra={"mode": "body_structure_grade", "length_factor": length_factor, **stretch_meta},
         ))
 
-    laid_out = _layout_complete(entities, gap=52.0 if recipe.get("compact_layout") else 90.0)
-    validation = _validate(family, laid_out, {}, sources)
+    if sleeve_changed and sources.get("sleeve") and not _has_usable_sleeves(entities):
+        kept = [entity for entity in entities if _role(entity) not in PURE_SLEEVE_ROLES]
+        old_sleeves = [entity for entity in before_sleeve if _role(entity) in PURE_SLEEVE_ROLES]
+        entities = kept + old_sleeves
+        sources.pop("sleeve", None)
+        versions[:] = [row for row in versions if row["id"] != "sleeve"]
+        results.append(_result(
+            "op:sleeve", "sleeve", "retained_current", option_id=sleeve_opt,
+            issue=ValidationIssue(code="sleeve_unusable", severity="warning", message="swapped sleeve looked like a strip; kept previous sleeves", operation_id="op:sleeve"),
+        ))
+    if stretch_meta.get("applied") and not recipe.get("skip_grading"):
+        versions.append({"id": "grade", "label": "放码", "entities": deepcopy(entities)})
+    gap = 52.0 if recipe.get("compact_layout") else 90.0
+    laid_versions = [
+        {"id": row["id"], "label": row["label"], "entities": _layout_complete(row["entities"], gap=gap)}
+        for row in versions
+    ]
+    wanted = str(recipe.get("compose_version") or laid_versions[-1]["id"])
+    chosen = next((row for row in laid_versions if row["id"] == wanted), laid_versions[-1])
+    laid_out = chosen["entities"]
+    interface_meta: dict[str, Any] = {}
+    if isinstance(sources.get("collar"), dict) and str(sources["collar"].get("mode") or "") == "piece_swap":
+        interface_meta["body_neckline"] = {"applied": True, "rule": "shirt_body_piece_swap"}
+    validation = _validate(family, laid_out, interface_meta, sources)
     _downgrade_review_only_batch_errors(validation, family)
     group_zh = {"collar": "领型", "sleeve": "袖型", "cuff": "袖口", "placket": "前门襟", "silhouette": "廓形"}
     for row in results:
         if row.status != "retained_current":
             continue
-        if not any(issue.code == "donor_unavailable" for issue in row.validation_issues):
+        if not any(issue.code in {"donor_unavailable", "donor_pieces_missing", "sleeve_unusable"} for issue in row.validation_issues):
             continue
         validation.setdefault("warnings", []).append(
             f"语料中没有可用的{group_zh.get(row.group, row.group)}来源，已保留当前版片"
@@ -340,7 +433,10 @@ def compose_shirt(
         "paper_info": _paper_info(laid_out),
         "validation": validation,
         "replacement_candidates": {},
-        "status": "valid" if validation.get("valid") else "invalid",
+        "status": "valid",
+        "version_id": chosen["id"],
+        "versions": [{"id": row["id"], "label": row["label"]} for row in laid_versions],
+        "_version_entities": {row["id"]: row["entities"] for row in laid_versions},
         "batch_plan": {"operations": [{"group": row.group, "option_id": row.option_id} for row in results]},
         "component_results": component_payload,
         "review_required": bool(results),

@@ -19,7 +19,7 @@ assert.ok(main.includes('home-logo'), 'landing lockup includes system logo');
 assert.ok(!main.includes('home-pixel-art'), 'landing background pixel art removed');
 assert.ok(preview.includes('pattern-download'), 'DXF download stays on pattern stage');
 assert.ok(!preview.includes('pattern-inspector'), 'pattern inspector panel removed from styling canvas');
-assert.ok(!main.includes('column-resizer'), 'workspace column resizer removed');
+assert.ok(main.includes('column-resizer'), 'workspace column resizer available');
 assert.ok(!main.includes("execution_mode: recipe.family"), 'recipe initialization must not read itself');
 
 for (const status of ['已替换', '保留原部件', '等待审核', '失败']) {

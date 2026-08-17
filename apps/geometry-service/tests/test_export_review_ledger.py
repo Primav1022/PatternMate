@@ -38,6 +38,11 @@ class ExportReviewLedgerTests(unittest.TestCase):
             ledger = json.loads(archive.read("review-ledger.json"))
             self.assertEqual("chi27.review-ledger.simple-piece-swap.v1", ledger["schema"])
             self.assertIn("operations", ledger)
+            self.assertIn("工艺单.html", archive.namelist())
+            self.assertIn("experiment_record.json", archive.namelist())
+            sheet = archive.read("工艺单.html").decode("utf-8")
+            self.assertIn("工艺单", sheet)
+            self.assertIn("C2590529", sheet)
 
 
 if __name__ == "__main__":

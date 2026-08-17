@@ -1,6 +1,7 @@
 import patternCatalogJson from './catalog-data/pattern-options.v1.json';
 import fabricCatalogJson from './catalog-data/fabrics.v1.json';
 import processCatalogJson from './catalog-data/processes.v1.json';
+import taobaoPrintFabricsJson from './catalog-data/taobao-print-fabrics.v1.json';
 import { asset } from './asset';
 
 export type GarmentFamily = 'tshirt' | 'shirt';
@@ -22,6 +23,7 @@ export type FabricOption = {
   slug: string;
   label: string;
   description: string;
+  feel: string;
   swatch: string;
 };
 
@@ -50,6 +52,41 @@ export const fabricGroupInfo: Record<string, { label: string; visual: string; su
   'luxury-draping': { label: '柔软垂坠', visual: '流动、柔软并带光泽', suitable: '高级女装、晚装、轻奢' },
   'sheer-lightweight': { label: '轻薄透明', visual: '空气感、透视、轻盈', suitable: '潮流、仙女风与叠穿' },
   'fashion-statement': { label: '艺术特殊', visual: '图案或特殊光泽突出', suitable: '个性、潮流与视觉重点款' },
+};
+
+const fabricFeel: Record<string, string> = {
+  'cotton-jersey': '软、亲肤',
+  'tencel-cotton': '滑、垂坠',
+  'heavy-cotton': '厚、挺括',
+  'canvas-cotton': '粗、硬挺',
+  'waffle-knit': '凹凸、软弹',
+  'slub-cotton': '颗粒、干爽',
+  'terry-cloth': '毛圈、蓬松',
+  'rib-knit': '弹、贴身',
+  'stretch-jersey': '滑、有弹',
+  'performance-polyester': '薄、光滑',
+  mesh: '透气、微糙',
+  'reflective-fabric': '硬、滑凉',
+  'cooling-fiber': '凉、光滑',
+  'velvet-knit': '绒面、柔软',
+  metallic: '硬、凉滑',
+  sequin: '硬、颗粒',
+  'sheer-mesh': '薄、透气',
+  poplin: '细滑、挺括',
+  oxford: '微糙、软挺',
+  'mercerized-cotton': '滑、有光',
+  linen: '干爽、易皱',
+  chambray: '软、微糙',
+  denim: '厚、硬挺',
+  corduroy: '条绒、暖软',
+  twill: '密实、挺括',
+  'waxed-cotton': '硬、油润',
+  'silk-satin': '滑、冰凉',
+  rayon: '软、垂坠',
+  velvet: '绒、厚软',
+  chiffon: '薄、飘逸',
+  organza: '薄、脆挺',
+  lace: '镂空、轻薄',
 };
 
 const fabricDescriptions: Record<string, string> = {
@@ -98,18 +135,64 @@ for (const [family, groups] of Object.entries(fabricCatalogJson.groups)) {
         slug,
         label,
         description: fabricDescriptions[slug] || fabricGroupInfo[group]?.visual || '服装面料选项',
-        swatch: asset(`/ui-assets/v1/fabric-options/${family}/${group}/${slug}/swatch.png`),
+        feel: fabricFeel[slug] || fabricGroupInfo[group]?.visual || '',
+        swatch: `/ui-assets/v1/fabric-options/${family}/${group}/${slug}/thumb.jpg`,
       });
     }
   }
 }
 export const fabricOptions = fabricRows;
 
+const fabricSwatch: Record<string, [string, string, string]> = {
+  'tb-poplin-ditsy': ['#f4efe6', '#c45c6a', '#7aa36b'],
+  'tb-poplin-soft-floral': ['#f7f1ea', '#d9a3b3', '#8f9d6e'],
+  'tb-clivia': ['#f3efe4', '#d4552d', '#3f7a4a'],
+  'tb-tropical': ['#eef3f7', '#3d6cb3', '#e3b341'],
+  'tb-cn-exotic': ['#f6f0e8', '#6b4c9a', '#2f8f8a'],
+  'tb-digital-allover': ['#f2eee8', '#b85c4a', '#4f7ea8'],
+};
+
+function printFabricSwatch(id: string) {
+  const [ground, a, b] = fabricSwatch[id] || ['#f4efe8', '#c45c6a', '#7aa36b'];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="${ground}"/><circle cx="18" cy="20" r="7" fill="${a}"/><circle cx="58" cy="18" r="6" fill="${b}"/><circle cx="40" cy="42" r="8" fill="${a}"/><circle cx="16" cy="58" r="6" fill="${b}"/><circle cx="62" cy="56" r="7" fill="${a}"/><circle cx="38" cy="16" r="3" fill="${b}"/></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+export type PrintFabricShop = 'zifurong' | 'lexiaoyu' | 'qiluo' | 'quanhe' | 'indigoblue' | 'mantianxing';
+
+export type TaobaoPrintFabric = {
+  id: string;
+  shop: PrintFabricShop;
+  name: string;
+  material: string;
+  width_cm: number;
+  price_hint: string;
+  style: string;
+  search: string;
+  taobao: string;
+  swatch: string;
+};
+
+export const printFabricShops: { id: PrintFabricShop; zh: string; en: string }[] = [
+  { id: 'qiluo', zh: '绮萝布艺 · 雪纺', en: 'Qiluo chiffon' },
+  { id: 'lexiaoyu', zh: '乐小鱼布艺 · 舒棉绸', en: 'Lexiaoyu rayon' },
+  { id: 'zifurong', zh: '紫芙蓉布行 · 绵绸', en: 'Zifurong cotton silk' },
+  { id: 'quanhe', zh: '全禾 · 热带雨林府绸', en: 'Quanhe tropical poplin' },
+  { id: 'indigoblue', zh: 'Indigo Blue · 拼布牛仔', en: 'Indigo Blue patchwork denim' },
+  { id: 'mantianxing', zh: '满天星布衣坊 · 格子', en: 'Mantianxing plaid' },
+];
+
+const printFabricShopOrder = Object.fromEntries(printFabricShops.map((shop, index) => [shop.id, index]));
+
+export const taobaoPrintFabrics: TaobaoPrintFabric[] = (taobaoPrintFabricsJson as TaobaoPrintFabric[])
+  .map((item) => ({ ...item, swatch: asset(item.swatch || printFabricSwatch(item.id)) }))
+  .sort((a, b) => (printFabricShopOrder[a.shop] ?? 99) - (printFabricShopOrder[b.shop] ?? 99));
+
 export const processOptions: ProcessOption[] = processCatalogJson.processes.map((item) => ({
   id: item.id,
   slug: item.slug,
   label: item.label_zh,
-  thumbnail: asset(item.thumbnail),
+  thumbnail: item.thumbnail,
 }));
 
 export const groupOrder: Record<GarmentFamily, string[]> = {

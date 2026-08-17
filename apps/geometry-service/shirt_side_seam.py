@@ -13,7 +13,9 @@ from batch_operators import _fit_polyline_to_ends, _points, _set_points
 
 BODY_SIDE_ROLES = {"front_body", "back_body", "front", "back", "front_left", "front_right"}
 FRONT_ROLES = {"front_body", "front", "front_left", "front_right"}
-OUTLINE_LINE_ROLES = {"pattern_boundary", "cut_line"}
+OUTLINE_LINE_ROLES = {"cut", "pattern_boundary", "cut_line"}
+_NOT_OUTLINE = {"sew", "internal", "grainline", "notch", "net_boundary", "seam_allowance"}
+_OUTLINE_RANK = {"cut": 3, "pattern_boundary": 2, "cut_line": 2}
 
 
 def _hypot(a: list[float], b: list[float]) -> float:
@@ -43,12 +45,19 @@ def _coarse_role(role: str) -> str:
     return "front" if role in FRONT_ROLES else "back"
 
 
-def _band_extreme(pts: list[list[float]], y0: float, y1: float, side: str) -> int:
+def _band_extreme(
+    pts: list[list[float]], y0: float, y1: float, side: str, *, toward_y: float | None = None,
+) -> int:
     lo, hi = min(y0, y1), max(y0, y1)
     cand = [i for i, p in enumerate(pts) if lo <= p[1] <= hi]
     if not cand:
         cand = list(range(len(pts)))
-    key = (lambda i: pts[i][0]) if side == "left" else (lambda i: -pts[i][0])
+
+    def key(i: int) -> tuple[float, float]:
+        xkey = pts[i][0] if side == "left" else -pts[i][0]
+        ykey = abs(pts[i][1] - toward_y) if toward_y is not None else 0.0
+        return (xkey, ykey)
+
     return min(cand, key=key)
 
 
@@ -82,8 +91,8 @@ def extract_side_indices(pts: list[list[float]]) -> dict[str, list[int]] | None:
     ys = [p[1] for p in pts]
     miny, maxy = min(ys), max(ys)
     h = max(maxy - miny, 1.0)
-    hem_l = _band_extreme(pts, miny, miny + 0.12 * h, "left")
-    hem_r = _band_extreme(pts, miny, miny + 0.12 * h, "right")
+    hem_l = _band_extreme(pts, miny, miny + 0.12 * h, "left", toward_y=miny)
+    hem_r = _band_extreme(pts, miny, miny + 0.12 * h, "right", toward_y=miny)
     arm_l = _band_extreme(pts, miny + 0.58 * h, miny + 0.82 * h, "left")
     arm_r = _band_extreme(pts, miny + 0.58 * h, miny + 0.82 * h, "right")
     left = _path_indices(pts, arm_l, hem_l, "left")
@@ -156,50 +165,152 @@ def _splice_spans(loop: list[list[float]], replacements: list[tuple[list[int], l
     return out
 
 
-def _sides_to_morph(role: str) -> tuple[str, ...]:
+def _half_outer(role: str) -> str | None:
     if role == "front_left":
-        return ("left",)
+        return "right"
     if role == "front_right":
-        return ("right",)
-    return ("left", "right")
+        return "left"
+    return None
 
 
-def _closed_outlines(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    best: dict[tuple[str, str], tuple[float, dict[str, Any]]] = {}
+def _sides_to_morph(role: str) -> tuple[str, ...]:
+    outer = _half_outer(role)
+    return (outer,) if outer else ("left", "right")
+
+
+def _poly_flare(poly: list[list[float]]) -> float:
+    if len(poly) < 2:
+        return 0.0
+    return abs(poly[-1][0] - poly[0][0])
+
+
+def _canonical_side_seams(
+    donors: list[dict[str, Any]],
+) -> dict[str, tuple[list[list[float]], float]] | None:
+    """One left/right side-seam for the whole garment.
+
+    Split fronts contribute only the outer edge (not CF). Front and back
+    sew together, so the most flared donor sides are reused on every body.
+    """
+    found: dict[str, list[tuple[float, list[list[float]], float]]] = {"left": [], "right": []}
+    for donor in donors:
+        role = _piece_role(donor)
+        loop = _open_loop(_points(donor))
+        sides = extract_side_indices(loop)
+        if not sides:
+            continue
+        cx = _center_x(loop)
+        wanted = _half_outer(role)
+        for name in ((wanted,) if wanted else ("left", "right")):
+            poly = [loop[i] for i in sides[name]]
+            found[name].append((_poly_flare(poly), poly, cx))
+    picked: dict[str, tuple[list[list[float]], float]] = {}
+    for name, rows in found.items():
+        if not rows:
+            continue
+        rows.sort(key=lambda row: row[0], reverse=True)
+        picked[name] = (rows[0][1], rows[0][2])
+    if "left" not in picked and "right" in picked:
+        picked["left"] = picked["right"]
+    if "right" not in picked and "left" in picked:
+        picked["right"] = picked["left"]
+    if "left" not in picked or "right" not in picked:
+        return None
+    return picked
+
+
+def _outline_family(entity: dict[str, Any]) -> str | None:
+    lr = _line_role(entity)
+    if lr in {"sew", "seam_allowance", "net_boundary"}:
+        return "sew"
+    if lr in _NOT_OUTLINE:
+        return None
+    if lr in OUTLINE_LINE_ROLES or lr == "":
+        return "cut"
+    return None
+
+
+def _closed_body_candidates(entities: list[dict[str, Any]], *, include_sew: bool = False) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
     for entity in entities:
-        role = _piece_role(entity)
-        if role not in BODY_SIDE_ROLES:
+        if _piece_role(entity) not in BODY_SIDE_ROLES:
             continue
         pts = _points(entity)
         if not _is_closed(pts):
             continue
+        family = _outline_family(entity)
+        if family == "cut" or (include_sew and family == "sew"):
+            out.append(entity)
+        elif family is None and len(pts) >= 16 and include_sew is False:
+            continue
+    return out
+
+
+def _closed_outlines(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    best: dict[str, tuple[int, float, dict[str, Any]]] = {}
+    for entity in _closed_body_candidates(entities):
+        pts = _points(entity)
         lr = _line_role(entity) or "pattern_boundary"
-        if lr not in OUTLINE_LINE_ROLES and len(pts) < 16:
+        rank = _OUTLINE_RANK.get(lr, 0)
+        if rank == 0 and len(pts) < 16:
             continue
         length = sum(_hypot(a, b) for a, b in zip(pts, pts[1:]))
-        key = (str(entity.get("piece_id") or entity.get("entity_id")), lr)
+        key = str(entity.get("piece_id") or entity.get("entity_id") or "")
         prev = best.get(key)
-        if prev is None or length > prev[0]:
-            best[key] = (length, entity)
-    return [row[1] for row in best.values()]
+        if prev is None or (rank, length) > (prev[0], prev[1]):
+            best[key] = (rank, length, entity)
+    return [row[2] for row in best.values()]
 
 
-def _match_donor(host: dict[str, Any], donors: list[dict[str, Any]]) -> dict[str, Any] | None:
-    host_role = _piece_role(host)
-    host_lr = _line_role(host) or "pattern_boundary"
-    host_coarse = _coarse_role(host_role)
-    ranked: list[tuple[int, float, dict[str, Any]]] = []
-    for donor in donors:
-        if _coarse_role(_piece_role(donor)) != host_coarse:
+def drop_extra_closed_outlines(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One cut + one sew closed loop per piece. Extra loops are leftover ghosts."""
+    best: dict[tuple[str, str], tuple[int, float, str]] = {}
+    closed_ids: set[str] = set()
+    for entity in entities:
+        family = _outline_family(entity)
+        if not family:
             continue
-        lr_match = 1 if (_line_role(donor) or "pattern_boundary") == host_lr else 0
-        pts = _points(donor)
+        pts = _points(entity)
+        if not _is_closed(pts):
+            continue
+        eid = str(entity.get("entity_id") or id(entity))
+        pid = str(entity.get("piece_id") or eid)
+        rank = _OUTLINE_RANK.get(_line_role(entity), 1 if family == "sew" else 0)
         length = sum(_hypot(a, b) for a, b in zip(pts, pts[1:]))
-        ranked.append((lr_match, length, donor))
-    if not ranked:
+        closed_ids.add(eid)
+        key = (pid, family)
+        prev = best.get(key)
+        if prev is None or (rank, length) > (prev[0], prev[1]):
+            best[key] = (rank, length, eid)
+    keep = {row[2] for row in best.values()}
+    return [
+        entity for entity in entities
+        if str(entity.get("entity_id") or id(entity)) not in closed_ids
+        or str(entity.get("entity_id") or id(entity)) in keep
+    ]
+
+
+def _side_replacements(
+    host_loop: list[list[float]],
+    role: str,
+    host_cx: float,
+    donor_sides: dict[str, tuple[list[list[float]], float]],
+) -> list[tuple[list[int], list[list[float]]]] | None:
+    host_sides = extract_side_indices(host_loop)
+    if not host_sides:
         return None
-    ranked.sort(key=lambda row: (row[0], row[1]), reverse=True)
-    return ranked[0][2]
+    replacements: list[tuple[list[int], list[list[float]]]] = []
+    for side in _sides_to_morph(role):
+        donor = donor_sides.get(side)
+        if not donor:
+            continue
+        donor_poly, donor_cx = donor
+        h_idx = host_sides[side]
+        host_poly = [host_loop[i] for i in h_idx]
+        target_end = _target_hem(host_poly[0], host_poly[-1], host_cx, donor_poly, donor_cx)
+        fitted = _fit_polyline_to_ends(donor_poly, host_poly[0], target_end)
+        replacements.append((h_idx, fitted))
+    return replacements or None
 
 
 def morph_body_side_seams(
@@ -207,49 +318,50 @@ def morph_body_side_seams(
     donor_entities: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     donors = _closed_outlines(donor_entities)
+    donor_sides = _canonical_side_seams(donors)
+    if not donor_sides:
+        return host_entities, {"applied": False, "reason": "no_closed_body_side_seams"}
     changed: dict[str, dict[str, Any]] = {}
     meta_rows: list[dict[str, Any]] = []
-    for host in _closed_outlines(host_entities):
-        donor = _match_donor(host, donors)
-        if not donor:
-            continue
+    for host in _closed_body_candidates(host_entities, include_sew=True):
         host_loop = _open_loop(_points(host))
-        donor_loop = _open_loop(_points(donor))
-        host_sides = extract_side_indices(host_loop)
-        donor_sides = extract_side_indices(donor_loop)
-        if not host_sides or not donor_sides:
-            continue
-        host_cx = _center_x(host_loop)
-        donor_cx = _center_x(donor_loop)
-        replacements: list[tuple[list[int], list[list[float]]]] = []
-        for side in _sides_to_morph(_piece_role(host)):
-            h_idx = host_sides[side]
-            d_idx = donor_sides[side]
-            host_poly = [host_loop[i] for i in h_idx]
-            donor_poly = [donor_loop[i] for i in d_idx]
-            target_end = _target_hem(host_poly[0], host_poly[-1], host_cx, donor_poly, donor_cx)
-            fitted = _fit_polyline_to_ends(donor_poly, host_poly[0], target_end)
-            replacements.append((h_idx, fitted))
+        replacements = _side_replacements(
+            host_loop, _piece_role(host), _center_x(host_loop), donor_sides,
+        )
         if not replacements:
             continue
-        new_pts = _splice_spans(host_loop, replacements)
         eid = str(host.get("entity_id") or "")
-        changed[eid] = _set_points(host, new_pts)
+        changed[eid] = _set_points(host, _splice_spans(host_loop, replacements))
         meta_rows.append({
             "entity_id": eid,
             "piece_role": _piece_role(host),
             "sides": list(_sides_to_morph(_piece_role(host))),
+            "line_role": _line_role(host),
         })
     if not changed:
         return host_entities, {"applied": False, "reason": "no_closed_body_side_seams"}
-    out = [changed.get(str(entity.get("entity_id")), entity) for entity in host_entities]
-    return out, {"applied": True, "mode": "side_seam_morph", "modified": meta_rows}
+    touched = {
+        str(entity.get("piece_id") or entity.get("entity_id") or "")
+        for entity in host_entities
+        if str(entity.get("entity_id") or "") in changed
+    }
+    out: list[dict[str, Any]] = []
+    for entity in host_entities:
+        eid = str(entity.get("entity_id") or "")
+        pid = str(entity.get("piece_id") or eid)
+        if eid in changed:
+            out.append(changed[eid])
+            continue
+        if pid in touched and _outline_family(entity) and _is_closed(_points(entity)):
+            continue
+        out.append(entity)
+    return drop_extra_closed_outlines(out), {"applied": True, "mode": "side_seam_morph", "modified": meta_rows}
 
 
 # Chest/length/neck grade: move structure points, not affine-stretch the piece.
 ARMHOLE_LINE_ROLES = {"armhole_front", "armhole_back", "armhole_seam"}
 NECK_LINE_ROLES = {"neckline", "front_neckline", "back_neckline"}
-BODY_GRADE_ROLES = BODY_SIDE_ROLES | {"front_placket", "back_yoke", "placket", "yoke"}
+BODY_GRADE_ROLES = BODY_SIDE_ROLES | {"front_placket", "front_yoke", "back_yoke", "placket", "yoke"}
 
 
 def _x_origin(role: str, loop: list[list[float]]) -> float:
@@ -272,16 +384,24 @@ def _map_body_point(
     width_sx: float,
     length_sy: float,
     *,
+    shoulder_s: float = 1.0,
+    armhole_s: float = 1.0,
     skip_width: bool = False,
 ) -> list[float]:
     chest_y = rec["chest_y"]
     ny = y if y >= chest_y else chest_y + (y - chest_y) * length_sy
-    if skip_width or abs(width_sx - 1.0) < 1e-6 or y >= chest_y - 1e-9:
+    if skip_width:
         return [x, ny]
-    ramp = max((chest_y - rec["miny"]) * 0.12, 1.0)
-    t = min(1.0, (chest_y - y) / ramp)
-    nx = rec["origin_x"] + (x - rec["origin_x"]) * (1.0 + (width_sx - 1.0) * t)
-    return [nx, ny]
+    _ = armhole_s
+    if y >= chest_y - 1e-9:
+        span = max(rec["maxy"] - chest_y, 1.0)
+        t = min(1.0, max(0.0, (y - chest_y) / span))
+        sx = width_sx + (shoulder_s - width_sx) * t
+    else:
+        sx = width_sx
+    if abs(sx - 1.0) < 1e-6:
+        return [x, ny]
+    return [rec["origin_x"] + (x - rec["origin_x"]) * sx, ny]
 
 
 def _outline_params(loop: list[list[float]], role: str) -> dict[str, float] | None:
@@ -317,7 +437,7 @@ def _params_for(
     if pid in by_piece:
         return by_piece[pid]
     role = _piece_role(entity)
-    if role in {"front_placket", "placket"}:
+    if role in {"front_placket", "placket", "front_yoke"}:
         return by_coarse.get("front")
     if role in {"back_yoke", "yoke"}:
         return by_coarse.get("back")
@@ -332,18 +452,19 @@ def grade_body_structure(
     width_sx: float,
     length_sy: float,
     neck_s: float = 1.0,
+    shoulder_s: float = 1.0,
+    armhole_s: float = 1.0,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Chest → side-seam let-out; length from chest down; neck opening only.
-
-    Armhole / shoulder / neck stay off the chest sx. ponytail: no extra armhole deepen.
-    """
+    """Measurement grade on structure points: chest, length, shoulder, armhole, neck."""
     meta: dict[str, Any] = {
         "mode": "body_structure_grade",
         "width_sx": round(width_sx, 5),
         "length_sy": round(length_sy, 5),
         "neck_s": round(neck_s, 5),
+        "shoulder_s": round(shoulder_s, 5),
+        "armhole_s": round(armhole_s, 5),
     }
-    if abs(width_sx - 1.0) < 1e-6 and abs(length_sy - 1.0) < 1e-6 and abs(neck_s - 1.0) < 1e-6:
+    if all(abs(value - 1.0) < 1e-6 for value in (width_sx, length_sy, neck_s, shoulder_s, armhole_s)):
         meta["applied"] = False
         return entities, meta
 
@@ -375,14 +496,11 @@ def grade_body_structure(
             out.append(entity)
             continue
         lr = _line_role(entity)
-        if lr in ARMHOLE_LINE_ROLES:
-            out.append(entity)
-            continue
         pts = _points(entity)
         if len(pts) < 2:
             out.append(entity)
             continue
-        placket = role in {"front_placket", "placket", "back_yoke", "yoke"}
+        placket = role in {"front_placket", "placket"}
         if lr in NECK_LINE_ROLES and do_neck:
             cx, cy = rec["neck_cx"], rec["neck_cy"]
             new_pts = [[cx + (p[0] - cx) * neck_s, cy + (p[1] - cy) * neck_s] for p in pts]
@@ -392,6 +510,7 @@ def grade_body_structure(
             new_pts = [
                 _map_body_point(
                     p[0], p[1], rec, width_sx, length_sy,
+                    shoulder_s=shoulder_s, armhole_s=armhole_s,
                     skip_width=placket or _in_neck_band(p[0], p[1], rec),
                 )
                 for p in work
@@ -409,5 +528,5 @@ def grade_body_structure(
         n_changed += 1
     meta["applied"] = n_changed > 0
     meta["n_changed"] = n_changed
-    return out, meta
+    return drop_extra_closed_outlines(out), meta
 

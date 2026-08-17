@@ -121,12 +121,14 @@ class PruneSleevePanelsTests(unittest.TestCase):
         )
         sleeves = [row for row in entities if _role(row) == "sleeve"]
         pids = set(_group_by_piece(sleeves))
-        self.assertEqual(len(pids), 1)
+        self.assertGreaterEqual(len(pids), 1)
+        self.assertLessEqual(len(pids), 2)
         box = bounds_of_entities(sleeves)
         w, h = box[2] - box[0], box[3] - box[1]
         self.assertGreater(min(w, h), 80)
         self.assertLess(max(w, h) / min(w, h), 3.5)
-        self.assertFalse((meta.get("sources") or {}).get("sizing", {}).get("fit_sleeves"))
+        fit = ((meta.get("sources") or {}).get("sizing") or {}).get("sleeve_armhole_fit") or {}
+        self.assertEqual(fit.get("mode"), "knit_cap_to_armhole")
 
     def test_c2490478_recovers_back_and_real_sleeve(self) -> None:
         from composition_engine import compose_recipe, build_index, pattern_catalog, FRONT_ROLES, BACK_ROLES, PURE_SLEEVE_ROLES

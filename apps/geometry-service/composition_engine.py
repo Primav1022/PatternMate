@@ -27,11 +27,14 @@ COLLAR_ROLES = {"neck_binding", "neck_rib", "collar", "collar_stand", "collar_in
 PLACKET_ROLES = {"front_placket"}
 PURE_SLEEVE_ROLES = {"sleeve", "sleeve_left", "sleeve_right"}
 CUFF_ROLES = {"cuff", "rib_cuff", "sleeve_placket", "sleeve_placket_extension"}
+_PIECE_SWAP_MODES = {"piece_swap", "piece_swap_similarity", "simple_piece_swap"}
 
 # Compose/preview: keep labeled pieces only. Unmatched fused DXF lines are dropped.
 _PREVIEW_DROP_PIECE_ROLES = {"unknown", "", "none", "unlabeled", "scrap"}
 _PREVIEW_DROP_LINE_ROLES = {
-    "drill_hole", "text", "construction", "auxiliary", "grainline",
+    "drill_hole", "text", "construction", "auxiliary", "internal",
+    "front_neckline", "back_neckline", "armhole_front", "armhole_back",
+    "shoulder", "shoulder_seam", "sleeve_cap",
 }
 # Note: shirt IR often stores cut outlines as line_role=unknown on a labeled
 # piece (collar/yoke/placket). Keep those; drop entities with no piece.
@@ -86,7 +89,9 @@ def prefer_piece_cut_outlines(entities: list[dict[str, Any]]) -> list[dict[str, 
 
 def filter_preview_entities(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Keep labeled pattern pieces; drop unmatched DXF lines and CAD junk."""
-    entities = prefer_piece_cut_outlines(entities)
+    from shirt_side_seam import drop_extra_closed_outlines
+
+    entities = drop_extra_closed_outlines(prefer_piece_cut_outlines(entities))
     out: list[dict[str, Any]] = []
     for entity in entities:
         role = str(entity.get("_piece_role") or entity.get("piece_role") or "unknown")
@@ -99,6 +104,24 @@ def filter_preview_entities(entities: list[dict[str, Any]]) -> list[dict[str, An
         if len(points) < 2:
             continue
         out.append(entity)
+    return _keep_one_grainline(out)
+
+
+def _keep_one_grainline(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """CAD 别布 hatches explode into dozens of grainlines; preview keeps one."""
+    best: dict[str, dict[str, Any]] = {}
+    for entity in entities:
+        if str(entity.get("line_role") or "").lower() != "grainline":
+            continue
+        pid = str(entity.get("piece_id") or "")
+        if pid not in best or entity_length(entity) > entity_length(best[pid]):
+            best[pid] = entity
+    out: list[dict[str, Any]] = []
+    for entity in entities:
+        if str(entity.get("line_role") or "").lower() != "grainline":
+            out.append(entity)
+        elif best.get(str(entity.get("piece_id") or "")) is entity:
+            out.append(entity)
     return out
 
 
@@ -593,6 +616,206 @@ def _splice_neck_span(
     return out
 
 
+def _neckline_depth(slug: str, piece_role: str, chord_length: float) -> float:
+    front_depth = {
+        "crew": 0.18, "v-neck": 0.72, "polo": 0.17, "high-mock": 0.07,
+        "cowl": 0.25, "scrunch": 0.13, "boat": 0.045, "asymmetric": 0.28,
+        "bow-tie": 0.14, "pointed": 0.16, "peter-pan": 0.13,
+        "casual-wide-lapel": 0.22, "open-v-pointed": 0.42,
+    }.get(slug, 0.16)
+    back_depth = {
+        "crew": .055, "v-neck": .10, "polo": .06, "high-mock": .035,
+        "boat": .035, "open-v-pointed": .095,
+    }.get(slug, .065)
+    ratio = front_depth if piece_role in FRONT_ROLES else back_depth
+    return chord_length * ratio
+
+
+def _neckline_redraw(slug: str, piece_role: str, start: list[float], end: list[float], nx: float, ny: float, depth: float):
+    chord_x, chord_y = end[0] - start[0], end[1] - start[1]
+    chord_length = math.hypot(chord_x, chord_y) or 1.0
+    ux, uy = chord_x / chord_length, chord_y / chord_length
+
+    def redraw(x: float, y: float) -> list[float]:
+        projection = ((x - start[0]) * ux + (y - start[1]) * uy) / chord_length
+        t = max(0.0, min(1.0, projection))
+        if slug in {"v-neck", "open-v-pointed"} and piece_role in FRONT_ROLES:
+            inward = depth * (1.0 - abs(2.0 * t - 1.0))
+        elif slug == "asymmetric" and piece_role in FRONT_ROLES:
+            peak = 0.68
+            inward = depth * (t / peak if t <= peak else (1.0 - t) / (1.0 - peak))
+        else:
+            inward = depth * math.sin(math.pi * t)
+        return [start[0] + chord_x * t + nx * inward, start[1] + chord_y * t + ny * inward]
+
+    return redraw
+
+
+def _higher_span(ring: list[list[float]], i: int, j: int) -> list[int]:
+    count = len(ring)
+    forward = _ring_path(count, i, j, False)
+    reverse = _ring_path(count, i, j, True)
+
+    def mean_y(indexes: list[int]) -> float:
+        return sum(ring[k][1] for k in indexes) / max(len(indexes), 1)
+
+    return forward if mean_y(forward) >= mean_y(reverse) else reverse
+
+
+def _replace_ring_span(
+    points: list[list[float]], span: list[int], new_span: list[list[float]]
+) -> list[list[float]] | None:
+    if len(points) < 8 or len(span) < 2 or len(new_span) < 2:
+        return None
+    closed = math.hypot(points[0][0] - points[-1][0], points[0][1] - points[-1][1]) <= 1.0
+    ring = points[:-1] if closed and len(points) > 1 else points
+    count = len(ring)
+    out: list[list[float]] = []
+    index = (span[-1] + 1) % count
+    while index != span[0]:
+        out.append(ring[index][:])
+        index = (index + 1) % count
+    out.extend(point[:] for point in new_span)
+    if len(out) < 8:
+        return None
+    if out[0] != out[-1]:
+        out.append(out[0][:])
+    return out
+
+
+def _split_front_cuts(entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    fronts = [
+        entity
+        for entity in entities
+        if (entity.get("source") or {}).get("origin") == "compose_ir"
+        and str(entity.get("line_role") or "") == "cut"
+        and str(entity.get("_piece_role") or "") in FRONT_ROLES
+    ]
+    if len(fronts) < 2:
+        return []
+    areas = [_piece_area([entity]) for entity in fronts]
+    largest = max(areas)
+    return [entity for entity, area in zip(fronts, areas) if area >= largest * 0.55]
+
+
+def _reshape_compose_neckline(
+    entities: list[dict[str, Any]], slug: str
+) -> tuple[list[dict[str, Any]], dict[str, Any]] | None:
+    """Only rewrite front/back compose cuts on their neckline span. Never touch sleeves."""
+    if not any((entity.get("source") or {}).get("origin") == "compose_ir" for entity in entities):
+        return None
+    split_fronts = _split_front_cuts(entities)
+    if split_fronts and slug not in {"v-neck", "boat"}:
+        return entities, {"applied": False, "reason": "split_front_keep_original", "slug": slug}
+    primary = _primary_body_piece_keys(entities)
+    target_ids = {str(entity.get("piece_id") or "") for entity in split_fronts} if split_fronts else None
+    piece_entities_current: dict[str, list[dict[str, Any]]] = {}
+    for entity in entities:
+        piece_entities_current.setdefault(str(entity.get("piece_id") or ""), []).append(entity)
+    changed: dict[tuple[str, str], dict[str, Any]] = {}
+    reports = []
+    for entity in entities:
+        if (entity.get("source") or {}).get("origin") != "compose_ir":
+            continue
+        if str(entity.get("line_role") or "") != "cut":
+            continue
+        piece_role = str(entity.get("_piece_role") or "")
+        piece_id = str(entity.get("piece_id") or "")
+        if target_ids is not None:
+            if piece_id not in target_ids:
+                continue
+        elif (piece_id, piece_role) not in primary:
+            continue
+        neck = next(
+            (edge for edge in (entity.get("_compose_edges") or []) if "neckline" in str(edge.get("role") or "")),
+            None,
+        )
+        points = entity_points(entity)
+        if not neck or len(points) < 8:
+            continue
+        closed = math.hypot(points[0][0] - points[-1][0], points[0][1] - points[-1][1]) <= 1.0
+        ring = points[:-1] if closed and len(points) > 1 else points
+        i, j = int(neck["start_i"]), int(neck["end_i"])
+        if i < 0 or j < 0 or i >= len(ring) or j >= len(ring) or i == j:
+            continue
+        span = _higher_span(ring, i, j)
+        if len(span) < 3:
+            continue
+        start, end = ring[span[0]], ring[span[-1]]
+        if split_fronts and slug == "v-neck":
+            spliced = _replace_ring_span(points, span, [start, end])
+            mode = "split_front_v_line"
+        elif split_fronts and slug == "boat":
+            line_y = max(start[1], end[1])
+            spliced = _replace_ring_span(points, span, [[start[0], line_y], [end[0], line_y]])
+            mode = "split_front_boat_line"
+        else:
+            chord_x, chord_y = end[0] - start[0], end[1] - start[1]
+            chord_length = math.hypot(chord_x, chord_y)
+            if chord_length <= 1e-6:
+                continue
+            nx, ny = -chord_y / chord_length, chord_x / chord_length
+            mid_x, mid_y = (start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0
+            body_bounds = bounds_of_entities(piece_entities_current.get(piece_id, []))
+            if body_bounds:
+                body_center = ((body_bounds[0] + body_bounds[2]) / 2.0, (body_bounds[1] + body_bounds[3]) / 2.0)
+                if (body_center[0] - mid_x) * nx + (body_center[1] - mid_y) * ny < 0:
+                    nx, ny = -nx, -ny
+            depth = _neckline_depth(slug, piece_role, chord_length)
+            redraw = _neckline_redraw(slug, piece_role, start, end, nx, ny, depth)
+            spliced = _splice_neck_span(points, start, end, redraw, max(12.0, chord_length * 0.12))
+            mode = "compose_cut_span"
+        if not spliced:
+            continue
+        item = deepcopy(entity)
+        geometry = dict(item.get("geometry") or {})
+        geometry["points"] = spliced
+        item["geometry"] = geometry
+        eid = str(entity.get("entity_id") or "")
+        changed[(piece_id, eid)] = item
+        if split_fronts:
+            line_y = max(start[1], end[1])
+            new_neck = [start[:], end[:]] if slug == "v-neck" else [[start[0], line_y], [end[0], line_y]]
+        for child in piece_entities_current.get(piece_id, []):
+            if str(child.get("line_role") or "") != str(neck.get("role") or ""):
+                continue
+            parent = (child.get("source") or {}).get("parent")
+            if parent and parent != eid:
+                continue
+            if split_fronts:
+                copied = deepcopy(child)
+                copied["geometry"] = {**(copied.get("geometry") or {}), "points": [p[:] for p in new_neck]}
+                changed[(piece_id, str(child.get("entity_id") or ""))] = copied
+                continue
+            child_pts = entity_points(child)
+            child_spliced = _splice_neck_span(child_pts, start, end, redraw, max(12.0, chord_length * 0.12))
+            if not child_spliced and len(child_pts) >= 2:
+                child_spliced = [redraw(p[0], p[1]) for p in child_pts]
+            if child_spliced:
+                copied = deepcopy(child)
+                copied["geometry"] = {**(copied.get("geometry") or {}), "points": child_spliced}
+                changed[(piece_id, str(child.get("entity_id") or ""))] = copied
+        reports.append({
+            "piece_id": piece_id,
+            "piece_role": piece_role,
+            "entity_count": 1,
+            "mode": mode,
+        })
+    if not changed:
+        return None
+    return [
+        changed.get((str(entity.get("piece_id") or ""), str(entity.get("entity_id") or "")), entity)
+        for entity in entities
+    ], {
+        "applied": True,
+        "slug": slug,
+        "chains": reports,
+        "locked_shoulders": True,
+        "modified_entity_ids": [eid for (_pid, eid) in changed],
+        "mode": reports[0]["mode"] if reports else "compose_cut_span",
+    }
+
+
 def reshape_body_neckline(
     entities: list[dict[str, Any]], ir: dict[str, Any], slug: str
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -603,6 +826,9 @@ def reshape_body_neckline(
     points fixed and redraws only the annotated neckline chains toward the body
     centroid, so adjacent shoulder geometry stays locked.
     """
+    composed = _reshape_compose_neckline(entities, slug)
+    if composed:
+        return composed
     entity_by_id = {entity.get("entity_id"): entity for entity in entities}
     entity_by_key = {
         (str(entity.get("piece_id") or ""), str(entity.get("entity_id") or "")): entity
@@ -745,43 +971,8 @@ def reshape_body_neckline(
             if (body_center[0] - mid_x) * nx + (body_center[1] - mid_y) * ny < 0:
                 nx, ny = -nx, -ny
 
-        front_depth = {
-            "crew": 0.18,
-            "v-neck": 0.72,
-            "polo": 0.17,
-            "high-mock": 0.07,
-            "cowl": 0.25,
-            "scrunch": 0.13,
-            "boat": 0.045,
-            "asymmetric": 0.28,
-            "bow-tie": 0.14,
-            "pointed": 0.16,
-            "peter-pan": 0.13,
-            "casual-wide-lapel": 0.22,
-            "open-v-pointed": 0.42,
-        }.get(slug, 0.16)
-        back_depth = {
-            "crew": .055,
-            "v-neck": .10,
-            "polo": .06,
-            "high-mock": .035,
-            "boat": .035,
-            "open-v-pointed": .095,
-        }.get(slug, .065)
-        depth_ratio = front_depth if piece_role in FRONT_ROLES else back_depth
-        depth = chord_length * depth_ratio
-
-        def redraw(x: float, y: float) -> list[float]:
-            projection = ((x - start[0]) * ux + (y - start[1]) * uy) / chord_length
-            t = max(0.0, min(1.0, projection))
-            if slug in {"v-neck", "open-v-pointed"} and piece_role in FRONT_ROLES:
-                inward = depth * (1.0 - abs(2.0 * t - 1.0))
-            elif slug == "asymmetric" and piece_role in FRONT_ROLES:
-                peak = 0.68
-                inward = depth * (t / peak if t <= peak else (1.0 - t) / (1.0 - peak))
-            else:
-                inward = depth * math.sin(math.pi * t)
-            return [start[0] + chord_x * t + nx * inward, start[1] + chord_y * t + ny * inward]
+        depth = _neckline_depth(slug, piece_role, chord_length)
+        redraw = _neckline_redraw(slug, piece_role, start, end, nx, ny, depth)
 
         # The source DXF commonly contains a cut-line copy over the semantic
         # neckline. Redraw that copy too; otherwise the old round neckline is
@@ -1056,6 +1247,9 @@ def _sex_prototype_scales(sex: str) -> dict[str, Any]:
         "sleeve_length": 1.0,
         "sleeve_width": 1.0,
         "neck": 1.0,
+        "shoulder": 1.0,
+        "armhole": 1.0,
+        "cuff": 1.0,
     }
     if sex != "male_general":
         return identity
@@ -1073,6 +1267,9 @@ def _sex_prototype_scales(sex: str) -> dict[str, Any]:
         "sleeve_length": dst["sleeve"] / src["sleeve"],
         "sleeve_width": chest * 0.55 + (dst["upper_arm"] / src["upper_arm"]) * 0.45,
         "neck": dst["neck"] / src["neck"],
+        "shoulder": shoulder,
+        "armhole": chest * 0.55 + (dst["upper_arm"] / src["upper_arm"]) * 0.45,
+        "cuff": dst["upper_arm"] / src["upper_arm"],
     }
 
 
@@ -1085,6 +1282,9 @@ def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
             "sleeve_length": 1.0,
             "sleeve_width": 1.0,
             "neck": 1.0,
+            "shoulder": 1.0,
+            "armhole": 1.0,
+            "cuff": 1.0,
             "ease_cm": 0.0,
             "fit": str(recipe.get("fit") or "regular"),
             "waist_scale": 1.0,
@@ -1133,6 +1333,9 @@ def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
     grade_sleeve_length = sleeve / base_sleeve
     grade_sleeve_width = (width_scale * 0.55 + upper_arm / base_upper_arm * 0.45) * shrink_correction
     grade_neck = neck / base_neck
+    grade_shoulder = shoulder_scale * shrink_correction
+    grade_armhole = (width_scale * 0.55 + (upper_arm / base_upper_arm) * 0.45) * shrink_correction
+    grade_cuff = (upper_arm / base_upper_arm) * 0.65 + grade_sleeve_width * 0.35
     profile = {
         "mode": mode,
         "width": max(0.75, min(1.55, grade_width * float(prototype["width"]))),
@@ -1140,6 +1343,9 @@ def grading_profile(recipe: dict[str, Any]) -> dict[str, float | str]:
         "sleeve_length": max(0.75, min(1.45, grade_sleeve_length * float(prototype["sleeve_length"]))),
         "sleeve_width": max(0.80, min(1.45, grade_sleeve_width * float(prototype["sleeve_width"]))),
         "neck": max(0.80, min(1.35, grade_neck * float(prototype["neck"]))),
+        "shoulder": max(0.80, min(1.40, grade_shoulder * float(prototype.get("shoulder") or 1.0))),
+        "armhole": max(0.80, min(1.40, grade_armhole * float(prototype.get("armhole") or 1.0))),
+        "cuff": max(0.80, min(1.40, grade_cuff * float(prototype.get("cuff") or 1.0))),
         "ease_cm": ease,
         "fit": fit,
         "waist_scale": round(waist_scale, 4),
@@ -1371,6 +1577,11 @@ def _interface_length(ir: dict[str, Any], entities: list[dict[str, Any]], edge_r
     return role_edge_length(mini, edge_roles, piece_roles)
 
 
+def _neck_source_swapped(sources: dict[str, Any]) -> bool:
+    src = sources.get("neckline") or sources.get("collar")
+    return isinstance(src, dict) and str(src.get("mode") or "") in _PIECE_SWAP_MODES
+
+
 def _validate(
     family: str,
     entities: list[dict[str, Any]],
@@ -1387,9 +1598,13 @@ def _validate(
     sleeveless = sources.get("intent_sleeve") == "sleeveless"
     if not sleeveless and not roles & PURE_SLEEVE_ROLES:
         errors.append("缺少袖片")
+    neck_swapped = _neck_source_swapped(sources)
     if family == "shirt":
-        if not roles & {"collar", "collar_stand"}:
+        # 休闲翻领等领型切在左右前片上，语料经常没有独立领面/领座。
+        if not roles & COLLAR_ROLES and not (neck_swapped and roles & FRONT_ROLES):
             errors.append("缺少衬衫领片")
+        elif not roles & COLLAR_ROLES:
+            warnings.append("翻领已随前后衣身换片，无独立领面/领座")
         if sources.get("intent_sleeve") not in {"short", "sleeveless"} and not roles & CUFF_ROLES:
             errors.append("缺少袖口版片")
         if not roles & PLACKET_ROLES:
@@ -1409,7 +1624,7 @@ def _validate(
         warnings.append("源IR缺少可识别的袖山接口，已按轮廓比例衔接")
     neck = interface_meta.get("neck") or {}
     body_neckline = interface_meta.get("body_neckline") or {}
-    if (sources.get("neckline") or sources.get("collar")) and not body_neckline.get("applied"):
+    if (sources.get("neckline") or sources.get("collar")) and not body_neckline.get("applied") and not neck_swapped:
         errors.append("基础纸样缺少可重绘的前后片领圈，不能生成可信的领口组合")
     if neck.get("applied"):
         error = abs(float(neck.get("length_error") or 0.0))
@@ -1440,18 +1655,12 @@ def _batch_component_payload(results: list[Any]) -> list[dict[str, Any]]:
 
 
 def _downgrade_review_only_batch_errors(validation: dict[str, Any], family: str) -> None:
-    """Batch preview is a trial generator: sparse legacy annotations go to human review, not hard failure."""
+    """Trial compose: shirt never hard-fails. Keep the preview and continue."""
     downgraded: list[str] = []
     kept_errors: list[str] = []
     for message in validation.get("errors") or []:
-        if family == "shirt" and message == "缺少门襟来源":
-            downgraded.append("基础版型未提供可审核门襟来源；已保留组合预览，生产前需人工审核")
-            continue
-        if family == "shirt" and message == "缺少袖口版片":
-            downgraded.append("基础版型未标注袖口版片；已保留组合预览，生产前需人工审核")
-            continue
-        if family == "shirt" and message == "缺少袖片":
-            downgraded.append("基础版型未标注袖片；已从可用来源补袖，生产前需人工审核")
+        if family == "shirt":
+            downgraded.append(f"{message}；已保留当前纸样，不阻断下一步")
             continue
         if message.startswith("存在 ") and " 条退化几何" in message:
             downgraded.append(f"{message}；已作为源IR质量问题进入人工审核，不阻断组合预览")

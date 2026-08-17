@@ -171,7 +171,11 @@ function designPrompt(request) {
 }
 
 function printPrompt(request) {
-  return `Perform a minimal localized print-only edit on the supplied garment preview. Keep person, pose, garment color and silhouette unchanged. Latest request: ${request.prompt || ""}. Previous: ${(request.history || []).join("; ")}`;
+  const history = (request.history || []).join("; ");
+  if (request.process === "tie-dye") {
+    return `Apply traditional batik / wax-resist (蜡染) and handmade tie-dye (扎染) as a fabric-level dye texture on the supplied garment preview, not a printed graphic sticker. Keep person, pose, garment silhouette and construction unchanged. Show wax-crackle, indigo bleed, and irregular dye diffusion on the cloth. Latest request: ${request.prompt || ""}. Previous: ${history}`;
+  }
+  return `Perform a minimal localized print-only edit on the supplied garment preview. Keep person, pose, garment color and silhouette unchanged. Latest request: ${request.prompt || ""}. Previous: ${history}`;
 }
 
 async function enqueue(input, kind, env, ctx) {
@@ -189,7 +193,7 @@ function notFoundJob(job_id) {
 async function runJob(job_id, input, kind, env) {
   try {
     await putJob({ job_id, status: "running", progress: 18, stage: "generating_preview", result_urls: [], kind });
-    const prompt = (input.prompt || "").trim() || (kind === "garment_print" ? printPrompt(input) : designPrompt(input));
+    const prompt = kind === "garment_print" ? printPrompt(input) : ((input.prompt || "").trim() || designPrompt(input));
     const reference = await referenceBytes(input, kind, env);
     const preview = await imageCall(env, reference ? "edit" : "generate", prompt, reference);
     await putImage(`${job_id}-0.png`, preview);
@@ -200,7 +204,9 @@ async function runJob(job_id, input, kind, env) {
     };
     if (kind === "garment_print") {
       await putJob({ ...job, status: "running", progress: 62, stage: "generating_production_artwork" });
-      const artwork = await imageCall(env, "generate", `Independent production print artwork, no person or garment mockup. User direction: ${input.prompt || ""}`, null);
+      const artwork = await imageCall(env, "generate", input.process === "tie-dye"
+        ? `Independent batik / wax-resist fabric texture swatch for production reference. Wax crackle, handmade tie-dye bleed, no person or garment mockup. User direction: ${input.prompt || ""}`
+        : `Independent production print artwork, no person or garment mockup. User direction: ${input.prompt || ""}`, null);
       await putImage(`${job_id}-1.png`, artwork);
       job.result_urls.push(`/results/${job_id}-1.png`);
       job.production_asset = { url: `/results/${job_id}-1.png`, mode: "motif", format: "PNG", width_px: 1024, height_px: 1024, dpi: 300, color_space: "sRGB", transparent: false };
