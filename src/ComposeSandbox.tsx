@@ -200,6 +200,7 @@ export function ComposeSandbox() {
           {elapsedMs != null && <span>{elapsedMs} ms</span>}
           {result && <span className={result.status === 'valid' ? 'ok' : 'bad'}>{result.status}</span>}
           {previewMode && <span className="sandbox-preview-mode">{previewMode === 'base' ? 'base 预览' : 'compose'}</span>}
+          <a href="#/relabel-yoke">后育克补标</a>
           <a href="#/relabel">袖片补标</a>
           <a href="#/sleeve-vlm">袖片 VLM</a>
           <a href="#/shirt-sandbox">衬衫 sandbox</a>

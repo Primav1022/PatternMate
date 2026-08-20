@@ -72,6 +72,126 @@ class ShirtComposeIrTests(unittest.TestCase):
         self.assertGreater(max(xs) - min(xs), 1000)
         self.assertLess(max(ys) - min(ys), 250)
 
+    def test_c2530029_keeps_source_front_yokes(self) -> None:
+        from dxf_closed_cuts import guess_role
+
+        self.assertEqual("front_yoke", guess_role("C2530029.左前上_面料_S", family="shirt"))
+        self.assertEqual("front_yoke", guess_role("C2530029.右前上_面料_S", family="shirt"))
+        self.assertEqual("front_left", guess_role("C2530029.左前下_面料_S", family="shirt"))
+        self.assertEqual("front_right", guess_role("C2530029.右前下_面料_S", family="shirt"))
+        doc = load_compose("C2530029")
+        names = [p["cad_name"] for p in doc["pieces"] if p["piece_role"] == "front_yoke"]
+        self.assertEqual(2, len(names))
+        self.assertTrue(any("左前上" in name for name in names))
+        self.assertTrue(any("右前上" in name for name in names))
+        self.assertTrue(any(p["piece_role"] == "front_left" and "左前下" in p["cad_name"] for p in doc["pieces"]))
+        self.assertTrue(any(p["piece_role"] == "front_right" and "右前下" in p["cad_name"] for p in doc["pieces"]))
+
+    def test_cad_names_keep_yokes_and_split_panels(self) -> None:
+        from relabel_queue import shirt_yoke_queue
+
+        self.assertEqual(31, len(shirt_yoke_queue()))
+        c0093 = load_compose("C2530093")
+        self.assertTrue(any(p["piece_role"] == "back_yoke" and "复势" in p["cad_name"] for p in c0093["pieces"]))
+        c0423 = load_compose("C2530423")
+        self.assertTrue(any(p["piece_role"] == "back_yoke" and "复势" in p["cad_name"] for p in c0423["pieces"]))
+        doc = load_compose("C2431055")
+        names = [(p["piece_role"], p["cad_name"].split(".")[-1]) for p in doc["pieces"]]
+        self.assertTrue(any(role == "front_body" and name.startswith("前片_面") for role, name in names))
+        self.assertTrue(any(role == "front_body" and name.startswith("前下片_面") for role, name in names))
+        self.assertTrue(any(role == "back_body" and name.startswith("后中_面") for role, name in names))
+        self.assertTrue(any(role == "back_body" and name.startswith("后下片_面") for role, name in names))
+        self.assertFalse(any("里料" in name for _, name in names))
+
+    def test_short_back_center_promotes_to_yoke_when_lower_exists(self) -> None:
+        from compose_ir import _promote_short_back_yokes
+
+        lower = {"piece_role": "back_body", "cad_name": "X.后下片_面A_38", "cut": {"closed": True, "points": [[0, 0], [300, 0], [300, 500], [0, 500], [0, 0]]}}
+        short = {"piece_role": "back_body", "cad_name": "X.后中_面A_38", "cut": {"closed": True, "points": [[0, 0], [200, 0], [200, 180], [0, 180], [0, 0]]}}
+        tall = {"piece_role": "back_body", "cad_name": "X.后中_面A_38", "cut": {"closed": True, "points": [[0, 0], [200, 0], [200, 450], [0, 450], [0, 0]]}}
+        promoted = _promote_short_back_yokes([lower, short])
+        self.assertEqual("back_yoke", next(p["piece_role"] for p in promoted if "后中" in p["cad_name"]))
+        self.assertEqual("back_body", next(p["piece_role"] for p in promoted if "后下" in p["cad_name"]))
+        kept = _promote_short_back_yokes([lower, tall])
+        self.assertEqual("back_body", next(p["piece_role"] for p in kept if "后中" in p["cad_name"]))
+
+    def test_c2431055_collar_swap_takes_side_panels(self) -> None:
+        from composition_engine import compose_recipe, build_index, pattern_catalog
+
+        index = build_index(ROOT / "data/ir/v1_rule_ready", None, ROOT / "data/ir/shirt_v2/pattern_ir")
+        catalog = pattern_catalog(ROOT / "packages/catalogs/src/pattern-options.v1.json", index)
+        base = {
+            "silhouette": "shirt.silhouette.oversized",
+            "collar": "shirt.collar.open-v-pointed",
+            "placket": "shirt.placket.full",
+            "sleeve": "shirt.sleeve.regular",
+            "cuff": "shirt.cuff.regular",
+        }
+        ents, meta = compose_recipe(
+            {
+                "family": "shirt", "sex": "female", "base_case_id": "C2431055",
+                "measurements_cm": {"height": 160, "chest": 84, "waist": 66, "shoulder": 38, "neck": 34, "sleeveLength": 58},
+                "fit": "regular", "ease_cm": 8, "skip_grading": True,
+                "selections": {**base, "collar": "shirt.collar.stand"},
+                "base_option_ids": base,
+            },
+            index,
+            catalog,
+        )
+        pieces = meta["pieces"]
+        fronts = [p for p in pieces if p["role"] == "front_body"]
+        sides = [p for p in pieces if p["role"] == "side_panel"]
+        self.assertTrue(fronts)
+        donor = fronts[0]["source_case_id"]
+        self.assertNotEqual("C2431055", donor)
+        self.assertTrue(all(p["source_case_id"] == donor for p in sides))
+        self.assertFalse(any(p["role"] == "side_panel" and p["source_case_id"] == "C2431055" for p in pieces))
+
+    def test_c2530029_puff_keeps_host_neckline(self) -> None:
+        from composition_engine import compose_recipe, build_index, pattern_catalog
+        from simple_compose import _role
+
+        def _cut_dip(ents, role):
+            best = 0.0
+            for entity in ents:
+                if _role(entity) != role or entity.get("line_role") != "cut":
+                    continue
+                pts = (entity.get("geometry") or {}).get("points") or []
+                if len(pts) < 8:
+                    continue
+                ys = [p[1] for p in pts]
+                h = max(ys) - min(ys)
+                maxy = max(ys)
+                band = [p for p in pts if p[1] >= maxy - 0.18 * max(h, 1)]
+                if band:
+                    best = max(best, (maxy - min(p[1] for p in band)) / max(h, 1))
+            return best
+
+        index = build_index(ROOT / "data/ir/v1_rule_ready", None, ROOT / "data/ir/shirt_v2/pattern_ir")
+        catalog = pattern_catalog(ROOT / "packages/catalogs/src/pattern-options.v1.json", index)
+        base = {
+            "silhouette": "shirt.silhouette.oversized",
+            "collar": "shirt.collar.open-v-pointed",
+            "placket": "shirt.placket.full",
+            "sleeve": "shirt.sleeve.regular",
+            "cuff": "shirt.cuff.regular",
+        }
+        recipe = {
+            "family": "shirt", "sex": "female", "base_case_id": "C2530029",
+            "measurements_cm": {"height": 160, "chest": 84, "waist": 66, "shoulder": 38, "neck": 34, "sleeveLength": 58},
+            "fit": "regular", "ease_cm": 8, "skip_grading": True,
+            "selections": {**base, "sleeve": "shirt.sleeve.puff"},
+            "base_option_ids": base,
+        }
+        ents, meta = compose_recipe(recipe, index, catalog)
+        roles = {p["role"] for p in meta["pieces"]}
+        self.assertIn("back_yoke", roles)
+        self.assertTrue(roles & FRONT_LIKE)
+        self.assertGreaterEqual(_cut_dip(ents, "front_left"), 0.12)
+        self.assertGreaterEqual(_cut_dip(ents, "front_right"), 0.12)
+        self.assertEqual("C2530029", next(p["source_case_id"] for p in meta["pieces"] if p["role"] == "front_left"))
+        self.assertTrue(any(p["role"] == "sleeve_placket" and "C2530029" in str(p.get("source_case_id") or "") for p in meta["pieces"]))
+
     def test_c2530642_host_puff_sleeve_not_crushed(self) -> None:
         from shirt_compose import compose_shirt
         from simple_compose import _role, _group_by_piece, bounds_of_entities

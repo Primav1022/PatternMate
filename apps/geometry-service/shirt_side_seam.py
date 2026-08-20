@@ -11,7 +11,7 @@ from typing import Any
 
 from batch_operators import _fit_polyline_to_ends, _points, _set_points
 
-BODY_SIDE_ROLES = {"front_body", "back_body", "front", "back", "front_left", "front_right"}
+BODY_SIDE_ROLES = {"front_body", "back_body", "front", "back", "front_left", "front_right", "side_panel"}
 FRONT_ROLES = {"front_body", "front", "front_left", "front_right"}
 OUTLINE_LINE_ROLES = {"cut", "pattern_boundary", "cut_line"}
 _NOT_OUTLINE = {"sew", "internal", "grainline", "notch", "net_boundary", "seam_allowance"}
@@ -377,6 +377,70 @@ def _in_neck_band(x: float, y: float, rec: dict[str, float]) -> bool:
     return y >= rec["maxy"] - 0.22 * rec["h"] and abs(x - rec["origin_x"]) <= 0.32 * rec["w"]
 
 
+def _dist_to_seg(p: list[float], a: list[float], b: list[float]) -> float:
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length2 = dx * dx + dy * dy
+    if length2 < 1e-12:
+        return _hypot(p, a)
+    t = max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length2))
+    return math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy))
+
+
+def _run_straight(pts: list[list[float]], i: int, j: int, tol: float) -> bool:
+    if j <= i + 1:
+        return True
+    a, b = pts[i], pts[j]
+    return all(_dist_to_seg(pts[k], a, b) <= tol for k in range(i + 1, j))
+
+
+def _restore_straight(
+    src: list[list[float]],
+    dst: list[list[float]],
+    *,
+    tol: float = 1.6,
+    min_len: float = 12.0,
+    chest_y: float | None = None,
+) -> list[list[float]]:
+    """Keep source-straight spans straight. Split at chest so hem let-out stays parallel."""
+    n = min(len(src), len(dst))
+    if n < 3:
+        return dst
+    out = [p[:] for p in dst]
+
+    def apply(i: int, j: int) -> None:
+        if j < i + 2 or _hypot(src[i], src[j]) < min_len:
+            return
+        if chest_y is not None:
+            ys = [src[k][1] - chest_y for k in range(i, j + 1)]
+            if min(ys) < -1.0 and max(ys) > 1.0:
+                return
+        total = sum(_hypot(src[k], src[k + 1]) for k in range(i, j)) or 1.0
+        acc = 0.0
+        a, b = out[i], out[j]
+        for k in range(i + 1, j):
+            acc += _hypot(src[k - 1], src[k])
+            t = acc / total
+            out[k] = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
+
+    i = 0
+    while i < n - 1:
+        j = i + 1
+        while j + 1 < n and _run_straight(src, i, j + 1, tol):
+            j += 1
+        if chest_y is not None:
+            cuts = [i]
+            for k in range(i, j):
+                if (src[k][1] - chest_y) * (src[k + 1][1] - chest_y) <= 0:
+                    cuts.append(k + 1)
+            cuts.append(j)
+            for a, b in zip(cuts, cuts[1:]):
+                apply(a, b)
+        else:
+            apply(i, j)
+        i = j if j > i else i + 1
+    return out
+
+
 def _map_body_point(
     x: float,
     y: float,
@@ -522,6 +586,7 @@ def grade_body_structure(
                     if _in_neck_band(work[i][0], work[i][1], rec) else p
                     for i, p in enumerate(new_pts)
                 ]
+            new_pts = _restore_straight(work, new_pts, chest_y=rec["chest_y"])
             if is_outline and (not new_pts or _hypot(new_pts[0], new_pts[-1]) > 1e-6):
                 new_pts.append(new_pts[0][:])
         out.append(_set_points(entity, new_pts))
@@ -529,4 +594,56 @@ def grade_body_structure(
     meta["applied"] = n_changed > 0
     meta["n_changed"] = n_changed
     return drop_extra_closed_outlines(out), meta
+
+
+def _bbox_w(entity: dict[str, Any]) -> float:
+    xs = [p[0] for p in _points(entity)]
+    return max(xs) - min(xs) if len(xs) >= 2 else 0.0
+
+
+def _chest_width(entity: dict[str, Any]) -> float:
+    pts = _open_loop(_points(entity))
+    rec = _outline_params(pts, _piece_role(entity))
+    if rec:
+        band = max(12.0, 0.05 * rec["h"])
+        xs = [p[0] for p in pts if abs(p[1] - rec["chest_y"]) <= band]
+        if len(xs) >= 2:
+            return max(xs) - min(xs)
+    return _bbox_w(entity)
+
+
+def shirt_body_sanity_warnings(
+    before: list[dict[str, Any]] | None,
+    after: list[dict[str, Any]],
+    *,
+    width_sx: float = 1.0,
+) -> list[str]:
+    """Catch split-panel backs and chest-width regression after grade."""
+    msgs: list[str] = []
+    after_out = _closed_outlines(after)
+    backs = [row for row in after_out if _piece_role(row) == "back_body"]
+    sides = [row for row in after_out if _piece_role(row) == "side_panel"]
+    if backs and sides:
+        bw = max(_bbox_w(row) for row in backs)
+        sw = sum(_bbox_w(row) for row in sides)
+        if sw > 0 and bw < 0.55 * (bw + sw):
+            cad = str((backs[0].get("source") or {}).get("cad_name") or "后片")
+            short = cad.split(".")[-1].split("_")[0]
+            msgs.append(f"后片「{short}」是分片中后片（{bw:.0f}mm），胸宽在侧片上，不是放码把整片后背压窄")
+    if before and width_sx >= 1.0 - 1e-9:
+        before_w = {
+            str(row.get("piece_id") or ""): _chest_width(row)
+            for row in _closed_outlines(before)
+            if _piece_role(row) in BODY_SIDE_ROLES
+        }
+        for row in after_out:
+            if _piece_role(row) not in BODY_SIDE_ROLES:
+                continue
+            prev = before_w.get(str(row.get("piece_id") or ""))
+            now = _chest_width(row)
+            if prev and now and now < prev * 0.97:
+                msgs.append(
+                    f"{_piece_role(row)}放码后胸宽 {prev:.0f}→{now:.0f}mm（胸围系数 {width_sx:.3f}，应变宽）"
+                )
+    return msgs
 

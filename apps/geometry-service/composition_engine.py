@@ -379,9 +379,9 @@ def remix_readiness(ir: dict[str, Any]) -> tuple[bool, list[str]]:
         reasons.append("missing_back_body")
     if not roles & PURE_SLEEVE_ROLES:
         # Shirt hosts may be cuff-integrated / sleeveless; still usable for collar/body swaps.
-        # T-shirt flutter/sleeveless are body-integrated: no independent sleeve piece.
+        # T-shirt flutter/sleeveless/batwing/raglan may be body-integrated: no independent sleeve.
         sleeve_slug = _label_slug(ir, "sleeve")
-        if family != "shirt" and sleeve_slug not in {"flutter", "sleeveless"}:
+        if family != "shirt" and sleeve_slug not in {"flutter", "sleeveless", "batwing", "raglan"}:
             reasons.append("missing_sleeve")
     # Prefer neckline on body pieces. Shirts often park neckline on unlabeled
     # pieces or only have collar / collar_attach geometry — still a valid host.
@@ -1411,7 +1411,7 @@ def _scale_complete_base(ir: dict[str, Any], profile: dict[str, Any]) -> list[di
                 width_scale=float(profile["sleeve_width"]),
                 ir=ir,
             )
-        elif role in FRONT_ROLES | BACK_ROLES | {"back_yoke", "front_placket"}:
+        elif role in FRONT_ROLES | BACK_ROLES | {"back_yoke", "front_placket", "side_panel"}:
             scaled = scale_piece_group(entities, sx=float(profile["width"]), sy=float(profile["length"]))
         elif role in COLLAR_ROLES:
             scaled = scale_piece_group(entities, sx=float(profile["neck"]), sy=float(profile["neck"]))
@@ -1501,34 +1501,46 @@ def _layout_complete(entities: list[dict[str, Any]], gap: float = 90.0) -> list[
     if not pieces:
         return []
     pieces.sort(key=lambda row: (-row[3] * row[4], -row[4], row[0]))
-    body_roles = FRONT_ROLES | BACK_ROLES
+    body_roles = FRONT_ROLES | BACK_ROLES | {"side_panel"}
     large = [row for row in pieces if str(row[1][0].get("_piece_role") or "") in body_roles]
     small = [row for row in pieces if str(row[1][0].get("_piece_role") or "") not in body_roles]
     if not large:
         large, small = pieces, []
 
-    def pack(rows: list[tuple], y0: float) -> tuple[list[dict[str, Any]], float]:
+    def pack(rows: list[tuple], y0: float, row_limit: float, biggest_on_top: bool) -> tuple[list[dict[str, Any]], float]:
         if not rows:
             return [], y0
-        widths = sorted((width for _, _, _, width, _height in rows), reverse=True)
-        area = sum((width + gap) * (height + gap) for _, _, _, width, height in rows)
-        pair = widths[0] + (widths[1] + gap if len(widths) > 1 else 0)
-        row_limit = max(pair, math.sqrt(max(area, 1.0)))
-        cursor_x = row_height = 0.0
-        cursor_y = y0
-        packed: list[dict[str, Any]] = []
-        for _, group, bounds, width, height in rows:
-            if cursor_x and cursor_x + width > row_limit:
+        bands: list[list[tuple]] = []
+        current: list[tuple] = []
+        cursor_x = 0.0
+        for row in rows:
+            _key, group, bounds, width, height = row
+            if current and cursor_x + width > row_limit:
+                bands.append(current)
+                current = []
                 cursor_x = 0.0
-                cursor_y += row_height + gap
-                row_height = 0.0
-            packed.extend(transform_entity(entity, dx=cursor_x - bounds[0], dy=cursor_y - bounds[1]) for entity in group)
+            current.append(row)
             cursor_x += width + gap
-            row_height = max(row_height, height)
-        return packed, cursor_y + row_height + gap
+        if current:
+            bands.append(current)
+        if biggest_on_top:
+            bands.reverse()
+        packed: list[dict[str, Any]] = []
+        cursor_y = y0
+        for band in bands:
+            row_height = max(height for _key, _group, _bounds, _width, height in band)
+            cursor_x = 0.0
+            for _key, group, bounds, width, _height in band:
+                packed.extend(transform_entity(entity, dx=cursor_x - bounds[0], dy=cursor_y - bounds[1]) for entity in group)
+                cursor_x += width + gap
+            cursor_y += row_height + gap
+        return packed, cursor_y
 
-    small_out, y1 = pack(small, 0.0)
-    large_out, _ = pack(large, y1)
+    widths = sorted((width for _key, _group, _bounds, width, _height in pieces), reverse=True)
+    n = min(4, len(widths))
+    row_limit = max(widths[0], sum(widths[:n]) + gap * (n - 1))
+    small_out, y1 = pack(small, 0.0, row_limit, False)
+    large_out, _ = pack(large, y1, row_limit, True)
     return small_out + large_out
 
 
@@ -1596,8 +1608,11 @@ def _validate(
     if not roles & BACK_ROLES:
         errors.append("缺少后片")
     sleeveless = sources.get("intent_sleeve") == "sleeveless"
-    if not sleeveless and not roles & PURE_SLEEVE_ROLES:
+    integrated_sleeve = str(sources.get("sleeve_mode") or "") in {"body_integrated", "body_and_sleeve"}
+    if not sleeveless and not integrated_sleeve and not roles & PURE_SLEEVE_ROLES:
         errors.append("缺少袖片")
+    elif integrated_sleeve and not roles & PURE_SLEEVE_ROLES:
+        warnings.append("插肩/蝙蝠/飞袖无独立袖片，袖与衣身一体")
     neck_swapped = _neck_source_swapped(sources)
     if family == "shirt":
         # 休闲翻领等领型切在左右前片上，语料经常没有独立领面/领座。

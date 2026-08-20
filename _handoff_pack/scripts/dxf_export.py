@@ -16,7 +16,8 @@ POINT_EPSILON = 1e-9
 
 
 def _pairs(code: int, value: object) -> list[str]:
-    return [str(code), str(value)]
+    # AutoCAD R12 / 富怡 ET read group codes as a 3-character field.
+    return [f"{int(code):3d}", str(value)]
 
 
 def _line_role(entity: dict) -> str:
@@ -75,10 +76,8 @@ def _line_rows(layer: str, points: list[list[float]]) -> list[str]:
         + _pairs(8, layer)
         + _pairs(10, _format_number(points[0][0]))
         + _pairs(20, _format_number(points[0][1]))
-        + _pairs(30, "0.0")
         + _pairs(11, _format_number(points[1][0]))
         + _pairs(21, _format_number(points[1][1]))
-        + _pairs(31, "0.0")
     )
 
 
@@ -97,7 +96,6 @@ def _polyline_rows(layer: str, points: list[list[float]], closed: bool) -> list[
             + _pairs(8, layer)
             + _pairs(10, _format_number(x))
             + _pairs(20, _format_number(y))
-            + _pairs(30, "0.0")
         )
     rows += _pairs(0, "SEQEND") + _pairs(8, layer)
     return rows
@@ -125,9 +123,8 @@ def _piece_name_rows(piece_name: str, bounds: list[float]) -> list[str]:
     return (
         _pairs(0, "TEXT")
         + _pairs(8, 1)
-        + _pairs(10, _format_number((min_x + max_x) / 2.0))
+        +         _pairs(10, _format_number((min_x + max_x) / 2.0))
         + _pairs(20, _format_number((min_y + max_y) / 2.0))
-        + _pairs(30, "0.0")
         + _pairs(40, "10.000000")
         + _pairs(50, "0.000000")
         + _pairs(1, piece_name)
@@ -153,8 +150,8 @@ def _insert_rows(name: str) -> list[str]:
         _pairs(0, "INSERT")
         + _pairs(8, 1)
         + _pairs(2, name)
-        + _pairs(10, 0)
-        + _pairs(20, 0)
+        + _pairs(10, "0.0")
+        + _pairs(20, "0.0")
     )
 
 
@@ -233,6 +230,11 @@ def write_entities_dxf(
 
     lines = (
         _pairs(999, "ANSI/AAMA")
+        + _pairs(0, "SECTION")
+        + _pairs(2, "HEADER")
+        + _pairs(9, "$ACADVER")
+        + _pairs(1, "AC1009")
+        + _pairs(0, "ENDSEC")
         + _pairs(0, "SECTION")
         + _pairs(2, "BLOCKS")
         + block_rows

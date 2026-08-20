@@ -26,12 +26,26 @@ type CaseDetail = QueueItem & {
   notes?: string;
 };
 
-const ROLES = [
+const TSHIRT_ROLES = [
   ['front_body', '前片'],
   ['back_body', '后片'],
   ['sleeve', '袖片'],
   ['side_panel', '侧片'],
   ['neck_binding', '领条'],
+  ['scrap', '废片/唛架'],
+] as const;
+
+const SHIRT_ROLES = [
+  ['front_body', '前片'],
+  ['front_left', '左前片'],
+  ['front_right', '右前片'],
+  ['front_yoke', '前育克'],
+  ['back_body', '后片'],
+  ['back_yoke', '后育克'],
+  ['sleeve', '袖片'],
+  ['collar', '领'],
+  ['front_placket', '门襟'],
+  ['cuff', '袖口'],
   ['scrap', '废片/唛架'],
 ] as const;
 
@@ -47,10 +61,17 @@ const SLEEVES = [
 
 const COLORS: Record<string, string> = {
   front_body: '#3f8f83',
+  front_left: '#3f8f83',
+  front_right: '#3f8f83',
+  front_yoke: '#2f6f66',
   back_body: '#bd8d79',
+  back_yoke: '#a45c48',
   sleeve: '#4d86b4',
   side_panel: '#c9843a',
   neck_binding: '#9b86d9',
+  collar: '#9b86d9',
+  front_placket: '#d29a45',
+  cuff: '#4d86b4',
   scrap: '#b0a8a0',
   unlabeled: '#c2410c',
 };
@@ -59,7 +80,15 @@ function api() {
   return String(import.meta.env.VITE_GEOMETRY_BASE_URL || '/geometry').replace(/\/$/, '');
 }
 
+function shirtMode() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  return hash.startsWith('relabel-yoke') || hash === 'sandbox/relabel-yoke' || new URLSearchParams(window.location.search).get('family') === 'shirt';
+}
+
 export function RelabelQueue() {
+  const [shirt, setShirt] = useState(() => shirtMode());
+  const qs = shirt ? '?family=shirt' : '';
+  const roleOptions = shirt ? SHIRT_ROLES : TSHIRT_ROLES;
   const [items, setItems] = useState<QueueItem[]>([]);
   const [caseId, setCaseId] = useState('');
   const [detail, setDetail] = useState<CaseDetail | null>(null);
@@ -73,9 +102,17 @@ export function RelabelQueue() {
   const selectedItem = items.find((row) => row.case_id === caseId);
 
   useEffect(() => {
+    const sync = () => setShirt(shirtMode());
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
+  useEffect(() => {
     let stop = false;
+    setCaseId('');
+    setDetail(null);
     const timer = window.setTimeout(() => {
-      fetch(`${api()}/relabel/queue`)
+      fetch(`${api()}/relabel/queue${qs}`)
         .then((r) => r.json())
         .then((data) => {
           if (stop) return;
@@ -86,13 +123,17 @@ export function RelabelQueue() {
         .catch((err) => { if (!stop) setError(String(err)); });
     }, 80);
     return () => { stop = true; window.clearTimeout(timer); };
-  }, []);
+  }, [qs]);
 
   useEffect(() => {
     if (!caseId) return;
     setError('');
-    fetch(`${api()}/relabel/${caseId}`)
-      .then((r) => r.json())
+    fetch(`${api()}/relabel/${caseId}${qs}`)
+      .then(async (r) => {
+        const data = await r.json().catch(() => null);
+        if (!r.ok) throw new Error(typeof data?.detail === 'string' ? data.detail : `HTTP ${r.status}`);
+        return data as CaseDetail;
+      })
       .then((data: CaseDetail) => {
         setDetail(data);
         setRoles(Object.fromEntries((data.pieces || []).map((p) => [p.piece_id, p.role])));
@@ -101,7 +142,7 @@ export function RelabelQueue() {
         setSelected(data.pieces?.[0]?.piece_id || '');
       })
       .catch((err) => setError(String(err)));
-  }, [caseId]);
+  }, [caseId, qs]);
 
   const remaining = useMemo(() => items.filter((row) => !row.reviewed).length, [items]);
 
@@ -110,7 +151,7 @@ export function RelabelQueue() {
     setSaving(true);
     setError('');
     try {
-      const response = await fetch(`${api()}/relabel/${caseId}`, {
+      const response = await fetch(`${api()}/relabel/${caseId}${qs}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ piece_roles: roles, sleeve_style: sleeve, notes, reviewer: 'expert' }),
@@ -130,10 +171,12 @@ export function RelabelQueue() {
     <div className="compose-sandbox relabel-page">
       <header className="sandbox-top">
         <div>
-          <strong>T恤袖片补标</strong>
-          <small>原始 DXF 闭合裁片 · 剩 {remaining}/{items.length || 10}</small>
+          <strong>{shirt ? '衬衫后育克补标' : 'T恤袖片补标'}</strong>
+          <small>原始 DXF {shirt ? '面料' : '闭合'}裁片 · 剩 {remaining}/{items.length || (shirt ? 31 : 10)}</small>
         </div>
         <div className="sandbox-meta">
+          <a href={shirt ? '#/relabel' : '#/relabel-yoke'}>{shirt ? '袖片补标' : '后育克补标'}</a>
+          <a href="#/shirt-sandbox">衬衫 sandbox</a>
           <a href="#/sandbox">compose</a>
           <a href="#/">回主站</a>
         </div>
@@ -148,7 +191,7 @@ export function RelabelQueue() {
               type="button"
             >
               <b>{item.case_id}</b>
-              <span>{item.issue === 'no_sleeve' ? 'IR无袖' : '袖≈衣身'}</span>
+              <span>{shirt ? (item.issue === 'unlabeled_yoke' ? '未标育克' : item.issue === 'has_yoke_name' ? '有育克名' : '无育克名') : (item.issue === 'no_sleeve' ? 'IR无袖' : '袖≈衣身')}</span>
               {item.reviewed ? <em>已标</em> : null}
             </button>
           ))}
@@ -184,15 +227,17 @@ export function RelabelQueue() {
         </section>
         <aside className="sandbox-side relabel-edit">
           <p>{selectedItem?.hint}</p>
+          {!shirt && (
           <fieldset>
             <legend>这件衣服的袖</legend>
             {SLEEVES.map(([slug, zh]) => (
               <label key={slug}><input type="radio" name="sleeve" checked={sleeve === slug} onChange={() => setSleeve(slug)} /> {zh}</label>
             ))}
           </fieldset>
+          )}
           <fieldset>
             <legend>选中的片 {selected ? selected.split(':').slice(-2).join(':') : '（点图里的轮廓）'}</legend>
-            {ROLES.map(([slug, zh]) => (
+            {roleOptions.map(([slug, zh]) => (
               <button
                 key={slug}
                 type="button"

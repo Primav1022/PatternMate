@@ -158,6 +158,8 @@ def infer_armholes(entities: list[dict[str, Any]]) -> dict[str, Any]:
     else:
         for outline in _closed_outlines(entities):
             role = _piece_role(outline)
+            if role == "side_panel":
+                continue
             coarse = "front" if role in FRONT_ROLES else "back"
             pts = _open_loop(_points(outline))
             for side in _sides_for_role(role):
@@ -346,7 +348,7 @@ def fit_knit_sleeves(
     sleeve_sy: float = 1.0,
     slug: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """T-shirt set-in: low cap from scye depth, width from front/back arcs, length below bicep."""
+    """T-shirt set-in: low cap from scye depth, width from front/back arcs, total length from sleeve_sy."""
     kind = str(slug or "regular").split(".")[-1].strip().lower()
     if kind in KNIT_SKIP:
         return entities, {"applied": False, "reason": "integrated_sleeve", "slug": kind}
@@ -408,7 +410,9 @@ def fit_knit_sleeves(
                 out.extend(piece_rows)
                 continue
             cap1 = cap0 if target_h < 1.0 else min(cap0, target_h)
-            body1 = max(8.0, body0 * max(0.35, min(2.2, float(sleeve_sy) or 1.0)))
+            total0 = cap0 + body0
+            target_total = max(cap1 + 8.0, total0 * max(0.35, min(2.2, float(sleeve_sy) or 1.0)))
+            body1 = max(8.0, target_total - cap1)
             sx = _clamp(target_w / cw)
             ox = (box[0] + box[2]) / 2.0
             mapped = [
@@ -424,7 +428,9 @@ def fit_knit_sleeves(
                 "sx": round(sx, 4),
                 "cap_h": [round(cap0, 1), round(cap1, 1)],
                 "body_h": [round(body0, 1), round(body1, 1)],
+                "sleeve_sy": round(float(sleeve_sy) or 1.0, 4),
                 "from": [round(cw, 1), round(ch, 1)],
+                "to_h": round(cap1 + body1, 1),
             })
     meta = {
         "applied": bool(pieces),

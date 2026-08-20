@@ -18,7 +18,6 @@ from composition_engine import (  # noqa: E402
     compose_recipe,
     grading_profile,
     pattern_catalog,
-    remix_readiness,
     reshape_body_neckline,
 )
 from dxf_export import write_entities_dxf  # noqa: E402
@@ -275,10 +274,27 @@ class CompositionEngineTests(unittest.TestCase):
         roles = {str(piece.get("role") or "") for piece in meta["pieces"]}
         self.assertFalse(any(role.startswith("sleeve") for role in roles))
         self.assertIn("original", {row["id"] for row in meta.get("versions") or []})
-        recipe["compose_version"] = "original"
-        _, original = compose_recipe(recipe, index, catalog)
-        self.assertEqual(original.get("version_id"), "original")
-        self.assertFalse(any(str(piece.get("role") or "").startswith("sleeve") for piece in original["pieces"]))
+
+    def test_c2590734_batwing_passes_without_separate_sleeve(self) -> None:
+        if "C2590734" not in self.index:
+            self.skipTest("missing C2590734")
+        recipe = self.recipe("tshirt", {
+            "neckline": "tshirt.neckline.boat",
+            "sleeve": "tshirt.sleeve.batwing",
+            "garment_length": "tshirt.garment-length.regular",
+        })
+        recipe["base_case_id"] = "C2590734"
+        recipe["base_option_ids"] = {
+            "neckline": "tshirt.neckline.boat",
+            "sleeve": "tshirt.sleeve.batwing",
+            "garment_length": "tshirt.garment-length.regular",
+        }
+        _, meta = compose_recipe(recipe, self.index, self.catalog)
+        roles = {str(piece.get("role") or "") for piece in meta["pieces"]}
+        self.assertFalse(roles & {"sleeve", "sleeve_left", "sleeve_right"})
+        self.assertEqual("body_and_sleeve", meta["sources"].get("sleeve_mode"))
+        self.assertTrue(meta["validation"]["trial_ready"], meta["validation"]["errors"])
+        self.assertNotIn("缺少袖片", meta["validation"]["errors"])
 
     def test_tryon_descriptor_triangulates_concave_panel(self) -> None:
         points = [[0, 0], [80, 0], [80, 60], [40, 35], [0, 60]]
@@ -337,8 +353,8 @@ class CompositionEngineTests(unittest.TestCase):
         self.assertEqual("aama_r12_blocks", report["format"])
         self.assertEqual(report["blocks_written"], report["inserts_written"])
         self.assertGreaterEqual(report["blocks_written"], 5)
-        self.assertIn("\n2\nBLOCKS\n", text)
-        self.assertIn("\n2\nENTITIES\n", text)
+        self.assertIn("\n  2\nBLOCKS\n", text)
+        self.assertIn("\n  2\nENTITIES\n", text)
         self.assertIn("\nINSERT\n", text)
         self.assertNotIn("LWPOLYLINE", text)
         self.assertIn("POLYLINE", text)

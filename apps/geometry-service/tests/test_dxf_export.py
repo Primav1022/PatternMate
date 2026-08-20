@@ -101,7 +101,11 @@ class DxfExportTests(unittest.TestCase):
         piece_names = [record for record in parsed_records if record[0] == ("0", "TEXT")]
 
         self.assertEqual(("999", "ANSI/AAMA"), pairs[0])
-        self.assertEqual(["BLOCKS", "ENTITIES"], section_names)
+        self.assertEqual(["HEADER", "BLOCKS", "ENTITIES"], section_names)
+        self.assertIn(("9", "$ACADVER"), pairs)
+        self.assertIn(("1", "AC1009"), pairs)
+        raw_codes = [line for index, line in enumerate(text.splitlines()) if index % 2 == 0]
+        self.assertTrue(all(len(code) == 3 for code in raw_codes), raw_codes[:12])
         self.assertEqual(2, len(blocks))
         self.assertEqual(2, record_types.count("ENDBLK"))
         self.assertEqual(2, len(inserts))
@@ -114,10 +118,9 @@ class DxfExportTests(unittest.TestCase):
         self.assertNotIn("PIECE NAME:", text)
         self.assertEqual({"1"}, {value(record, "8") for record in piece_names})
         self.assertEqual({"10.000000"}, {value(record, "40") for record in piece_names})
-        self.assertEqual({"0"}, {value(insert, "10") for insert in inserts})
-        self.assertEqual({"0"}, {value(insert, "20") for insert in inserts})
+        self.assertEqual({"0.0"}, {value(insert, "10") for insert in inserts})
+        self.assertEqual({"0.0"}, {value(insert, "20") for insert in inserts})
         self.assertNotIn("LWPOLYLINE", record_types)
-        self.assertNotIn("HEADER", text)
         self.assertNotIn("$INSUNITS", text)
         self.assertNotIn("AI4M_", text)
         self.assertTrue({"1", "4", "7", "11"}.issubset({pair_value for code, pair_value in pairs if code == "8"}))
@@ -185,7 +188,7 @@ class DxfExportTests(unittest.TestCase):
         self.assertEqual(2, report["entities_skipped"])
         self.assertEqual(1, report["ungrouped_entities_skipped"])
         self.assertNotIn("nan", text.lower())
-        self.assertIn("\n8\n8\n", text)
+        self.assertIn("\n  8\n8\n", text)
 
     def test_rejects_export_without_a_valid_piece(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

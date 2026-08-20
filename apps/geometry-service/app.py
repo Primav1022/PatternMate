@@ -59,7 +59,16 @@ WWW_ROOT = Path(os.getenv("PATTERNMATE_WWW_ROOT", "/var/www/chi27"))
 
 from composition_engine import build_index, compose_recipe, pattern_catalog, remix_readiness
 from data_registry import BLOCKED_DONORS, build_dxf_index, data_status
-from relabel_queue import QUEUE as RELABEL_QUEUE, apply_labels, piece_outlines, summarize, svg_payload
+from relabel_queue import (
+    QUEUE as RELABEL_QUEUE,
+    apply_labels,
+    apply_shirt_compose_labels,
+    piece_outlines,
+    shirt_dxf_pieces,
+    shirt_yoke_queue,
+    summarize,
+    svg_payload,
+)
 from review_ledger import append_review_decision, read_review_history
 
 TSHIRT_V2 = ROOT / "data" / "ir" / "tshirt_v2" / "pattern_ir"
@@ -200,7 +209,7 @@ class ReviewDecisionRequest(BaseModel):
 
 class RelabelSaveRequest(BaseModel):
     piece_roles: dict[str, str] = Field(default_factory=dict)
-    sleeve_style: str
+    sleeve_style: str = "unknown"
     notes: str = ""
     reviewer: str = "expert"
 
@@ -1020,7 +1029,7 @@ def svg_for_ir(ir: dict[str, Any], view: str = "all") -> str:
     lines: list[str] = []
     labels: dict[str, tuple[str, float, float]] = {}
     role_colors = {
-        "front_body": "#3f8f83", "front_left": "#3f8f83", "front_right": "#3f8f83",
+        "front_body": "#3f8f83", "front_left": "#3f8f83", "front_right": "#3f8f83", "front_yoke": "#3f8f83",
         "back_body": "#bd8d79", "back_yoke": "#bd8d79",
         "sleeve": "#6f9f91", "sleeve_left": "#6f9f91", "sleeve_right": "#6f9f91",
         "neck_binding": "#9b86d9", "neck_rib": "#9b86d9", "collar": "#9b86d9",
@@ -1064,7 +1073,7 @@ def svg_for_ir(ir: dict[str, Any], view: str = "all") -> str:
         for role, x, y in labels.values()
     ]
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -20 {width + 60:.3f} {height + 40:.3f}" preserveAspectRatio="xMidYMid meet">'
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-30 -20 {width + 60:.3f} {height + 40:.3f}" preserveAspectRatio="xMidYMid meet">'
         + "".join(lines + text)
         + "</svg>"
     )
@@ -1190,7 +1199,15 @@ def catalog() -> dict[str, Any]:
 
 
 @app.get("/relabel/queue")
-def relabel_queue() -> dict[str, Any]:
+def relabel_queue(family: str = "") -> dict[str, Any]:
+    if family == "shirt":
+        items = []
+        for item in shirt_yoke_queue():
+            ir = IR_INDEX.get(item["case_id"]) or {"case_id": item["case_id"]}
+            row = summarize(ir, item, _cover_url(item["case_id"], ir))
+            row["reviewed"] = bool(item.get("reviewed"))
+            items.append(row)
+        return {"items": items, "family": "shirt"}
     items = []
     for item in RELABEL_QUEUE:
         ir = IR_INDEX.get(item["case_id"])
@@ -1201,7 +1218,22 @@ def relabel_queue() -> dict[str, Any]:
 
 
 @app.get("/relabel/{case_id}")
-def relabel_case(case_id: str) -> dict[str, Any]:
+def relabel_case(case_id: str, family: str = "") -> dict[str, Any]:
+    if family == "shirt":
+        item = next((row for row in shirt_yoke_queue() if row["case_id"] == case_id), None)
+        if not item:
+            raise HTTPException(status_code=404, detail="not in shirt yoke queue")
+        ir = IR_INDEX.get(case_id) or {"case_id": case_id}
+        payload = svg_payload(shirt_dxf_pieces(case_id))
+        return {
+            **summarize(ir, item, _cover_url(case_id, ir)),
+            "reviewed": bool(item.get("reviewed")),
+            "viewBox": payload["viewBox"],
+            "pieces": payload["pieces"],
+            "notes": "",
+            "sleeve_style": None,
+            "family": "shirt",
+        }
     item = next((row for row in RELABEL_QUEUE if row["case_id"] == case_id), None)
     if not item:
         raise HTTPException(status_code=404, detail="not in relabel queue")
@@ -1220,7 +1252,15 @@ def relabel_case(case_id: str) -> dict[str, Any]:
 
 
 @app.post("/relabel/{case_id}")
-def save_relabel(case_id: str, request: RelabelSaveRequest) -> dict[str, Any]:
+def save_relabel(case_id: str, request: RelabelSaveRequest, family: str = "") -> dict[str, Any]:
+    if family == "shirt":
+        if not any(row["case_id"] == case_id for row in shirt_yoke_queue()):
+            raise HTTPException(status_code=404, detail="not in shirt yoke queue")
+        try:
+            apply_shirt_compose_labels(case_id, request.piece_roles)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return relabel_case(case_id, family="shirt")
     if not any(row["case_id"] == case_id for row in RELABEL_QUEUE):
         raise HTTPException(status_code=404, detail="not in relabel queue")
     path = _ir_path(case_id)
@@ -1682,7 +1722,7 @@ _MEAS_ZH = {
 _ROLE_ZH = {
     "front_body": "前片", "back_body": "后片", "sleeve": "袖片", "neck_binding": "领条",
     "collar": "领面", "collar_stand": "领座", "cuff": "袖口", "sleeve_placket": "袖开衩",
-    "front_placket": "门襟", "back_yoke": "后育克", "front_left": "左前片", "front_right": "右前片",
+    "front_placket": "门襟", "back_yoke": "后育克", "front_yoke": "前育克", "front_left": "左前片", "front_right": "右前片",
 }
 
 

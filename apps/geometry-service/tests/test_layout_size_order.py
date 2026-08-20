@@ -58,6 +58,34 @@ class LayoutSizeOrderTests(unittest.TestCase):
         self.assertLess(abs(front[1] - back[1]), 5)
         self.assertGreater(max(front[2], back[2]), 700)
 
+    def test_largest_body_sits_above_smaller_body(self):
+        laid = _layout_complete([
+            _box("back_body", "big", 420, 520),
+            _box("front_right", "small", 180, 240),
+            _box("back_yoke", "yoke", 200, 80),
+            _box("collar", "collar", 90, 40),
+        ], gap=40)
+        big = bounds_of_entities([row for row in laid if row["piece_id"] == "big"])
+        small = bounds_of_entities([row for row in laid if row["piece_id"] == "small"])
+        yoke = bounds_of_entities([row for row in laid if row["piece_id"] == "yoke"])
+        collar = bounds_of_entities([row for row in laid if row["piece_id"] == "collar"])
+        assert big and small and yoke and collar
+        self.assertLess(abs(big[1] - small[1]), 5)
+        self.assertLess(abs(big[1] - yoke[1]), 5)
+        self.assertGreater(min(big[1], small[1], yoke[1]), collar[3])
+
+    def test_four_body_pieces_share_a_row(self):
+        laid = _layout_complete([
+            _box("back_body", "a", 200, 300),
+            _box("front_left", "b", 200, 300),
+            _box("front_right", "c", 200, 300),
+            _box("back_yoke", "d", 200, 120),
+        ], gap=40)
+        ys = [bounds_of_entities([row for row in laid if row["piece_id"] == pid])[1] for pid in "abcd"]
+        xs = [bounds_of_entities([row for row in laid if row["piece_id"] == pid])[2] for pid in "abcd"]
+        self.assertLess(max(ys) - min(ys), 5)
+        self.assertGreater(max(xs), 800)
+
 
 if __name__ == "__main__":
     unittest.main()

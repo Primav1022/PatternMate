@@ -4774,7 +4774,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -5820,7 +5820,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -10128,7 +10128,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -10576,7 +10576,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -11413,6 +11413,184 @@
       "piece_id": "C2530642:compose:cuff:01"
     },
     {
+      "piece_role": "cuff",
+      "cad_name": "C2530642-PLEATED SHIRT-大货.袖克夫_面料_S",
+      "cut": {
+        "closed": true,
+        "points": [
+          [
+            -768.210723,
+            -11887.948487
+          ],
+          [
+            -1027.210724,
+            -11887.948487
+          ],
+          [
+            -1027.210724,
+            -11838.948486
+          ],
+          [
+            -830.210724,
+            -11838.948486
+          ],
+          [
+            -768.210723,
+            -11838.948486
+          ],
+          [
+            -768.210723,
+            -11887.948487
+          ]
+        ]
+      },
+      "edges": [],
+      "sew": {
+        "closed": true,
+        "points": [
+          [
+            -780.210724,
+            -11875.948486
+          ],
+          [
+            -1015.210724,
+            -11875.948486
+          ],
+          [
+            -1015.210724,
+            -11850.948486
+          ],
+          [
+            -830.210724,
+            -11850.948486
+          ],
+          [
+            -780.210724,
+            -11850.948486
+          ],
+          [
+            -780.210724,
+            -11875.948486
+          ]
+        ]
+      },
+      "lines": [
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -790.210724,
+              -11875.948486
+            ],
+            [
+              -790.210724,
+              -11850.948486
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -1005.210724,
+              -11850.948486
+            ],
+            [
+              -1005.210724,
+              -11875.948486
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -790.210724,
+              -11863.448486
+            ],
+            [
+              -1005.210724,
+              -11863.448486
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -1014.210739,
+              -11874.949951
+            ],
+            [
+              -781.210785,
+              -11874.949951
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -1014.210739,
+              -11851.949463
+            ],
+            [
+              -1014.210739,
+              -11874.949951
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -781.210785,
+              -11851.949463
+            ],
+            [
+              -1014.210739,
+              -11851.949463
+            ]
+          ]
+        },
+        {
+          "role": "grainline",
+          "closed": false,
+          "points": [
+            [
+              -781.210785,
+              -11874.949951
+            ],
+            [
+              -781.210785,
+              -11851.949463
+            ]
+          ]
+        },
+        {
+          "role": "internal",
+          "closed": false,
+          "points": [
+            [
+              -931.266708,
+              -11863.033447
+            ],
+            [
+              -859.578705,
+              -11863.033447
+            ]
+          ]
+        }
+      ],
+      "piece_id": "C2530642:compose:cuff:02"
+    },
+    {
       "piece_role": "front_right",
       "cad_name": "C2530642-PLEATED SHIRT-大货.前右片_面料_S",
       "cut": {
@@ -12170,7 +12348,7 @@
       },
       "lines": [
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -12252,7 +12430,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -13198,7 +13376,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -13968,7 +14146,7 @@
       },
       "lines": [
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -14050,7 +14228,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -14996,7 +15174,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [

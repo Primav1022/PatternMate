@@ -35,13 +35,13 @@ PIECE_ROLES = frozenset({
     "cuff", "scrap",
 })
 EDGE_ON_ROLE = {
-    "front_neckline": frozenset({"front_body", "front_left", "front_right"}),
+    "front_neckline": frozenset({"front_body", "front_left", "front_right", "front_yoke"}),
     "back_neckline": frozenset({"back_body", "back_yoke"}),
-    "armhole_front": frozenset({"front_body", "front_left", "front_right", "side_panel"}),
+    "armhole_front": frozenset({"front_body", "front_left", "front_right", "front_yoke", "side_panel"}),
     "armhole_back": frozenset({"back_body", "back_yoke", "side_panel"}),
     "sleeve_cap": frozenset({"sleeve", "sleeve_left", "sleeve_right"}),
     "side_seam": frozenset({"front_body", "front_left", "front_right", "back_body", "side_panel"}),
-    "shoulder": frozenset({"front_body", "front_left", "front_right", "back_body", "back_yoke"}),
+    "shoulder": frozenset({"front_body", "front_left", "front_right", "front_yoke", "back_body", "back_yoke"}),
     "hem": frozenset({"front_body", "front_left", "front_right", "back_body", "side_panel"}),
     "hem_line": frozenset({"front_body", "front_left", "front_right", "back_body", "side_panel"}),
 }
@@ -444,6 +444,35 @@ def _rel_source(path: Path) -> str:
         return path.name
 
 
+ROLE_OVERRIDE_PATH = _ROOT / "data" / "ir" / "shirt_v2" / "piece_role_overrides.json"
+
+
+def load_role_overrides(case_id: str) -> dict[str, str]:
+    if not ROLE_OVERRIDE_PATH.exists():
+        return {}
+    data = json.loads(ROLE_OVERRIDE_PATH.read_text(encoding="utf-8"))
+    entry = data.get(case_id) or {}
+    return {str(key): str(role) for key, role in entry.items() if not str(key).startswith("_") and role}
+
+
+def save_role_overrides(case_id: str, roles: dict[str, str], *, reviewed: bool = True) -> None:
+    data = json.loads(ROLE_OVERRIDE_PATH.read_text(encoding="utf-8")) if ROLE_OVERRIDE_PATH.exists() else {}
+    entry = {key: role for key, role in roles.items() if role and not str(key).startswith("_")}
+    if reviewed:
+        entry["_reviewed"] = True
+    data[case_id] = entry
+    ROLE_OVERRIDE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ROLE_OVERRIDE_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _override_role(cad_name: str, role: str, overrides: dict[str, str]) -> str:
+    cad = cad_name or ""
+    if cad in overrides:
+        return overrides[cad]
+    short = cad.split(".", 1)[-1]
+    return overrides.get(short) or role
+
+
 def _is_face_copy(cad_name: str) -> bool:
     name = cad_name or ""
     if any(token in name for token in _NEST_DROP):
@@ -453,20 +482,67 @@ def _is_face_copy(cad_name: str) -> bool:
     return True
 
 
+def _part_stem(cad_name: str) -> str:
+    """CAD block stem: 前片_面A_38 → 前片; 后育克面 / 后复势外 → 后育克 / 后复势."""
+    part = (cad_name or "").split(".")[-1].split("_")[0]
+    for suf in ("里", "面", "外"):
+        if part.endswith(suf) and len(part) > 2:
+            return part[: -len(suf)]
+    return part
+
+
 def _shirt_keep(cuts: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """One production face per role; keep left/right pairs."""
+    """One production face per CAD part name (前片 / 前下片 / 后复势…), not one per role."""
     faces = [row for row in cuts if _is_face_copy(str(row.get("cad_name") or ""))]
-    pool = faces or cuts
+    pool = [row for row in (faces or cuts) if str(row.get("piece_role") or "") not in {"scrap", "unlabeled", ""}]
     grouped: dict[str, list[dict[str, Any]]] = {}
     for row in pool:
-        grouped.setdefault(str(row.get("piece_role") or "unlabeled"), []).append(row)
+        grouped.setdefault(_part_stem(str(row.get("cad_name") or "")), []).append(row)
     kept: list[dict[str, Any]] = []
-    for role, rows in grouped.items():
-        rows = sorted(rows, key=lambda item: _bbox_area(item["cut"]["points"]), reverse=True)
-        if role == "scrap":
-            continue
-        kept.append(rows[0])
+    for rows in grouped.values():
+        def rank(item: dict[str, Any]) -> tuple[int, int, float]:
+            name = str(item.get("cad_name") or "")
+            part = name.split(".")[-1].split("_")[0]
+            if "里料" in name:
+                fabric = 2
+            elif "网" in name or "亮葱" in name:
+                fabric = 1
+            else:
+                fabric = 0
+            return (fabric, 1 if part.endswith("里") else 0, -_bbox_area(item["cut"]["points"]))
+        kept.append(min(rows, key=rank))
     return kept
+
+
+def _piece_h(piece: dict[str, Any]) -> float:
+    box = piece.get("_box") or _bbox((piece.get("cut") or {}).get("points") or [])
+    return 0.0 if not box else box[3] - box[1]
+
+
+def _promote_short_back_yokes(pieces: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """If 后下片 exists, a shorter 后中/后上 is the yoke, not a second back."""
+    def cad(piece: dict[str, Any]) -> str:
+        return str(piece.get("cad_name") or "").split(".")[-1]
+
+    lowers = [piece for piece in pieces if "后下" in cad(piece) and "贴" not in cad(piece)]
+    if not lowers:
+        return pieces
+    lower_h = max(_piece_h(piece) for piece in lowers)
+    if lower_h < 40:
+        return pieces
+    out: list[dict[str, Any]] = []
+    for piece in pieces:
+        name = cad(piece)
+        if (
+            str(piece.get("piece_role") or "") == "back_body"
+            and "后侧" not in name
+            and any(key in name for key in ("后中", "后上"))
+            and _piece_h(piece) <= 0.75 * lower_h
+        ):
+            out.append({**piece, "piece_role": "back_yoke"})
+        else:
+            out.append(piece)
+    return out
 
 
 def build_one(case_id: str, old_ir: dict[str, Any] | None = None, family: str = "tshirt") -> dict[str, Any]:
@@ -476,17 +552,19 @@ def build_one(case_id: str, old_ir: dict[str, Any] | None = None, family: str = 
     raw_cuts = closed_cuts(dxf, family=family)
     if not raw_cuts:
         raise ValueError(f"{case_id}: no closed BLOCK cuts in {dxf}")
+    overrides = load_role_overrides(case_id) if family == "shirt" else {}
     counts: dict[str, int] = {}
     pieces: list[dict[str, Any]] = []
     leftovers: list[dict[str, Any]] = []
     for row in raw_cuts:
-        role = str(row.get("role") or "unlabeled")
+        cad_name = str(row.get("cad_name") or row.get("label") or "")
+        role = _override_role(cad_name, str(row.get("role") or "unlabeled"), overrides)
         pts = _closed((row.get("paths") or [[]])[0])
         if len(pts) < _min_pts(role if role in PIECE_ROLES else "scrap"):
             continue
         item = {
             "piece_role": role,
-            "cad_name": row.get("cad_name") or row.get("label") or "",
+            "cad_name": cad_name,
             "cut": {"closed": True, "points": pts},
             "edges": [],
             "_ring": pts[:-1] if len(pts) > 1 and pts[0] == pts[-1] else pts,
@@ -501,7 +579,7 @@ def build_one(case_id: str, old_ir: dict[str, Any] | None = None, family: str = 
         else:
             pieces.append(item)
     if family == "shirt":
-        pieces = _shirt_keep(pieces)
+        pieces = _promote_short_back_yokes(_shirt_keep(pieces))
     have = {p["piece_role"] for p in pieces}
     leftovers.sort(key=lambda row: _bbox_area(row["cut"]["points"]), reverse=True)
     need_front = not (have & FRONT_LIKE)

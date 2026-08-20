@@ -37,10 +37,22 @@ const CHIP_LABELS: PrintOption[] = [
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
-export function defaultOverlay(type: PrintOverlay['type'], src: string, density?: PrintBrief['density']): PrintOverlay {
-  if (type === 'chest') return { src, type, x: 0.3, y: 0.16, w: 0.34, h: 0.28, tile: 0.18, gap: 0.04 };
+const PHOTO_FRONT = { x: 0.32, y: 0.24, w: 0.36, h: 0.48 };
+
+function zoneToPhoto(zone: PrintZone): PrintZone {
+  return {
+    x: PHOTO_FRONT.x + zone.x * PHOTO_FRONT.w,
+    y: PHOTO_FRONT.y + zone.y * PHOTO_FRONT.h,
+    w: Math.max(0.05, zone.w * PHOTO_FRONT.w),
+    h: Math.max(0.05, zone.h * PHOTO_FRONT.h),
+  };
+}
+
+export function defaultOverlay(type: PrintOverlay['type'], src: string, density?: PrintBrief['density'], zone?: PrintZone): PrintOverlay {
   if (type === 'allover') return { src, type, x: 0, y: 0, w: 1, h: 1, tile: density === 'dense' ? 0.14 : density === 'sparse' ? 0.28 : 0.2, gap: density === 'dense' ? 0.01 : density === 'sparse' ? 0.08 : 0.04 };
-  return { src, type, x: 0.41, y: 0.2, w: 0.16, h: 0.16, tile: 0.18, gap: 0.04 };
+  const photo = zoneToPhoto(zone || (type === 'chest' ? { x: 0.28, y: 0.16, w: 0.44, h: 0.28 } : { x: 0.38, y: 0.2, w: 0.24, h: 0.18 }));
+  const size = type === 'small' ? Math.min(photo.w, photo.h) : photo.w;
+  return { src, type, x: photo.x, y: photo.y, w: size, h: type === 'small' ? size : photo.h, tile: 0.18, gap: 0.04 };
 }
 
 function loadImage(src: string) {
@@ -131,14 +143,14 @@ function styleNotes(history: PrintConversationTurn[]) {
 function briefPrompt(brief: PrintBrief, extra = '', notes: string[] = []) {
   const type = brief.type ? TYPE_LABEL[brief.type]?.[0] : '';
   const style = brief.style_prompt || Array.from(new Set([brief.motif, ...notes].filter(Boolean))).join('，');
-  const zone = zoneRect(brief);
+  const zone = zoneToPhoto(zoneRect(brief));
   const zoneText = brief.type === 'allover'
     ? '全身印花：前片、袖子、克夫、可见侧片和后片的布面都要铺上同一块布的连续花纹，不要只印前片，皮肤和背景保持不变。'
-    : `前片放置框：距左${Math.round(zone.x * 100)}%，距上${Math.round(zone.y * 100)}%，宽${Math.round(zone.w * 100)}%，高${Math.round(zone.h * 100)}%。把印花放进这个框，不要移到框外。`;
+    : `穿着图前片放置框：距左${Math.round(zone.x * 100)}%，距上${Math.round(zone.y * 100)}%，宽${Math.round(zone.w * 100)}%，高${Math.round(zone.h * 100)}%。把印花放进这个框，不要移到下摆或框外。`;
   return [type, style, brief.type !== 'allover' && brief.placement && `位置${brief.placement === 'left' ? '偏左' : brief.placement === 'right' ? '偏右' : '居中'}`, brief.density && `排列${brief.density === 'sparse' ? '稀疏' : brief.density === 'dense' ? '紧密' : '适中'}`, zoneText, extra].filter(Boolean).join('，');
 }
 
-function PrintPlacementMap({ svg, brief, onZoneChange }: { svg?: string; brief: PrintBrief; onZoneChange?: (zone: PrintZone) => void }) {
+function PrintPlacementMap({ brief, onZoneChange }: { brief: PrintBrief; onZoneChange?: (zone: PrintZone) => void }) {
   const { t } = useLanguage();
   const bodyRef = React.useRef<HTMLDivElement>(null);
   const drag = React.useRef<{ x: number; y: number; zx: number; zy: number } | null>(null);
@@ -164,7 +176,7 @@ function PrintPlacementMap({ svg, brief, onZoneChange }: { svg?: string; brief: 
   return <div className="print-dxf-map" aria-label={title}>
     <small>{title} · {t('拖抓手调整', 'Drag to place')}{brief.density ? ` · ${brief.density === 'sparse' ? t('疏', 'Sparse') : brief.density === 'dense' ? t('密', 'Dense') : t('中', 'Medium')}` : ''}</small>
     <div ref={bodyRef} className="print-dxf-body">
-      {svg ? <div className="print-dxf-svg" dangerouslySetInnerHTML={{ __html: svg }} /> : <svg viewBox="0 0 100 120" aria-hidden="true"><path d="M22 14 L50 8 L78 14 L90 112 H10 Z" fill="#f7f1ea" stroke="#b9a89a" /></svg>}
+      <svg viewBox="0 0 100 120" aria-hidden="true"><path d="M22 14 L50 8 L78 14 L90 112 H10 Z" fill="#f7f1ea" stroke="#b9a89a" /></svg>
       <div className={`print-zone${brief.type === 'allover' ? ' allover' : ''}`} style={{ left: `${zone.x * 100}%`, top: `${zone.y * 100}%`, width: `${zone.w * 100}%`, height: `${zone.h * 100}%` }} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
         <i className="print-zone-handle" aria-hidden="true" />
       </div>
@@ -185,6 +197,13 @@ export function PrintDesignPanel(props: any) {
   const [adopted, setAdopted] = React.useState(libraryPick?.id || '');
   const briefRef = React.useRef(brief);
   briefRef.current = brief;
+  const genSeq = React.useRef(0);
+  const inflight = React.useRef(0);
+  const setBusy = (label: string) => { setAiStatus(label); props.onGenerating?.(label); };
+  const clearBusy = () => {
+    inflight.current = Math.max(0, inflight.current - 1);
+    if (inflight.current === 0) { setAiStatus(''); props.onGenerating?.(''); }
+  };
   React.useEffect(() => { onBriefChange?.(brief); }, [brief]);
   const upload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; if (!file) return;
@@ -193,28 +212,31 @@ export function PrintDesignPanel(props: any) {
     event.target.value = '';
   };
   const resultSrc = (base: string, path: string) => `${base}${path.startsWith('/') ? path : `/${path}`}`;
-  const pollJob = async (base: string, route: string, jobId: string, label: string) => {
+  const pollJob = async (base: string, route: string, jobId: string, label: string, seq?: number) => {
     let completed: any = { job_id: jobId, status: 'queued', progress: 0 };
     while (!['succeeded', 'failed', 'cancelled'].includes(completed.status)) {
-      await new Promise((resolve) => window.setTimeout(resolve, 1600));
+      await new Promise((resolve) => window.setTimeout(resolve, 800));
       const statusResponse = await fetch(`${base}${route}/${jobId}`);
       if (!statusResponse.ok) throw new Error(t('无法读取生成进度', 'Unable to read generation progress'));
       completed = await statusResponse.json();
-      setAiStatus(`${label}${completed.progress ? ` · ${completed.progress}%` : ''}`);
+      if (seq == null || seq === genSeq.current) setBusy(`${label}${completed.progress ? ` · ${completed.progress}%` : ''}`);
     }
     return completed;
   };
   const generateMotifs = async (nextBrief: PrintBrief, extra = '') => {
+    inflight.current += 1;
     const base = aiBase();
     const prompt = briefPrompt(nextBrief, extra, styleNotes(aiHistory));
     const mode = nextBrief.type === 'allover' || batik ? 'seamless' : 'motif';
-    setAiError(''); setAiStatus(t('正在生成4张印花图', 'Generating 4 print artworks'));
+    setAiError('');
+    setBusy(t('正在生成4张印花图', 'Generating 4 print artworks'));
     try {
       const input = { prompt, history: aiHistory.filter((turn) => turn.role === 'user').map((turn) => turn.text).slice(-6), process: batik ? 'tie-dye' : 'print', mode, width: 512, height: 512, candidate_count: 4, inspiration_image_data_url: uploadImage?.src || '' };
       const response = await fetch(`${base}/print/jobs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
       if (!response.ok) throw new Error(t('印花图生成暂时不可用，请稍后重试。', 'Print artwork generation is temporarily unavailable.'));
       const created = await response.json();
       const completed = await pollJob(base, '/print/jobs', created.job_id, t('正在生成印花图', 'Generating print artworks'));
+      if (completed.status === 'cancelled') return;
       if (completed.status !== 'succeeded' || !completed.result_urls?.length) throw new Error(t('印花图生成失败，请调整描述后重试。', 'Print artwork generation failed. Adjust the request and try again.'));
       const drafts = completed.result_urls.slice(0, 4).map((path: string, index: number) => ({ id: `${created.job_id}-${index}`, src: resultSrc(base, path), productionAsset: { url: resultSrc(base, path), mode, format: 'PNG' as const, width_px: 512, height_px: 512, dpi: 150, color_space: 'sRGB', transparent: mode === 'motif' }, input: { ...input, selected_print_url: path } }));
       setUploadImage(null);
@@ -223,14 +245,14 @@ export function PrintDesignPanel(props: any) {
         : t('点一张放到衣服上，拖动缩放后保存即可。', 'Pick one, place it on the garment, then save.');
       setAiHistory((current) => [...current, { id: `assistant-${created.job_id}`, role: 'assistant', text: `${t('按这个风格出图', 'Generating with this style')}：${prompt}。${placeHint}`, drafts }]);
     } catch (error) { setAiError(error instanceof Error ? error.message : t('图案生成失败', 'Pattern generation failed')); }
-    finally { setAiStatus(''); }
+    finally { clearBusy(); }
   };
   const applyMotif = (draft: GeneratedDraft) => {
     if (!basePreview?.url) { setAiError(t('请先在编辑搭配中完成2D设计预览。', 'Complete the 2D design preview first.')); return; }
     const type = batik || briefRef.current.type === 'allover' ? 'allover' : (briefRef.current.type || 'small');
     setAdopted(draft.id);
     onAdopt({ preview_url: draft.src, production_asset: draft.productionAsset, input: draft.input });
-    onPlace?.(defaultOverlay(type, draft.src, briefRef.current.density));
+    onPlace?.(defaultOverlay(type, draft.src, briefRef.current.density, zoneRect(briefRef.current)));
     setAiError('');
     setAiHistory((current) => [...current, { id: `assistant-place-${draft.id}`, role: 'assistant', text: type === 'allover' ? t('已放到布料上。调好疏密后点「出效果图」。', 'Placed on the fabric. Adjust the repeat, then generate the look.') : t('已放到衣服上。拖动、缩放，点「保存这一版」即可。', 'Placed on the garment. Drag and scale, then save this version.') }]);
   };
@@ -240,8 +262,14 @@ export function PrintDesignPanel(props: any) {
       if (printSrc) setAiError(t('请先在编辑搭配中完成2D设计预览。', 'Complete the 2D design preview first.'));
       return;
     }
+    const seq = Math.max(Date.now(), genSeq.current + 1);
+    genSeq.current = seq;
+    inflight.current += 1;
     const base = aiBase();
-    setAiError(''); setAiStatus(t('正在把布料印到衣服上', 'Printing the fabric onto the garment'));
+    setAiError('');
+    onPreviewChange('', seq);
+    props.onPending?.(seq, true);
+    setBusy(t('正在生成效果图', 'Generating the look'));
     try {
       const live = { ...briefRef.current, zone: briefRef.current.zone || placementZone };
       const garmentUrl = await toJpegDataUrl(basePreview.url, 768).catch(() => basePreview.url);
@@ -253,16 +281,22 @@ export function PrintDesignPanel(props: any) {
       const response = await fetch(`${base}/garment-print/jobs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
       if (!response.ok) throw new Error(t('穿着效果生成暂时不可用，请稍后重试。', 'Garment look generation is temporarily unavailable.'));
       const created = await response.json();
-      const completed = await pollJob(base, '/garment-print/jobs', created.job_id, t('正在生成效果图', 'Generating the look'));
+      const completed = await pollJob(base, '/garment-print/jobs', created.job_id, t('正在生成效果图', 'Generating the look'), seq);
+      if (completed.status === 'cancelled') return;
       if (completed.status !== 'succeeded' || !completed.preview_url) throw new Error(String(completed.error || '').slice(0, 180) || t('效果图生成失败，请换一块布再试。', 'The garment look failed. Try another fabric.'));
-      onPreviewChange(resultSrc(base, completed.preview_url));
+      onPreviewChange(resultSrc(base, completed.preview_url), seq);
       setAiHistory((current) => [...current, { id: `assistant-look-${created.job_id}`, role: 'assistant', text: t('效果图已出。不满意可以换一块布，或继续改描述。', 'The look is ready. Pick another fabric or keep editing.') }]);
     } catch (error) { setAiError(error instanceof Error ? error.message : t('效果图生成失败', 'Look generation failed')); }
-    finally { setAiStatus(''); }
+    finally {
+      inflight.current = Math.max(0, inflight.current - 1);
+      props.onPending?.(seq, false);
+      if (seq === genSeq.current) props.onGenerating?.('');
+      if (inflight.current === 0) { setAiStatus(''); props.onGenerating?.(''); }
+    }
   };
   const talk = async (raw: string, asChip = false) => {
     const text = raw.trim();
-    if (!text || aiStatus) return;
+    if (!text) return;
     if (batik) {
       setAiHistory((current) => [...current, { id: `user-${Date.now()}`, role: 'user', text }]);
       setAiPrompt('');
@@ -281,7 +315,8 @@ export function PrintDesignPanel(props: any) {
       await generateMotifs(seed, shown);
       return;
     }
-    setAiStatus(t('印花创作师正在想', 'The print designer is thinking'));
+    setBusy(t('印花创作师正在想', 'The print designer is thinking'));
+    inflight.current += 1;
     try {
       const response = await fetch(`${textBase()}/print/conversation`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ language, brief: seed, messages: [...aiHistory.map((turn) => ({ role: turn.role, content: turn.text })), { role: 'user', content: shown }], image_data_urls: uploadImage?.src ? [uploadImage.src] : [] }) });
       if (!response.ok) throw new Error(t('印花创作师暂时不可用。', 'The print designer is temporarily unavailable.'));
@@ -291,7 +326,7 @@ export function PrintDesignPanel(props: any) {
       setAiHistory((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant', text: data.assistant_message || t('继续说说你想要的印花。', 'Tell me more about the print.'), options: data.options || [] }]);
       if (data.brief?.ready_to_generate && /生成印花|生成效果|出图/.test(text)) await generateMotifs(nextBrief, shown);
     } catch (error) { setAiError(error instanceof Error ? error.message : t('对话失败', 'Conversation failed')); }
-    finally { setAiStatus(''); }
+    finally { clearBusy(); }
   };
   const pickFabric = (fabric: TaobaoPrintFabric) => {
     const next = { ...briefRef.current, type: 'allover' as const, motif: fabric.name, style_prompt: fabric.style, density: briefRef.current.density || 'medium' };
@@ -311,15 +346,15 @@ export function PrintDesignPanel(props: any) {
     : t('我是印花创作师。先选一种印花方式，或直接描述你想要的图案，我会一步步帮你确定细节和位置。', 'I am a print designer. Pick a print type, or describe the artwork — I will guide the details and placement.');
   return <div className="panel-content print-panel-redesign">
       <div className="design-conversation" aria-label={batik ? t('扎染创作记录', 'Tie-dye creation history') : t('印花创作记录', 'Print creation history')} aria-live="polite">
-        {!aiHistory.length && <div className="design-message assistant"><small>{assistantName}</small><span>{opening}</span>{!batik && <div className="design-quick-replies">{TYPE_CHIPS.map((item) => <button key={item.value} type="button" disabled={Boolean(aiStatus)} onClick={() => void talk(item.value, true)}>{language === 'zh' ? item.label_zh : item.label_en}</button>)}</div>}</div>}
-        {aiHistory.map((turn) => <React.Fragment key={turn.id}><div className={`design-message ${turn.role}`}>{turn.role === 'assistant' && <small>{assistantName}</small>}<span>{turn.text}</span>{turn.role === 'assistant' && turn.options && turn.id === aiHistory.at(-1)?.id && <div className="design-quick-replies">{turn.options.map((item) => <button key={item.value} type="button" disabled={Boolean(aiStatus)} onClick={() => void talk(item.value, true)}>{language === 'zh' ? item.label_zh : item.label_en}</button>)}</div>}</div>{turn.drafts && <div className="print-draft-grid">{turn.drafts.map((draft) => <article key={draft.id}><img src={draft.src} alt={t('印花图', 'Print artwork')} /><button type="button" className={adopted === draft.id ? 'adopted' : ''} disabled={Boolean(aiStatus)} onClick={() => void applyMotif(draft)}>{t('选这个', 'Select this')}</button></article>)}</div>}</React.Fragment>)}
+        {!aiHistory.length && <div className="design-message assistant"><small>{assistantName}</small><span>{opening}</span>{!batik && <div className="design-quick-replies">{TYPE_CHIPS.map((item) => <button key={item.value} type="button"  onClick={() => void talk(item.value, true)}>{language === 'zh' ? item.label_zh : item.label_en}</button>)}</div>}</div>}
+        {aiHistory.map((turn) => <React.Fragment key={turn.id}><div className={`design-message ${turn.role}`}>{turn.role === 'assistant' && <small>{assistantName}</small>}<span>{turn.text}</span>{turn.role === 'assistant' && turn.options && turn.id === aiHistory.at(-1)?.id && <div className="design-quick-replies">{turn.options.map((item) => <button key={item.value} type="button"  onClick={() => void talk(item.value, true)}>{language === 'zh' ? item.label_zh : item.label_en}</button>)}</div>}</div>{turn.drafts && <div className="print-draft-grid">{turn.drafts.map((draft) => <article key={draft.id}><img src={draft.src} alt={t('印花图', 'Print artwork')} /><button type="button" className={adopted === draft.id ? 'adopted' : ''}  onClick={() => void applyMotif(draft)}>{t('选这个', 'Select this')}</button></article>)}</div>}</React.Fragment>)}
         {aiStatus && <div className="design-message assistant thinking"><small>{assistantName}</small><span className="design-thinking" aria-label={aiStatus}><i /><i /><i /></span><em>{aiStatus}</em></div>}
       </div>
       {uploadImage && <div className="print-upload-chip"><img src={uploadImage.src} alt="" /><span>{uploadImage.name}</span><button type="button" onClick={() => setUploadImage(null)}>×</button></div>}
-      <div className="chat-input"><input value={aiPrompt} onChange={(event) => setAiPrompt(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void talk(aiPrompt); } }} placeholder={aiHistory.length ? (batik ? t('继续描述蜡染纹理修改…', 'Continue describing batik revisions…') : t('继续描述印花…', 'Continue describing the print…')) : (batik ? t('告诉我你想要的扎染或蜡染纹理…', 'Tell me the tie-dye or batik texture you want…') : t('告诉我你想要的印花…', 'Tell me what print you want…'))} /><label className="print-chat-upload" title={t('上传参考图', 'Add image')}><input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload} /><span aria-hidden="true">＋</span></label><button type="button" disabled={!aiPrompt.trim() || Boolean(aiStatus)} onClick={() => void talk(aiPrompt)}>{t('发送', 'Send')}</button></div>
+      <div className="chat-input"><input value={aiPrompt} onChange={(event) => setAiPrompt(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void talk(aiPrompt); } }} placeholder={aiHistory.length ? (batik ? t('继续描述蜡染纹理修改…', 'Continue describing batik revisions…') : t('继续描述印花…', 'Continue describing the print…')) : (batik ? t('告诉我你想要的扎染或蜡染纹理…', 'Tell me the tie-dye or batik texture you want…') : t('告诉我你想要的印花…', 'Tell me what print you want…'))} /><label className="print-chat-upload" title={t('上传参考图', 'Add image')}><input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload} /><span aria-hidden="true">＋</span></label><button type="button" disabled={!aiPrompt.trim()} onClick={() => void talk(aiPrompt)}>{t('发送', 'Send')}</button></div>
       {libraryPick && <div className="print-upload-chip"><img src={libraryPick.swatch} alt="" /><span>{libraryPick.name}</span><button type="button" onClick={() => { setAdopted(''); onAdopt?.(null); props.onLibraryPick?.(null); }}>×</button></div>}
       {aiError && <p className="form-error">{aiError}</p>}
-    {(libraryPick || overlay?.type === 'allover') && <button className="primary full" disabled={Boolean(aiStatus)} onClick={() => void (libraryPick ? generateLook(libraryPick.swatch, false) : generateLook())}>{t('生成', 'Generate')}</button>}
+    {(libraryPick || overlay?.type === 'allover') && <button className="primary full"  onClick={() => void (libraryPick ? generateLook(libraryPick.swatch, false) : generateLook())}>{t('生成', 'Generate')}</button>}
   </div>;
 }
 
@@ -334,9 +369,9 @@ function MotifLayer({ overlay, onChange }: { overlay: PrintOverlay; onChange: (n
   };
   const move = (event: React.PointerEvent) => {
     if (!drag.current || !boxRef.current) return;
-    const box = boxRef.current.getBoundingClientRect();
-    const dx = (event.clientX - drag.current.x) / box.width;
-    const dy = (event.clientY - drag.current.y) / box.height;
+    const box = boxRef.current;
+    const dx = (event.clientX - drag.current.x) / Math.max(1, box.clientWidth);
+    const dy = (event.clientY - drag.current.y) / Math.max(1, box.clientHeight);
     if (drag.current.kind === 'move') onChange({ ...overlay, x: clamp(drag.current.ox + dx, 0, 1 - overlay.w), y: clamp(drag.current.oy + dy, 0, 1 - overlay.h) });
     else {
       const size = clamp(drag.current.ow + dx, 0.06, 0.8);
@@ -377,7 +412,7 @@ function FabricBoard({ overlay, onChange }: { overlay: PrintOverlay; onChange: (
   </div>;
 }
 
-export function PrintDesignPreview({ src, versions = [], activeId = '', compositionSvg = '', printBrief = {}, overlay, onOverlayChange, onCommit, onZoneChange, onSelectVersion, showLibrary = false, adoptedId = '', onPickFabric }: {
+export function PrintDesignPreview({ src, versions = [], activeId = '', compositionSvg = '', printBrief = {}, overlay, onOverlayChange, onCommit, onZoneChange, onSelectVersion, showLibrary = false, adoptedId = '', onPickFabric, generating = '', pending = [] }: {
   src: string;
   versions?: Array<{ id: string; label: string; designUrl: string; tip?: string }>;
   activeId?: string;
@@ -391,6 +426,8 @@ export function PrintDesignPreview({ src, versions = [], activeId = '', composit
   showLibrary?: boolean;
   adoptedId?: string;
   onPickFabric?: (fabric: TaobaoPrintFabric) => void;
+  generating?: string;
+  pending?: number[];
 }) {
   const { t } = useLanguage();
   const [view, setView] = React.useState<'preview' | 'library'>('preview');
@@ -400,11 +437,13 @@ export function PrintDesignPreview({ src, versions = [], activeId = '', composit
   const [libraryReady, setLibraryReady] = React.useState(false);
   const libraryLoaded = React.useRef(new Set<string>());
   const imgRef = React.useRef<HTMLImageElement>(null);
-  const [box, setBox] = React.useState({ left: 0, top: 0, w: 0, h: 0 });
+  const stageRef = React.useRef<HTMLDivElement>(null);
+  const [fit, setFit] = React.useState({ w: 0, h: 0 });
   const preview = src || MOCK_GARMENT;
   const rail = versions.length ? versions : (preview ? [{ id: 'live', label: 'V1', designUrl: preview, tip: t('当前预览', 'Current preview') }] : []);
   const motif = overlay && overlay.type !== 'allover';
   const library = showLibrary && view === 'library';
+  const photoZone = !motif && printBrief.type && printBrief.type !== 'allover' ? zoneToPhoto(zoneRect(printBrief)) : null;
   const noteLibrary = (id: string) => {
     if (libraryLoaded.current.size >= 8) return;
     libraryLoaded.current.add(id);
@@ -417,24 +456,19 @@ export function PrintDesignPreview({ src, versions = [], activeId = '', composit
   }, [library, libraryReady]);
   React.useEffect(() => {
     const img = imgRef.current;
-    const stage = img?.parentElement;
+    const stage = stageRef.current;
     if (!img || !stage) return;
     const update = () => {
       if (!img.naturalWidth) return;
-      const stageBox = stage.getBoundingClientRect();
-      const imgBox = img.getBoundingClientRect();
-      const scale = Math.min(imgBox.width / img.naturalWidth, imgBox.height / img.naturalHeight);
-      const w = img.naturalWidth * scale;
-      const h = img.naturalHeight * scale;
-      setBox({ left: imgBox.left - stageBox.left + (imgBox.width - w) / 2, top: imgBox.top - stageBox.top + (imgBox.height - h) / 2, w, h });
+      const scale = Math.min(stage.clientWidth / img.naturalWidth, stage.clientHeight / img.naturalHeight);
+      setFit({ w: img.naturalWidth * scale, h: img.naturalHeight * scale });
     };
     update();
     const observer = new ResizeObserver(update);
-    observer.observe(img);
     observer.observe(stage);
     img.addEventListener('load', update);
     return () => { observer.disconnect(); img.removeEventListener('load', update); };
-  }, [preview, overlay, fullscreen, library]);
+  }, [preview, fullscreen, library]);
   const save = async () => {
     if (!overlay || !onCommit) return;
     setSaving(true);
@@ -466,21 +500,34 @@ export function PrintDesignPreview({ src, versions = [], activeId = '', composit
         })}
         </div>
       </div> : <>
-        <div className={`design-preview-stage${fullscreen ? ' fullscreen' : ''}`}>
-          <img ref={imgRef} src={preview} alt={t('印花穿着效果预览', 'Garment print preview')} className="ready" />
-          {motif && box.w > 0 && <div className="print-motif-frame" style={{ left: box.left, top: box.top, width: box.w, height: box.h }}><MotifLayer overlay={overlay} onChange={(next) => onOverlayChange?.(next)} /></div>}
+        <div ref={stageRef} className={`design-preview-stage${fullscreen ? ' fullscreen' : ''}`}>
+          <div className="print-preview-fit" style={fit.w ? { width: fit.w, height: fit.h } : undefined}>
+            <img ref={imgRef} src={preview} alt={t('印花穿着效果预览', 'Garment print preview')} className="ready" />
+            {motif && fit.w > 0 && <MotifLayer overlay={overlay} onChange={(next) => onOverlayChange?.(next)} />}
+            {photoZone && fit.w > 0 && <div className="print-photo-zone" style={{ left: `${photoZone.x * 100}%`, top: `${photoZone.y * 100}%`, width: `${photoZone.w * 100}%`, height: `${photoZone.h * 100}%` }} />}
+          </div>
           {overlay?.type === 'allover' && <FabricBoard overlay={overlay} onChange={(next) => onOverlayChange?.(next)} />}
-          {!overlay && printBrief.type !== 'allover' && <PrintPlacementMap svg={compositionSvg} brief={printBrief} onZoneChange={onZoneChange} />}
+          {!overlay && printBrief.type !== 'allover' && <PrintPlacementMap brief={printBrief} onZoneChange={onZoneChange} />}
+          {generating && <div className="design-ai-loading" role="status">
+            <div className="design-ai-mosaic" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} style={{ background: MOSAIC[index % MOSAIC.length], ['--i' as string]: index }} />)}</div>
+            <strong>{generating}</strong>
+          </div>}
           <div className="design-ai-actions">
             {motif && <button type="button" className="primary" disabled={saving} onClick={() => void save()}>{saving ? t('保存中…', 'Saving…') : t('保存这一版', 'Save this version')}</button>}
             <button type="button" onClick={() => setFullscreen((value) => !value)}>{fullscreen ? t('退出全屏', 'Exit fullscreen') : t('全屏查看', 'Fullscreen')}</button>
           </div>
         </div>
-        {rail.length > 0 && <div className="design-version-rail" aria-label={t('搭配版本', 'Style versions')}>
+        {(rail.length > 0 || pending.length > 0) && <div className="design-version-rail" aria-label={t('搭配版本', 'Style versions')} aria-busy={pending.length ? true : undefined}>
           {rail.map((version) => (
             <button key={version.id} type="button" className={(activeId ? version.id === activeId : version.designUrl === preview) ? 'active' : ''} data-tip={version.tip || version.label} title={version.tip || version.label} onClick={() => onSelectVersion?.(version)}>
               <img src={version.designUrl} alt="" />
               <em>{version.label}</em>
+            </button>
+          ))}
+          {pending.map((seq) => (
+            <button key={seq} type="button" className="generating" disabled aria-busy="true" data-tip={t('正在生成效果图', 'Generating the look')}>
+              <span className="design-version-wait" aria-hidden="true">{Array.from({ length: 16 }, (_, index) => <i key={index} style={{ background: MOSAIC[index % MOSAIC.length], ['--i' as string]: index }} />)}</span>
+              <em>{t('生成中', '…')}</em>
             </button>
           ))}
         </div>}

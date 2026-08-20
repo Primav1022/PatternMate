@@ -304,8 +304,18 @@ function mergeReferenceOrder(ranked: string[], catalogIds: string[]) {
 }
 
 function defaultSidebarWidth(step: string) {
-  if (step === 'measure') return 440;
-  return typeof window !== 'undefined' && window.innerWidth < 960 ? 264 : 299;
+  const width = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  if (step === 'measure') return width < 1200 ? 320 : 440;
+  return width < 960 ? 264 : 299;
+}
+
+function sidebarWidthForPreview(naturalW: number, naturalH: number) {
+  const workspace = document.querySelector('.resizable-workspace') as HTMLElement | null;
+  const stage = document.querySelector('.pattern-stage') as HTMLElement | null;
+  if (!workspace || !stage || naturalW < 1 || naturalH < 1) return null;
+  const frameH = Math.max(1, stage.clientHeight - 76);
+  const canvasW = frameH * (naturalW / naturalH) + 124;
+  return Math.min(720, Math.max(220, Math.round(workspace.clientWidth - canvasW)));
 }
 
 function SidebarResizer({ width, onWidth }: { width: number; onWidth: (value: number) => void }) {
@@ -324,7 +334,7 @@ function SidebarResizer({ width, onWidth }: { width: number; onWidth: (value: nu
       if (!drag.current) return;
       const workspace = event.currentTarget.parentElement;
       const scale = workspace && workspace.offsetWidth ? workspace.getBoundingClientRect().width / workspace.offsetWidth : 1;
-      onWidth(Math.min(640, Math.max(220, Math.round(drag.current.w + (event.clientX - drag.current.x) / (scale || 1)))));
+      onWidth(Math.min(720, Math.max(220, Math.round(drag.current.w + (event.clientX - drag.current.x) / (scale || 1)))));
     }}
     onPointerUp={() => { drag.current = null; }}
     onPointerCancel={() => { drag.current = null; }}
@@ -404,6 +414,8 @@ function App() {
   const [printBrief, setPrintBrief] = useState<Record<string, any>>({});
   const [printOverlay, setPrintOverlay] = useState<PrintOverlay | null>(null);
   const [printLibraryPick, setPrintLibraryPick] = useState<any>(null);
+  const [printGenerating, setPrintGenerating] = useState('');
+  const [printPending, setPrintPending] = useState<number[]>([]);
   const [adoptedPrintConcept, setAdoptedPrintConcept] = useState<AdoptedPrintConcept | null>(session?.adoptedPrintConcept || null);
   const [exportError, setExportError] = useState('');
   const [analysisError, setAnalysisError] = useState('');
@@ -425,10 +437,34 @@ function App() {
   const printHistoryBurst = useRef<number | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => defaultSidebarWidth(stepIds.includes(session?.step) ? session.step : 'measure'));
   const sidebarTouched = useRef(false);
+  const sidebarWidthRef = useRef(sidebarWidth);
+  sidebarWidthRef.current = sidebarWidth;
+  const canvasModeRef = useRef<'design' | 'dxf'>('design');
+  const previewSeqRef = useRef(0);
+  const designSidebarRef = useRef<number | null>(null);
   useEffect(() => {
     if (sidebarTouched.current) return;
+    if (step === 'styling' && finalDesignPreview?.url) return;
     setSidebarWidth(defaultSidebarWidth(step));
   }, [step]);
+  useEffect(() => {
+    if (step !== 'styling' || !finalDesignPreview?.url || canvasModeRef.current === 'dxf') return;
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      const apply = () => {
+        if (cancelled || canvasModeRef.current === 'dxf') return;
+        const next = sidebarWidthForPreview(img.naturalWidth, img.naturalHeight);
+        if (next != null) {
+          designSidebarRef.current = next;
+          setSidebarWidth(next);
+        }
+      };
+      requestAnimationFrame(() => requestAnimationFrame(apply));
+    };
+    img.src = finalDesignPreview.url;
+    return () => { cancelled = true; };
+  }, [step, finalDesignPreview?.url]);
   const current = useMemo(() => steps.find((item) => item.id === step)!, [step, language]);
   const selectedStructure = optionsForFamily(family).find((item) => item.id === (selections.neckline || selections.collar));
   const selectedFabric = fabricOptions.find((item) => item.id === materialId);
@@ -565,9 +601,10 @@ function App() {
     setMeasurements((old) => ({ ...old, [key]: value }));
     setMeasurementsSaved(false); setReferenceConfirmed(false); setStylingConfirmed(false);
   };
+  const measureNumber = (value: string) => Number(String(value || '').normalize('NFKC').replace(/,/g, '.').trim());
   const validateMeasurements = () => {
     const required: (keyof Measurements)[] = ['height', 'chest', 'waist', 'shoulder', 'neck', 'sleeveLength', 'upperArm'];
-    const invalid = required.find((key) => !Number.isFinite(Number(measurements[key])) || Number(measurements[key]) <= 0);
+    const invalid = required.find((key) => !Number.isFinite(measureNumber(measurements[key])) || measureNumber(measurements[key]) <= 0);
     if (invalid) { setMeasureError('请完整填写身高、胸围、腰围、肩宽、领围、袖长和上臂围。'); return false; }
     setMeasureError(''); return true;
   };
@@ -742,10 +779,33 @@ function App() {
         designUrl: finalDesignPreview.url,
         designInput: finalDesignPreview.input,
         pieceCount: Array.isArray(compositionSummary?.pieces) ? compositionSummary.pieces.length : 0,
-        tip: tipBits.join(' · ') || (prev && prev.revision === designPreviewRevision ? t('印花效果', 'Print look') : t('版片调整', 'Pattern update')),
-      }].slice(-8);
+        tip: finalDesignPreview.input?.view === 'side' ? t('侧视图', 'Side view') : (tipBits.join(' · ') || (prev && prev.revision === designPreviewRevision ? t('印花效果', 'Print look') : t('版片调整', 'Pattern update'))),
+      }].slice(-16);
     });
   }, [stylingReady, compositionSummary, finalDesignPreview, designPreviewRevision, submittedSelections, submittedMaterialId, submittedFabricColor, submittedProcessId]);
+  const keepGeneratedPreview = (url: string, input: Record<string, any>, revision: number, seq?: number) => {
+    if (seq != null && seq < previewSeqRef.current) {
+      if (url) setStyleVersions((rows) => rows.some((row) => row.designUrl === url) ? rows : [...rows, {
+        id: `${revision}-${url}`,
+        label: `V${rows.length + 1}`,
+        revision,
+        selections: { ...submittedSelections },
+        materialId: submittedMaterialId,
+        fabricColor: submittedFabricColor,
+        processId: submittedProcessId,
+        recipeHash: String(compositionSummary?.recipe_hash || ''),
+        designUrl: url,
+        designInput: input,
+        pieceCount: Array.isArray(compositionSummary?.pieces) ? compositionSummary.pieces.length : 0,
+        tip: input.view === 'side' ? t('侧视图', 'Side view') : t('并发生成', 'Concurrent generation'),
+      }].slice(-16));
+      return false;
+    }
+    if (seq != null) previewSeqRef.current = seq;
+    if (!url) return true;
+    setFinalDesignPreview({ url, input, revision });
+    return true;
+  };
   const capturePrintSnapshot = (): PrintSnapshot => ({
     assets: printAssets.map((asset) => ({ ...asset })),
     selectedAssetIds: { ...selectedPrintAssetIds },
@@ -885,18 +945,18 @@ function App() {
   const globalNotice = exportError ? { kind: 'error', text: t(`导出失败：${exportError}`, `Export failed: ${exportError}`) } : analysisError ? { kind: 'error', text: analysisError } : catalogStatus !== 'ready' && step === 'design' ? { kind: 'status', text: t('正在连接设计服务…', 'Connecting to the design service…') } : null;
   const stepIndex = Math.max(0, steps.findIndex((item) => item.id === step));
   const stepSwatches = ['#C4C17C', '#F3C13E', '#9DC9E8', '#F2821C', '#F497A2', '#9A95ED', '#60332D'];
-  return <div className="app-shell" style={{ '--theme-primary': fixedTheme.primary, '--theme-soft': fixedTheme.soft, '--theme-border': fixedTheme.border } as React.CSSProperties}><header className="topbar"><button type="button" className="brand-lockup" onClick={() => setShowHome(true)} aria-label="PatternMate"><img className="brand-mark" src={asset('/brand/logo.png')} alt="" /><img className="brand-wordmark" src={asset('/brand/patternmate-wordmark.svg')} alt="PatternMate" /></button><nav className="styling-progress topbar-steps" aria-label={t('创作步骤', 'Design steps')}><div className="styling-progress-mosaic" aria-hidden="true">{[...stepSwatches, ...stepSwatches.slice(0, 5)].map((color, index) => <i key={index} style={{ background: index < [3, 6, 9, 12][stepIndex] ? color : '#efe8df' }} />)}</div><div className="styling-progress-labels">{steps.map((item, index) => <button key={item.id} type="button" disabled={!canAccess(item.id)} className={item.id === step ? 'active' : stepIndex > index ? 'done' : ''} aria-current={item.id === step ? 'step' : undefined} onClick={() => canAccess(item.id) && setStep(item.id)}>{item.label}</button>)}</div></nav><div className="project-title-view"><button type="button" className="new-experiment" aria-label={t('新建实验', 'New experiment')} title={t('新建实验', 'New experiment')} onClick={() => { setProjectNameDraft(suggestExperimentName()); setProjectNameEditing(true); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg></button></div><label className="language-picker" aria-label={t('语言', 'Language')}><select aria-label={t('语言', 'Language')} value={language} onChange={(event) => setLanguage(event.target.value as 'zh' | 'en')}><option value="zh">中文</option><option value="en">English</option></select></label>{stylingConfirmed && <button type="button" className={`topbar-export${printPreviewUrl || adoptedPrintConcept ? ' ready' : ''}`} disabled={exporting} onClick={exportAll}>{exporting ? t('生成中…', 'Generating…') : t('导出', 'Export')}</button>}</header>
+  return <div className="app-shell" style={{ '--theme-primary': fixedTheme.primary, '--theme-soft': fixedTheme.soft, '--theme-border': fixedTheme.border } as React.CSSProperties}><header className="topbar"><button type="button" className="brand-lockup" onClick={() => setShowHome(true)} aria-label="PatternMate"><img className="brand-mark" src={asset('/brand/logo.png')} alt="" /><img className="brand-wordmark" src={asset('/brand/patternmate-wordmark.svg')} alt="PatternMate" /></button><nav className="styling-progress topbar-steps" aria-label={t('创作步骤', 'Design steps')}><div className="styling-progress-mosaic" aria-hidden="true">{[...stepSwatches, ...stepSwatches.slice(0, 5)].map((color, index) => <i key={index} style={{ background: index < [3, 6, 9, 12][stepIndex] ? color : '#efe8df' }} />)}</div><div className="styling-progress-labels">{steps.map((item, index) => <button key={item.id} type="button" disabled={!canAccess(item.id)} className={item.id === step ? 'active' : stepIndex > index ? 'done' : ''} aria-current={item.id === step ? 'step' : undefined} onClick={() => canAccess(item.id) && setStep(item.id)}>{item.label}</button>)}</div></nav><div className="project-title-view"><button type="button" className="new-experiment" aria-label={t('新建实验', 'New experiment')} title={t('新建实验', 'New experiment')} onClick={() => { setProjectNameDraft(suggestExperimentName()); setProjectNameEditing(true); }}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg></button></div><label className="language-picker" aria-label={t('语言', 'Language')}><select aria-label={t('语言', 'Language')} value={language} onChange={(event) => setLanguage(event.target.value as 'zh' | 'en')}><option value="zh">中文</option><option value="en">English</option></select></label><button type="button" className={`topbar-export${printPreviewUrl || adoptedPrintConcept ? ' ready' : ''}`} disabled={exporting || !(stylingConfirmed || finalDesignPreview?.url)} onClick={exportAll}>{exporting ? t('生成中…', 'Generating…') : t('导出', 'Export')}</button></header>
     {globalNotice && <div className={`global-notice ${globalNotice.kind}`} role={globalNotice.kind === 'error' ? 'alert' : 'status'}>{globalNotice.text}</div>}
     <main className="workspace resizable-workspace" style={{ gridTemplateColumns: `${sidebarWidth}px minmax(0,1fr)`, ['--sidebar-width' as string]: `${sidebarWidth}px` }}><aside className="sidebar"><div className="side-heading"><img className="side-heading-mark" src={asset(`/icon/Group ${{ measure: 278, design: 279, styling: 280, print: 282 }[step]}.svg`)} alt="" aria-hidden="true" />{current.label}</div>
       {step === 'measure' && <MeasurePanel sex={sex} setSex={(value: Sex) => { setSex(value); setMeasurementsSaved(false); setReferenceConfirmed(false); setStylingConfirmed(false); }} measurements={measurements} updateMeasurement={updateMeasurement} rememberMeasurements={rememberMeasurements} setRememberMeasurements={setRememberMeasurements} facePhoto={facePhoto} setFacePhoto={setFacePhoto} error={measureError} onNext={saveMeasurements} />}
       {step === 'design' && <DesignPanel message={message} setMessage={setMessage} analyze={analyze} analyzing={analyzing} serviceReady={catalogStatus === 'ready'} intentMessages={intentMessages} assistantMessages={assistantMessages} generatedCard={generatedCard} analysisMode={analysisMode} />}
       {step === 'styling' && <StylingPanel family={family} baseItem={selectedReferenceInfo} referenceItems={referenceItems} intent={designIntent} unresolved={intentUnresolved} selections={selections} setSelection={setSelection} materialId={materialId} setMaterialId={setMaterialId} fabricColor={fabricColor} setFabricColor={setFabricColor} processId={processId} setProcessId={setProcessId} ready={stylingReady} compositionReady={compositionReady} hasDesignPreview={Boolean(finalDesignPreview?.url)} hasDraftPatternChanges={hasDraftPatternChanges} hasDraftPieceChanges={hasDraftPieceChanges} seen={styleSeen} onSeen={(id: 'fabric' | 'color' | 'process') => setStyleSeen((old) => ({ ...old, [id]: true }))} needChoices={needStyleChoices} needChoicesHint={needChoicesHint} onGenerate={submitPatternDraft} printSupport={selectedFabricPrintSupport} processSupport={selectedProcessSupport} onNext={() => { if (hasDraftPatternChanges) { setSubmittedSelections({ ...selections }); setSubmittedMaterialId(materialId); setSubmittedFabricColor(fabricColor); setSubmittedProcessId(processId); } const notes = [...(!compositionReady ? ['pattern_compose_unreviewed'] : []), ...(!finalDesignPreview?.url ? ['design_preview_missing'] : [])]; setPatternReview({ passed: notes.length === 0, notes }); const unsupported = processId.endsWith('.print') ? selectedFabricPrintSupport === 'unsupported' : selectedProcessSupport === 'unsupported'; if (unsupported) { setPrintCompatibilityWarning(true); return; } setStylingConfirmed(true); if (!finalDesignPreview?.url) setFinalDesignPreview({ url: '/home-gallery/garment-01.png', input: {}, revision: designPreviewRevision || 1 }); setStep('print'); }} />}
-      {step === 'print' && <PrintDesignPanel key={processId} variant={processId.endsWith('.tie-dye') ? 'tie-dye' : 'print'} libraryPick={processId.endsWith('.tie-dye') ? null : printLibraryPick} onLibraryPick={setPrintLibraryPick} basePreview={finalDesignPreview} currentPreview={printPreviewUrl || finalDesignPreview?.url || ''} overlay={printOverlay} onPlace={setPrintOverlay} onPreviewChange={(url: string) => { setPrintPreviewUrl(url); setFinalDesignPreview((old) => old ? { ...old, url } : { url, input: {}, revision: designPreviewRevision || 1 }); setPrintOverlay(null); }} onAdopt={setAdoptedPrintConcept} placementZone={printBrief.zone} onBriefChange={(next: Record<string, any>) => setPrintBrief((old) => ({ ...old, ...next, zone: old.type !== next.type || old.placement !== next.placement ? next.zone : (next.zone || old.zone) }))} designContext={{ recipe, composition: compositionSummary }} onExport={() => adoptedPrintConcept && exportAll({ ...designState, print_concept: { ...adoptedPrintConcept, adopted: true } })} />}
+      {step === 'print' && <PrintDesignPanel key={processId} variant={processId.endsWith('.tie-dye') ? 'tie-dye' : 'print'} libraryPick={processId.endsWith('.tie-dye') ? null : printLibraryPick} onLibraryPick={setPrintLibraryPick} basePreview={finalDesignPreview} currentPreview={printPreviewUrl || finalDesignPreview?.url || ''} overlay={printOverlay} onPlace={setPrintOverlay} onGenerating={setPrintGenerating} onPending={(seq: number, active: boolean) => setPrintPending((old) => active ? (old.includes(seq) ? old : [...old, seq]) : old.filter((id) => id !== seq))} onPreviewChange={(url: string, seq?: number) => { if (keepGeneratedPreview(url, finalDesignPreview?.input || {}, finalDesignPreview?.revision || designPreviewRevision || 1, seq) && url) { setPrintPreviewUrl(url); setPrintOverlay(null); } }} onAdopt={setAdoptedPrintConcept} placementZone={printBrief.zone} onBriefChange={(next: Record<string, any>) => setPrintBrief((old) => ({ ...old, ...next, zone: old.type !== next.type || old.placement !== next.placement ? next.zone : (next.zone || old.zone) }))} designContext={{ recipe, composition: compositionSummary }} onExport={() => adoptedPrintConcept && exportAll({ ...designState, print_concept: { ...adoptedPrintConcept, adopted: true } })} />}
     </aside><SidebarResizer width={sidebarWidth} onWidth={(value) => { sidebarTouched.current = true; setSidebarWidth(value); }} /><section className="canvas-area">
       {step === 'measure' && <MeasureCanvas saved={measurementsSaved} measurements={measurements} sex={sex} />}
       {step === 'design' && <ReferenceGrid items={referenceItems} scores={referenceScores} order={referenceOrder} selected={selectedReference} onSelect={(item) => item.id === selectedReference ? setSelectedReference('') : chooseReference(item.id)} onConfirm={(item) => { chooseReference(item.id); setReferenceConfirmed(true); setStep('styling'); }} status={catalogStatus} />}
-      {step === 'styling' && <PatternPreview recipe={recipe} baseCoverUrl={selectedReferenceInfo.coverUrl} generationRevision={designPreviewRevision} resetToken={canvasReset} seedPreviewUrl={finalDesignPreview?.revision === designPreviewRevision ? finalDesignPreview.url : undefined} styleVersions={styleVersions} activeVersionId={styleVersions.find((row) => row.revision === designPreviewRevision && row.designUrl === finalDesignPreview?.url)?.id} allowGenerate={styleChoicesReady} needChoicesHint={needChoicesHint} onNeedChoices={() => setNeedStyleChoices((value) => value + 1)} onReset={resetStylingCanvas} onRestoreVersion={restoreStyleVersion} onGeneratedPreview={(url, input, revision) => setFinalDesignPreview({ url, input, revision })} onReplaceSelection={setSelection} onUndo={undoPattern} canUndo={patternUndo.length > 0} onExport={exportAll} onValidationChange={(ready) => { setCompositionReady(ready); }} onCompositionChange={setCompositionSummary} />}
-      {step === 'print' && <PrintDesignPreview src={printPreviewUrl || finalDesignPreview?.url || ''} versions={styleVersions} activeId={styleVersions.find((row) => row.designUrl === (printPreviewUrl || finalDesignPreview?.url))?.id} compositionSvg={compositionSummary?.svg || ''} printBrief={printBrief} overlay={printOverlay} onOverlayChange={setPrintOverlay} onCommit={(url) => { setPrintPreviewUrl(url); setFinalDesignPreview((old) => old ? { ...old, url } : { url, input: {}, revision: designPreviewRevision || 1 }); setPrintOverlay(null); }} onZoneChange={(zone) => setPrintBrief((old) => ({ ...old, zone }))} onSelectVersion={(version) => { const full = styleVersions.find((row) => row.id === version.id); if (full) restoreStyleVersion(full, { keepStep: true }); else { setPrintPreviewUrl(version.designUrl); setPrintOverlay(null); } }} showLibrary={!processId.endsWith('.tie-dye')} adoptedId={printLibraryPick?.id || ''} onPickFabric={setPrintLibraryPick} />}
+      {step === 'styling' && <PatternPreview recipe={recipe} baseCoverUrl={selectedReferenceInfo.coverUrl} generationRevision={designPreviewRevision} resetToken={canvasReset} seedPreviewUrl={finalDesignPreview?.revision === designPreviewRevision ? finalDesignPreview.url : undefined} styleVersions={styleVersions} activeVersionId={styleVersions.find((row) => row.revision === designPreviewRevision && row.designUrl === finalDesignPreview?.url)?.id} allowGenerate={styleChoicesReady} needChoicesHint={needChoicesHint} onNeedChoices={() => setNeedStyleChoices((value) => value + 1)} onReset={resetStylingCanvas} onRestoreVersion={restoreStyleVersion} onGeneratedPreview={(url, input, revision, seq) => { keepGeneratedPreview(url, input, revision, seq); }} onReplaceSelection={setSelection} onUndo={undoPattern} canUndo={patternUndo.length > 0} onExport={exportAll} onValidationChange={(ready) => { setCompositionReady(ready); }} onCompositionChange={setCompositionSummary} onViewMode={(mode) => { canvasModeRef.current = mode; if (mode === 'dxf') { designSidebarRef.current = sidebarWidthRef.current; setSidebarWidth(defaultSidebarWidth('styling')); } else if (designSidebarRef.current != null) setSidebarWidth(designSidebarRef.current); }} />}
+      {step === 'print' && <PrintDesignPreview src={printPreviewUrl || finalDesignPreview?.url || ''} versions={styleVersions} activeId={styleVersions.find((row) => row.designUrl === (printPreviewUrl || finalDesignPreview?.url))?.id} compositionSvg={compositionSummary?.svg || ''} printBrief={printBrief} overlay={printOverlay} generating={printGenerating} pending={printPending} onOverlayChange={setPrintOverlay} onCommit={(url) => { setPrintPreviewUrl(url); setFinalDesignPreview((old) => old ? { ...old, url } : { url, input: {}, revision: designPreviewRevision || 1 }); setPrintOverlay(null); }} onZoneChange={(zone) => setPrintBrief((old) => ({ ...old, zone }))} onSelectVersion={(version) => { const full = styleVersions.find((row) => row.id === version.id); if (full) restoreStyleVersion(full, { keepStep: true }); else { setPrintPreviewUrl(version.designUrl); setPrintOverlay(null); } }} showLibrary={!processId.endsWith('.tie-dye')} adoptedId={printLibraryPick?.id || ''} onPickFabric={setPrintLibraryPick} />}
     </section></main>{facetEditor && <TagCorrectionModal facets={semanticFacets} activeKey={facetEditor} selected={facetSelections} setActiveKey={setFacetEditor} onChoose={chooseFacet} onClose={() => setFacetEditor(null)} />}{printCompatibilityWarning && <DigitalPrintWarning isPrint={processId.endsWith('.print')} onBack={() => setPrintCompatibilityWarning(false)} onSkip={() => { const noPrintDesign = { ...designState, printSkipped: true, print: { ...designState.print, face_modes: { front: 'none', back: 'none' }, density_asset_ids: { front: null, back: null }, placements: [], assets: [] } }; setPrintCompatibilityWarning(false); setPrintModes({ front: 'none', back: 'none' }); setStylingConfirmed(true); void exportAll(noPrintDesign); }} />}{projectNameEditing && <div className="reference-modal-backdrop" onMouseDown={() => setProjectNameEditing(false)}><div className="project-name-modal" onMouseDown={(event) => event.stopPropagation()}><h2>{t('新建实验', 'New experiment')}</h2><p>{t('给这次实验起个名字。确认后从身体尺寸开始，未下载的当前记录会被清空。', 'Name this experiment. Confirming starts from body measurements and clears unsaved work.')}</p><input autoFocus aria-label={t('实验名称', 'Experiment name')} value={projectNameDraft} onChange={(event) => setProjectNameDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && projectNameDraft.trim()) startNewExperiment(projectNameDraft); if (event.key === 'Escape') setProjectNameEditing(false); }} /><div><button onClick={() => setProjectNameEditing(false)}>{t('取消', 'Cancel')}</button><button className="primary" disabled={!projectNameDraft.trim()} onClick={() => startNewExperiment(projectNameDraft)}>{t('确认开始', 'Start')}</button></div></div></div>}</div>;
 }
 
@@ -918,6 +978,23 @@ function CoverImage({ src, alt, className }: { src: string; alt: string; classNa
   if (!urls[index]) return null;
   return <img className={className} src={urls[index]} alt={alt} loading="lazy" onError={() => setIndex((value) => value + 1)} />;
 }
+function insertMeasureDigit(event: React.KeyboardEvent<HTMLInputElement>, field: string, updateMeasurement: (key: string, value: string) => void) {
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  const code = event.code || '';
+  const digit = /^(?:Digit|Numpad)(\d)$/.exec(code);
+  const typed = (event.key || '').normalize('NFKC');
+  const ch = digit ? digit[1] : (code === 'Period' || code === 'NumpadDecimal' || typed === '.' ? '.' : (/^\d$/.test(typed) ? typed : ''));
+  if (!ch) return;
+  event.preventDefault();
+  const el = event.currentTarget;
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  const next = `${el.value.slice(0, start)}${ch}${el.value.slice(end)}`;
+  el.value = next;
+  updateMeasurement(field, next);
+  requestAnimationFrame(() => { try { el.setSelectionRange(start + 1, start + 1); } catch { /* ignore */ } });
+}
+
 function MeasurePanel({ sex, setSex, measurements, updateMeasurement, rememberMeasurements, setRememberMeasurements, facePhoto, setFacePhoto, error, onNext }: any) {
   const { t } = useLanguage();
   const fields = [['height', '身高', 'cm'], ['weight', '体重（可选）', 'kg'], ['chest', '胸围', 'cm'], ['waist', '腰围', 'cm'], ['shoulder', '肩宽', 'cm'], ['neck', '领围', 'cm'], ['sleeveLength', '袖长', 'cm'], ['upperArm', '上臂围', 'cm']];
@@ -929,7 +1006,7 @@ function MeasurePanel({ sex, setSex, measurements, updateMeasurement, rememberMe
     {facePhoto && <button type="button" className="face-photo-clear" onClick={() => setFacePhoto('')}>{t('清除照片', 'Remove photo')}</button>}
     <small className="face-photo-note">{t('可选。用于 2D 预览替换正脸，请上传清晰正面照。', 'Optional. Used to replace the face in the 2D preview. Upload a clear front photo.')}</small>
     <h3>{t('尺寸', 'Measurements')}</h3>
-    <div className="measure-fields">{fields.map(([key, label, unit]) => <label className="field" key={key}><span>{languageField(label, t)}</span><div><input inputMode="decimal" value={measurements[key]} onChange={(event) => updateMeasurement(key, event.target.value)} placeholder="—" /><em>{unit}</em></div></label>)}</div>
+    <div className="measure-fields">{fields.map(([key, label, unit]) => <label className="field" key={key}><span>{languageField(label, t)}</span><div><input type="tel" inputMode="numeric" autoComplete="off" autoCorrect="off" spellCheck={false} lang="en" value={measurements[key]} onChange={(event) => updateMeasurement(key, event.target.value.normalize('NFKC'))} onKeyDown={(event) => insertMeasureDigit(event, key, updateMeasurement)} placeholder="—" /><em>{unit}</em></div></label>)}</div>
     <label className="remember-measurements"><input type="checkbox" checked={rememberMeasurements} onChange={(event) => setRememberMeasurements(event.target.checked)} /><span>{t('记住本机尺寸', 'Remember on this device')}</span></label>
     {error && <p className="form-error">{error}</p>}
     <div className="measurement-preview-actions"><button className="primary full" onClick={onNext}>{t('确认并继续', 'Confirm and continue')}</button></div>
@@ -1156,7 +1233,7 @@ function isShirtSandboxRoute() {
 
 function isRelabelRoute() {
   const hash = window.location.hash.replace(/^#\/?/, '');
-  return hash === 'relabel' || hash === 'sandbox/relabel' || new URLSearchParams(window.location.search).has('relabel');
+  return hash === 'relabel' || hash === 'relabel-yoke' || hash === 'sandbox/relabel' || hash === 'sandbox/relabel-yoke' || new URLSearchParams(window.location.search).has('relabel');
 }
 
 function isPrintSandboxRoute() {

@@ -1,6 +1,7 @@
 """T-shirt sleeve relabel queue: 6 IR-missing-sleeve + 4 sleeve≈body."""
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -164,16 +165,48 @@ def unlabeled_clusters(ir: dict[str, Any], *, gap_mm: float = 28.0) -> list[dict
     return out
 
 
-def _dxf_outlines(case_id: str) -> list[dict[str, Any]]:
-    path = original_dxf_path(case_id)
+def _spread_paths(rows: list[dict[str, Any]], gap: float = 48.0, max_row_w: float = 2200.0) -> list[dict[str, Any]]:
+    """Put each closed cut in its own cell so nested CAD pieces are clickable."""
+    x = 0.0
+    y = 0.0
+    row_h = 0.0
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        pts = [xy for path in (row.get("paths") or []) for xy in path]
+        if len(pts) < 2:
+            out.append(row)
+            continue
+        minx = min(p[0] for p in pts)
+        miny = min(p[1] for p in pts)
+        w = max(p[0] for p in pts) - minx
+        h = max(p[1] for p in pts) - miny
+        if x > 0 and x + w > max_row_w:
+            x = 0.0
+            y += row_h + gap
+            row_h = 0.0
+        shifted = [[[p[0] - minx + x, p[1] - miny + y] for p in path] for path in row["paths"]]
+        out.append({**row, "paths": shifted})
+        x += w + gap
+        row_h = max(row_h, h)
+    return out
+
+
+def _dxf_outlines(case_id: str, family: str | None = None, face_only: bool = False) -> list[dict[str, Any]]:
+    path = original_dxf_path(case_id, family=family)
     if not path:
         return []
     rows = []
-    for index, cut in enumerate(closed_cuts(path)):
+    for index, cut in enumerate(closed_cuts(path, family=family)):
+        cad = str(cut.get("cad_name") or cut.get("label") or "")
+        if face_only:
+            from compose_ir import _is_face_copy
+            if not _is_face_copy(cad):
+                continue
         rows.append({
             "piece_id": f"dxf:{index}",
             "role": cut["role"],
-            "cad_name": cut["label"],
+            "cad_name": cad,
+            "label": cut.get("label") or cad.split(".", 1)[-1],
             "width_mm": cut["width_mm"],
             "height_mm": cut["height_mm"],
             "paths": cut["paths"],
@@ -377,3 +410,74 @@ def apply_labels(
     ir["design_semantics_extra"] = extra
     ir.pop("_remix_readiness_cache", None)
     return ir
+
+
+_YOKE_HINT = ("育克", "复势", "后上", "前上", "过肩")
+
+
+def shirt_yoke_queue() -> list[dict[str, str]]:
+    from compose_ir import ROLE_OVERRIDE_PATH, load_compose, shirt_case_ids
+
+    reviewed: set[str] = set()
+    if ROLE_OVERRIDE_PATH.exists():
+        data = json.loads(ROLE_OVERRIDE_PATH.read_text(encoding="utf-8"))
+        reviewed = {cid for cid, entry in data.items() if isinstance(entry, dict) and entry.get("_reviewed")}
+    items: list[dict[str, str]] = []
+    for case_id in shirt_case_ids():
+        doc = load_compose(case_id) or {}
+        names = [(p.get("cad_name") or "").split(".", 1)[-1] for p in doc.get("pieces") or []]
+        yokeish = [name for name in names if any(key in name for key in _YOKE_HINT)]
+        has_by = any(p.get("piece_role") == "back_yoke" for p in doc.get("pieces") or [])
+        if yokeish:
+            hint = "原版有：" + "、".join(n.split("_")[0] for n in yokeish[:6]) + "。核对后育克"
+            issue = "has_yoke_name"
+        elif has_by:
+            hint = "compose 已有后育克。对照原版裁片确认"
+            issue = "has_yoke_name"
+        else:
+            hint = "原版没有育克/复势字样。若后片上方有短片，标成后育克"
+            issue = "no_yoke_name"
+        items.append({
+            "case_id": case_id,
+            "issue": issue,
+            "hint": hint,
+            "reviewed": "1" if case_id in reviewed else "",
+        })
+    return items
+
+
+def shirt_dxf_pieces(case_id: str) -> list[dict[str, Any]]:
+    from compose_ir import load_role_overrides
+
+    rows = _dxf_outlines(case_id, family="shirt", face_only=True)
+    overrides = load_role_overrides(case_id)
+    if overrides:
+        patched = []
+        for row in rows:
+            cad = str(row.get("cad_name") or "")
+            role = overrides.get(cad) or overrides.get(cad.split(".", 1)[-1]) or row.get("role")
+            patched.append({**row, "role": role})
+        rows = patched
+    return _spread_paths(rows)
+
+
+def apply_shirt_compose_labels(case_id: str, piece_roles: dict[str, str]) -> dict[str, Any]:
+    from compose_ir import PIECE_ROLES, load_role_overrides, save_role_overrides, write_one
+
+    rows = _dxf_outlines(case_id, family="shirt", face_only=True)
+    by_id = {str(row["piece_id"]): row for row in rows}
+    overrides = load_role_overrides(case_id)
+    for pid, role in piece_roles.items():
+        row = by_id.get(str(pid))
+        if not row or role not in PIECE_ROLES:
+            continue
+        cad = str(row.get("cad_name") or "")
+        if not cad:
+            continue
+        guessed = str(row.get("role") or "unlabeled")
+        if role == guessed:
+            overrides.pop(cad, None)
+        else:
+            overrides[cad] = role
+    save_role_overrides(case_id, overrides, reviewed=True)
+    return write_one(case_id, family="shirt")

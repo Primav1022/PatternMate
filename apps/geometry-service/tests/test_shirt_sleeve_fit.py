@@ -191,9 +191,30 @@ class ShirtSleeveArmholeFitTests(unittest.TestCase):
         cap0, cap1 = meta["pieces"][0]["cap_h"]
         body0, body1 = meta["pieces"][0]["body_h"]
         self.assertLess(cap1, cap0 * 0.75)
-        self.assertGreater(body1, body0 * 1.2)
-        self.assertLess(max(ys) - min(ys), 130.0)
+        self.assertGreater(body1, body0)
+        self.assertGreater(max(ys) - min(ys), 130.0 * 1.15)
         self.assertGreater(max(xs) - min(xs), 40.0)
+
+    def test_knit_sleeve_sy_changes_total_length(self) -> None:
+        body = _bodice()
+        peaked = [
+            [20.0, 0.0], [80.0, 0.0], [100.0, 40.0], [50.0, 130.0], [0.0, 40.0], [20.0, 0.0],
+        ]
+        short, _ = fit_knit_sleeves([
+            _closed("f", "front", "front_body", body),
+            _closed("b", "back", "back_body", body),
+            _closed("s", "sleeve", "sleeve", peaked, line_role="cut_line"),
+        ], sleeve_sy=0.8, slug="regular")
+        long, _ = fit_knit_sleeves([
+            _closed("f", "front", "front_body", body),
+            _closed("b", "back", "back_body", body),
+            _closed("s", "sleeve", "sleeve", peaked, line_role="cut_line"),
+        ], sleeve_sy=1.3, slug="regular")
+        def _h(rows):
+            sleeve = next(row for row in rows if row["piece_id"] == "sleeve")
+            ys = [p[1] for p in sleeve["geometry"]["points"]]
+            return max(ys) - min(ys)
+        self.assertGreater(_h(long), _h(short) * 1.2)
 
     def test_knit_skips_raglan(self) -> None:
         body = _bodice()

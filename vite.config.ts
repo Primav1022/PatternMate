@@ -6,5 +6,9 @@ export default defineConfig({
   base: process.env.VITE_BASE || '/',
   // The sandbox used by automated checks cannot create nested public folders;
   // production builds keep the default public directory behavior.
-  publicDir: process.env.NO_PUBLIC_COPY ? false : 'public'
+  publicDir: process.env.NO_PUBLIC_COPY ? false : 'public',
+  build: {
+    target: ['es2017', 'chrome64'],
+    cssTarget: 'chrome64',
+  },
 });

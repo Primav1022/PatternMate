@@ -43,7 +43,9 @@ def original_dxf_path(case_id: str, root: Path | None = None, family: str | None
     found = [path for path in candidates if path.exists() and _dxf_score(path, family)[1] > 0]
     if not found:
         return None
-    return max(found, key=lambda path: _dxf_score(path, family))
+    originals = [path for path in found if "annotated" not in path.name.lower()]
+    pool = originals or found
+    return max(pool, key=lambda path: _dxf_score(path, family))
 
 
 def _decode_cad(name: str) -> str:
@@ -58,13 +60,13 @@ def _decode_cad(name: str) -> str:
 
 def _guess_shirt_role(name: str) -> str:
     parts = {part for part in name.replace("_", ".").split(".") if part}
-    if any(key in name for key in ("脚朴", "压条", "洗标", "烫样", "烫版", "唛", "贴袋", "绣花", "夹底", "夹圈", "标位置", "滚条", "捆条", "出芽", "内贴", "贴布")):
+    if any(key in name for key in ("脚朴", "压条", "洗标", "烫样", "烫版", "唛", "贴袋", "绣花", "夹底", "夹圈", "标位置", "滚条", "捆条", "出芽", "内贴", "贴布", "弹袖条", "袖条")):
         if "袖荷叶" in name:
             return "sleeve"
         if "领" in name:
             return "neck_binding"
         return "scrap"
-    if any(key in name for key in ("门襟", "门里襟", "里襟", "门巾", "里巾", "门禁")):
+    if any(key in name for key in ("门襟", "门里襟", "里襟", "门巾", "里巾", "门禁", "里禁")):
         return "front_placket"
     if any(key in name for key in ("领座", "下级领", "领脚")):
         return "collar_stand"
@@ -86,9 +88,9 @@ def _guess_shirt_role(name: str) -> str:
         return "sleeve_right"
     if "袖" in name:
         return "sleeve"
-    if any(key in name for key in ("后育克", "后上")):
+    if any(key in name for key in ("后育克", "后上", "后复势")):
         return "back_yoke"
-    if "前育克" in name:
+    if any(key in name for key in ("前育克", "前上", "前复势")):
         return "front_yoke"
     if any(key in name for key in ("左前", "前左", "前片左")):
         return "front_left"

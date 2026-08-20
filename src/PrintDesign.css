@@ -106,8 +106,10 @@
 .print-share-icon path { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .print-fabric-name { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; margin: 0; padding: 22px 10px 8px; background: linear-gradient(transparent, #0008); color: #fff; font-size: 12px; font-weight: 700; pointer-events: none; }
 .design-preview-stage.fullscreen { position: fixed; inset: 0; z-index: 1000; background: #ececee; }
-.print-motif-frame { position: absolute; z-index: 4; pointer-events: none; }
-.print-motif-layer { position: absolute; inset: 0; pointer-events: auto; touch-action: none; }
+.print-preview-fit { position: relative; z-index: 1; justify-self: center; align-self: center; flex: none; }
+.print-preview-fit > img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+.print-photo-zone { position: absolute; z-index: 2; box-sizing: border-box; border: 2px solid #e07a3d; background: rgba(224,122,61,.16); pointer-events: none; }
+.print-motif-layer { position: absolute; inset: 0; z-index: 2; pointer-events: auto; touch-action: none; }
 .print-motif { position: absolute; cursor: grab; touch-action: none; }
 .print-motif:active { cursor: grabbing; }
 .print-motif img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 6px #4b342633); }

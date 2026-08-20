@@ -5,7 +5,7 @@ Pipeline id: ``tshirt.simple_piece_swap.v2``
 袖型: puff/set-in/bell/regular 只换袖片；raglan/batwing 换衣身+袖；flutter 换衣身去袖。
 领口: 双前片时 V领=斜直线、一字肩=水平直线+侧缝延长，其余领口不动；单前片仍重绘领圈。Polo/高领/堆堆领换前后片。
 衣长/衣宽/领围: 结构点放码（侧缝外放、胸围线以下加长、只动领圈）。
-袖山按针织工业逻辑：矮袖山、前后弧对袖窿，袖长只加在袖肥线以下。
+袖山按针织工业逻辑：矮袖山、前后弧对袖窿；总袖长跟量体袖长，加长加在袖肥线以下。
 """
 from __future__ import annotations
 
@@ -1523,8 +1523,9 @@ def compose_simple(
             extra={"mode": "relative_host_dxf", "length_factor": length_factor, **body_fit},
         ))
 
-    if (body_fit.get("grade") or {}).get("applied") and not recipe.get("skip_grading"):
-        versions.append({"id": "grade", "label": "放码", "entities": deepcopy(entities)})
+    if (body_fit.get("grade") or {}).get("applied") or abs(float(body_fit.get("sleeve_sy") or 1.0) - 1.0) >= 1e-6 or (body_fit.get("sleeve_armhole_fit") or {}).get("applied"):
+        if not recipe.get("skip_grading"):
+            versions.append({"id": "grade", "label": "放码", "entities": deepcopy(entities)})
     gap = 52.0 if recipe.get("compact_layout") else 90.0
     laid_versions = [
         {"id": row["id"], "label": row["label"], "entities": _layout_complete(row["entities"], gap=gap)}
@@ -1533,6 +1534,8 @@ def compose_simple(
     wanted = str(recipe.get("compose_version") or laid_versions[-1]["id"])
     chosen = next((row for row in laid_versions if row["id"] == wanted), laid_versions[-1])
     laid_out = chosen["entities"]
+    sleeve_plan = _sleeve_plan(selections.get("sleeve") or base_option_ids.get("sleeve"))
+    sources["sleeve_mode"] = sleeve_plan.get("mode")
     interface_meta: dict[str, Any] = {}
     neck_src = sources.get("neckline") or sources.get("collar")
     if isinstance(neck_src, dict):

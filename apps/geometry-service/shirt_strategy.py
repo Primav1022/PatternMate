@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Any
 
-BODY_ROLES = {"front_body", "back_body", "front", "back", "front_placket", "front_left", "front_right", "front_yoke", "back_yoke"}
+BODY_ROLES = {"front_body", "back_body", "front", "back", "front_placket", "front_left", "front_right", "front_yoke", "back_yoke", "side_panel"}
 PURE_SLEEVE_ROLES = {"sleeve", "sleeve_left", "sleeve_right"}
 CUFF_ROLES = {"cuff", "rib_cuff", "sleeve_placket", "sleeve_placket_extension"}
 COLLAR_ROLES = {"collar", "collar_stand", "collar_interlining", "neck_binding", "neck_rib"}
@@ -23,7 +23,7 @@ COLLAR_SWAP_ROLES = BODY_SWAP_ROLES
 PLACKET_SWAP_ROLES = BODY_SWAP_ROLES
 SLEEVE_SWAP_ROLES = set(PURE_SLEEVE_ROLES)
 CUFF_SWAP_ROLES = set(CUFF_ROLES)
-SILHOUETTE_BODY_ROLES = {"front_body", "back_body", "front", "back", "front_left", "front_right"}
+SILHOUETTE_BODY_ROLES = {"front_body", "back_body", "front", "back", "front_left", "front_right", "side_panel"}
 
 
 def option_slug(option_id: str | None) -> str:

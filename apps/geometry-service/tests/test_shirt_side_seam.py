@@ -78,11 +78,13 @@ class ShirtSideSeamTests(unittest.TestCase):
         self.assertTrue({"front_body", "back_body"} <= COLLAR_SWAP_ROLES)
         self.assertIn("front_placket", COLLAR_SWAP_ROLES)
         self.assertIn("collar", COLLAR_SWAP_ROLES)
+        self.assertIn("side_panel", COLLAR_SWAP_ROLES)
 
     def test_silhouette_plan_is_side_seam_morph(self) -> None:
         plan = swap_plan("silhouette", "shirt.silhouette.a-line")
         self.assertEqual(plan["mode"], "side_seam_morph")
         self.assertIn("front_body", plan["roles"])
+        self.assertIn("side_panel", plan["roles"])
         self.assertNotIn("back_yoke", plan["roles"])
 
     def test_h_host_picks_up_aline_flare(self) -> None:
@@ -199,6 +201,38 @@ class BodyStructureGradeTests(unittest.TestCase):
         self.assertGreater(_width_at(pts, 200, tol=6), 112)
         self.assertAlmostEqual(_width_at(pts, 0, tol=6), 100, delta=2)
 
+    def test_graded_shoulder_stays_straight(self) -> None:
+        from shirt_side_seam import _dist_to_seg, grade_body_structure
+
+        def lerp(a, b, k, m):
+            return a + (b - a) * k / m
+
+        pts = []
+        for i in range(8):
+            pts.append([0.0, lerp(0, 90, i, 7)])
+        pts += [[2.0, 105.0], [12.0, 118.0]]
+        for i in range(8):
+            pts.append([lerp(12, 42, i, 7), lerp(118, 132, i, 7)])
+        for i in range(1, 6):
+            pts.append([lerp(42, 78, i, 5), 128.0])
+        for i in range(1, 8):
+            pts.append([lerp(78, 108, i, 7), lerp(132, 118, i, 7)])
+        pts += [[118.0, 105.0], [120.0, 90.0]]
+        for i in range(1, 8):
+            pts.append([120.0, lerp(90, 0, i, 7)])
+        for i in range(1, 8):
+            pts.append([lerp(120, 0, i, 7), 0.0])
+        host = _closed("h", "front", "front_body", pts)
+        src = host["geometry"]["points"]
+        left = src[10:18]
+        out, meta = grade_body_structure([host], width_sx=1.22, length_sy=1.0, shoulder_s=1.0, neck_s=1.12)
+        self.assertTrue(meta["applied"])
+        graded = out[0]["geometry"]["points"][10:18]
+        bow = max(_dist_to_seg(p, graded[0], graded[-1]) for p in graded[1:-1])
+        self.assertLess(bow, 0.6)
+        src_bow = max(_dist_to_seg(p, left[0], left[-1]) for p in left[1:-1])
+        self.assertLess(src_bow, 0.4)
+
     def test_armhole_grade_does_not_tear_outline(self) -> None:
         from shirt_side_seam import _hypot, grade_body_structure
 
@@ -245,6 +279,26 @@ class BodyStructureGradeTests(unittest.TestCase):
         src_ys = [p[1] for p in src]
         chest_y = min(src_ys) + 0.58 * (max(src_ys) - min(src_ys))
         self.assertGreater(_width_at(loop, chest_y, tol=20), _width_at(src, chest_y, tol=20) + 40)
+
+    def test_split_back_and_chest_regression_warnings(self) -> None:
+        from compose_ir import entities_from_compose, load_compose
+        from shirt_side_seam import shirt_body_sanity_warnings
+
+        doc = load_compose("C2431105")
+        ents = entities_from_compose(doc)
+        split = shirt_body_sanity_warnings(None, ents, width_sx=1.0)
+        self.assertTrue(any("分片中后片" in msg for msg in split))
+        grown = shirt_body_sanity_warnings(ents, ents, width_sx=1.05)
+        self.assertFalse(any("应变宽" in msg for msg in grown))
+        crushed = []
+        for entity in ents:
+            if entity.get("_piece_role") == "back_body":
+                pts = [[p[0] * 0.5, p[1]] for p in (entity.get("geometry") or {}).get("points") or []]
+                crushed.append({**entity, "geometry": {**(entity.get("geometry") or {}), "points": pts}})
+            else:
+                crushed.append(entity)
+        bad = shirt_body_sanity_warnings(ents, crushed, width_sx=1.05)
+        self.assertTrue(any("应变宽" in msg for msg in bad))
 
 
 if __name__ == "__main__":

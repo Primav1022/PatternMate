@@ -3330,7 +3330,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -4296,7 +4296,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -6022,7 +6022,7 @@
       },
       "lines": [
         {
-          "role": "internal",
+          "role": "center_front",
           "closed": false,
           "points": [
             [
@@ -10006,7 +10006,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [
@@ -10426,7 +10426,7 @@
           ]
         },
         {
-          "role": "internal",
+          "role": "placket_line",
           "closed": false,
           "points": [
             [

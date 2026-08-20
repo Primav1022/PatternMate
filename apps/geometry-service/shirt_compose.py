@@ -28,7 +28,7 @@ from composition_engine import (
     normalize_family,
     source_measurements,
 )
-from shirt_side_seam import grade_body_structure, morph_body_side_seams
+from shirt_side_seam import grade_body_structure, morph_body_side_seams, shirt_body_sanity_warnings
 from shirt_sleeve_fit import GATHER_SLUGS, fit_cuffs_to_sleeves, fit_sleeves_to_armholes
 from shirt_strategy import (
     BODY_SWAP_ROLES,
@@ -223,8 +223,8 @@ def compose_shirt(
     # 1) 领口+门襟 → 一次整换前后片（两者都在衣身上）
     collar_opt = selections.get("collar")
     placket_opt = selections.get("placket")
-    collar_changed = bool(collar_opt and collar_opt != base_option_ids.get("collar"))
-    placket_changed = bool(placket_opt and placket_opt != base_option_ids.get("placket"))
+    collar_changed = bool(collar_opt and base_option_ids.get("collar") and collar_opt != base_option_ids.get("collar"))
+    placket_changed = bool(placket_opt and base_option_ids.get("placket") and placket_opt != base_option_ids.get("placket"))
     if collar_changed or placket_changed:
         pick_group = "collar" if collar_changed else "placket"
         pick_opt = collar_opt if collar_changed else placket_opt
@@ -274,13 +274,19 @@ def compose_shirt(
             host_ref = list(entities)
             sleeve_donor = donor_index.get(str(sources["sleeve"].get("case_id") or ""))
             if sleeve_donor:
-                trial, count, _ = _replace_roles(
-                    entities, sleeve_donor, set(CUFF_SWAP_ROLES), host_ref=host_ref,
-                )
-                if count > 0:
-                    entities = trial
-                    host_ref = list(entities)
-                    sources["sleeve"]["companion_roles"] = sorted(CUFF_SWAP_ROLES)
+                donor_cuff = {_role(entity) for entity in _annotate(sleeve_donor)} & set(CUFF_SWAP_ROLES)
+                if donor_cuff:
+                    trial, count, _ = _replace_roles(
+                        entities, sleeve_donor, donor_cuff, host_ref=host_ref,
+                    )
+                    if count > 0:
+                        entities = trial
+                        host_ref = list(entities)
+                        sources["sleeve"]["companion_roles"] = sorted(donor_cuff)
+            locked = [entity for entity in before_sleeve if _role(entity) in BODY_SWAP_ROLES]
+            if locked:
+                entities = [entity for entity in entities if _role(entity) not in BODY_SWAP_ROLES] + locked
+                host_ref = list(entities)
             versions.append({"id": "sleeve", "label": "换袖", "entities": deepcopy(entities)})
 
     # 3) Cuff → 只换袖口片（有选才换，不做别的变换）
@@ -390,6 +396,9 @@ def compose_shirt(
         interface_meta["body_neckline"] = {"applied": True, "rule": "shirt_body_piece_swap"}
     validation = _validate(family, laid_out, interface_meta, sources)
     _downgrade_review_only_batch_errors(validation, family)
+    validation.setdefault("warnings", []).extend(
+        shirt_body_sanity_warnings(before, entities, width_sx=width_sx)
+    )
     group_zh = {"collar": "领型", "sleeve": "袖型", "cuff": "袖口", "placket": "前门襟", "silhouette": "廓形"}
     for row in results:
         if row.status != "retained_current":
