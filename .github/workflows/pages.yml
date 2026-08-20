@@ -34,11 +34,11 @@ jobs:
           NO_PUBLIC_COPY: "1"
           VITE_BASE: /PatternMate/
           VITE_ASSET_BASE: https://raw.githubusercontent.com/Primav1022/PatternMate/main/public
-          VITE_TEXT_BASE_URL: https://u1120192-44ru-e0d4d607.westd.seetacloud.com:8443/geometry
-          VITE_AI_BASE_URL: https://u1120192-44ru-e0d4d607.westd.seetacloud.com:8443/ai
-          VITE_GEOMETRY_BASE_URL: https://u1120192-44ru-e0d4d607.westd.seetacloud.com:8443/geometry
-          VITE_TRYON_BASE_URL: https://u1120192-44ru-e0d4d607.westd.seetacloud.com:8443/tryon
-          VITE_API_BASE_URL: https://u1120192-44ru-e0d4d607.westd.seetacloud.com:8443/geometry
+          VITE_TEXT_BASE_URL: https://u1120192-804b-76f4954f.westd.seetacloud.com:8443/geometry
+          VITE_AI_BASE_URL: https://u1120192-804b-76f4954f.westd.seetacloud.com:8443/ai
+          VITE_GEOMETRY_BASE_URL: https://u1120192-804b-76f4954f.westd.seetacloud.com:8443/geometry
+          VITE_TRYON_BASE_URL: https://u1120192-804b-76f4954f.westd.seetacloud.com:8443/tryon
+          VITE_API_BASE_URL: https://u1120192-804b-76f4954f.westd.seetacloud.com:8443/geometry
       - run: mkdir -p dist/brand && cp public/brand/logo.svg dist/brand/logo.svg
       - uses: actions/upload-pages-artifact@v3
         with:
